@@ -7,7 +7,7 @@ No terminal. No commands. No code.
 ## Quick Setup
 
 ```bash
-git clone https://github.com/robglre/my-second-brain.git
+git clone https://github.com/robgIre/my-second-brain.git
 cd my-second-brain
 bash setup.sh
 ```

@@ -14,7 +14,7 @@ Hey team — I've been building something I'd love your help testing.
 1. Open your OD terminal
 2. Paste this:
 ```
-git clone https://github.com/robglre/my-second-brain.git && cd my-second-brain && bash setup.sh
+git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
 ```
 3. Open http://localhost:5151 in your browser
 4. Click "Connect Brain"
@@ -23,7 +23,7 @@ There's a "Get Started" page inside the app with full instructions and troublesh
 
 I'm looking for honest feedback — what works, what doesn't, what's confusing, what's missing. Try the morning routine, type something into "Build Now", fill in your About Me. Break it if you can.
 
-Landing page: https://robglre.github.io/my-second-brain
+Landing page: https://robgIre.github.io/my-second-brain
 
 Ping me if you get stuck.
 
@@ -50,11 +50,11 @@ Most people in DEC aren't engineers. Asking them to open a terminal, type comman
 
 **Setup:**
 ```
-git clone https://github.com/robglre/my-second-brain.git && cd my-second-brain && bash setup.sh
+git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
 ```
 Then open http://localhost:5151
 
-Landing page: https://robglre.github.io/my-second-brain
+Landing page: https://robgIre.github.io/my-second-brain
 
 Comment below or DM me if you want to try it. I want honest feedback on what works, what's confusing, and what you'd want it to do.
 

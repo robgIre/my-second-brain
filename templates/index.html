@@ -1401,7 +1401,7 @@
             <div class="setup-step-body">
               <h3>Paste the setup command</h3>
               <p>Copy this command and paste it into your terminal. It installs everything and starts your brain.</p>
-              <div class="setup-command-box">git clone https://github.com/robglre/my-second-brain.git && cd my-second-brain && bash setup.sh<button class="copy-btn" onclick="copySetupCommand(this)">Copy</button></div>
+              <div class="setup-command-box">git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh<button class="copy-btn" onclick="copySetupCommand(this)">Copy</button></div>
               <p style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">This clones the repo, installs Flask (one dependency), checks Claude Code is available, and starts the server.</p>
             </div>
           </div>
@@ -1889,7 +1889,7 @@
   // ─── Getting Started ─────────────────────────────────────────────────────
 
   function copySetupCommand(btn) {
-    const cmd = 'git clone https://github.com/robglre/my-second-brain.git && cd my-second-brain && bash setup.sh';
+    const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
     navigator.clipboard.writeText(cmd).then(() => {
       btn.textContent = 'Copied!';
       btn.style.background = 'rgba(16,185,129,0.2)';
