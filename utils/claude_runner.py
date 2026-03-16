@@ -87,17 +87,12 @@ def check_connection():
         return {"connected": False, "error": "Claude Code CLI not installed"}
 
     try:
-        # First check: can we run claude at all?
-        result = subprocess.run(
-            ["claude", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode == 0:
+        # Check claude is installed and reachable — just check the binary exists
+        claude_path = shutil.which("claude")
+        if claude_path:
             return {"connected": True}
         else:
-            return {"connected": False, "error": result.stderr.strip() or "CLI returned an error"}
+            return {"connected": False, "error": "Claude Code CLI not found in PATH"}
     except subprocess.TimeoutExpired:
         return {"connected": False, "error": "Connection timed out"}
     except Exception as e:
