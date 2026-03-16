@@ -87,16 +87,17 @@ def check_connection():
         return {"connected": False, "error": "Claude Code CLI not installed"}
 
     try:
+        # First check: can we run claude at all?
         result = subprocess.run(
-            ["claude", "--print", "Reply with exactly: PING_OK"],
+            ["claude", "--version"],
             capture_output=True,
             text=True,
-            timeout=15,
+            timeout=10,
         )
-        if result.returncode == 0 and "PING_OK" in result.stdout:
+        if result.returncode == 0:
             return {"connected": True}
         else:
-            return {"connected": False, "error": "CLI responded but unexpected output"}
+            return {"connected": False, "error": result.stderr.strip() or "CLI returned an error"}
     except subprocess.TimeoutExpired:
         return {"connected": False, "error": "Connection timed out"}
     except Exception as e:
