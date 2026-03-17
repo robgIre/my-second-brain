@@ -12,10 +12,11 @@ My Second Brain is a wrapper around Claude Code CLI. Claude Code runs on ODs —
 
 ## Step 1: Get an OD
 
-1. Go to **go/od** in your browser
-2. Click **Create** to provision a new On-Demand server
-3. Wait for it to spin up (usually 1-2 minutes)
-4. Open the **VS Code** connection to your OD
+1. Type **od** in your bunnylol bar (browser address bar) and hit Enter
+2. You'll see the On Demand page with your workspaces listed
+3. Click **"Join Workspace"** on your default workspace, or click **"Create New Workspace"** if you don't have one
+4. Wait for it to spin up (usually 1-2 minutes)
+5. Click **"Open"** to launch VS Code connected to your OD
 
 ---
 
