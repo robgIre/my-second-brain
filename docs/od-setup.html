@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Second Brain — OD Setup Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --bg-card: #1a1d26;
+    --bg-card-hover: #21242f;
+    --border: #2a2d3a;
+    --text: #e4e7ec;
+    --text-secondary: #8b93a8;
+    --text-tertiary: #5a6178;
+    --accent: #4f6ef7;
+    --accent-hover: #6b85ff;
+    --green: #10b981;
+    --pink: #c47a9e;
+    --yellow: #f59e0b;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 24px 40px;
+    text-align: center;
+  }
+
+  .header-flask {
+    margin-bottom: 24px;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .header h1 {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Why OD callout */
+  .callout {
+    max-width: 680px;
+    margin: 0 auto 40px;
+    padding: 0 24px;
+  }
+
+  .callout-box {
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+  }
+
+  .callout-box h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--yellow);
+  }
+
+  .callout-box p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Steps */
+  .steps {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #6b85ff);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-body h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .step-body p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .step-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .arrow {
+    text-align: center;
+    font-size: 24px;
+    color: var(--text-tertiary);
+    margin: -8px 0;
+  }
+
+  /* Code blocks */
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--green);
+    line-height: 1.8;
+    position: relative;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+
+  .code-block .comment { color: var(--text-tertiary); }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+  /* What to try */
+  .try-section {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .try-section h2 {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .try-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .try-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .try-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(79,110,247,0.3);
+    transform: translateY(-2px);
+  }
+
+  .try-card .icon { font-size: 28px; margin-bottom: 10px; }
+  .try-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .try-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* Troubleshooting */
+  .troubleshooting {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .troubleshooting h2 {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .trouble-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+  }
+
+  .trouble-item h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--yellow);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-bottom: 6px;
+  }
+
+  .trouble-item p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .trouble-item code {
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  /* Restart section */
+  .restart {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  .restart h2 {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .restart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .restart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .restart-card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  .footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .footer a:hover { color: var(--text); }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 32px;
+    transition: color 0.15s;
+  }
+
+  .back-link:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .header h1 { font-size: 28px; }
+    .header p { font-size: 15px; }
+    .try-grid { grid-template-columns: 1fr; }
+    .restart-grid { grid-template-columns: 1fr; }
+    .step { flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="header">
+  <a href="index.html" class="back-link">&larr; Back to home</a>
+
+  <div class="header-flask">
+    <svg width="60" height="76" viewBox="0 0 56 72" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="flGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:rgba(79,110,247,0.08)"/>
+          <stop offset="100%" style="stop-color:rgba(79,110,247,0.3)"/>
+        </linearGradient>
+        <radialGradient id="bGrad" cx="50%" cy="40%">
+          <stop offset="0%" style="stop-color:#ebb5d0"/>
+          <stop offset="100%" style="stop-color:#c47a9e"/>
+        </radialGradient>
+      </defs>
+      <path d="M 22 6 L 22 22 L 8 54 Q 5 62 14 65 L 42 65 Q 51 62 48 54 L 34 22 L 34 6"
+            fill="none" stroke="rgba(228,231,236,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+      <rect x="20" y="4" width="16" height="4" rx="2" fill="rgba(228,231,236,0.3)"/>
+      <path d="M 23 26 L 10 52 Q 7 60 14 63 L 42 63 Q 49 60 46 52 L 33 26 Z" fill="url(#flGreen)"/>
+      <ellipse cx="28" cy="44" rx="12" ry="10" fill="url(#bGrad)" opacity="0.7"/>
+      <path d="M 20 41 Q 24 38 28 41 Q 32 44 36 41" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
+      <path d="M 19 46 Q 24 43 28 46 Q 32 49 37 46" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
+      <line x1="28" y1="35" x2="28" y2="53" stroke="rgba(196,122,158,0.25)" stroke-width="0.6"/>
+    </svg>
+  </div>
+
+  <h1>OD Setup Guide</h1>
+  <p>Get My Second Brain running on a Meta On-Demand server. Full functionality, no Windows/Mac headaches.</p>
+</section>
+
+<section class="callout">
+  <div class="callout-box">
+    <h2>Why do I need an OD?</h2>
+    <p>My Second Brain is a wrapper around Claude Code CLI. Claude Code runs on ODs — it won't work from your regular Windows or Mac laptop. If you tried running it locally and got errors about pip, Flask, or "module not found", this is why. Get an OD and everything just works.</p>
+  </div>
+</section>
+
+<section class="steps">
+
+  <!-- Step 1 -->
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Get an OD</h3>
+      <p>Go to <strong>go/od</strong> in your browser and provision a new On-Demand server. Click <strong>Create</strong> and wait for it to spin up (usually 1-2 minutes). Then open the <strong>VS Code</strong> connection to your OD.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 2 -->
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Open a terminal</h3>
+      <p>In VS Code on your OD, open a terminal by pressing <strong>Ctrl + `</strong> (backtick), or go to <strong>Terminal > New Terminal</strong> in the menu.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 3 -->
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Paste this command and hit Enter</h3>
+      <p>This clones the project, installs Flask, and starts the server. Takes about 30 seconds.</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyCmd(this)">Copy</button>
+        git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);">You'll see a green URL when it's ready. Keep this terminal window open — it runs the server.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Open the app</h3>
+      <p>Open your browser and go to:</p>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 24px;text-align:center;margin:12px 0;">
+        <span style="color:var(--green);font-size:20px;font-weight:700;letter-spacing:-0.3px;">http://localhost:5151</span>
+      </div>
+      <p>Click the green <strong>"Connect Brain"</strong> button. When it says <strong>"Your brain is active"</strong> — you're all set.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 5 -->
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Set up your profile</h3>
+      <p>Click <strong>"About Me"</strong> in the sidebar. Fill in your name, role, team, manager, and location. Write a short background about what you do. Click <strong>"Save & Sync"</strong>.</p>
+      <p>This teaches your brain who you are so it has context every time you use it.</p>
+    </div>
+  </div>
+
+</section>
+
+<section class="try-section">
+  <h2>What to try first</h2>
+  <div class="try-grid">
+    <div class="try-card">
+      <div class="icon">&#9728;&#65039;</div>
+      <h3>Morning Routine</h3>
+      <p>Click "Run Now" on the home page</p>
+    </div>
+    <div class="try-card">
+      <div class="icon">&#128296;</div>
+      <h3>Build Now</h3>
+      <p>Type anything: "What's on my calendar today?"</p>
+    </div>
+    <div class="try-card">
+      <div class="icon">&#127769;</div>
+      <h3>Evening Routine</h3>
+      <p>Wrap up your day with an EOD debrief</p>
+    </div>
+  </div>
+</section>
+
+<section class="restart">
+  <h2>After first time</h2>
+  <div class="restart-grid">
+    <div class="restart-card">
+      <h3>Restart the server</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyRestart(this)">Copy</button>
+        cd ~/my-second-brain && bash setup.sh
+      </div>
+    </div>
+    <div class="restart-card">
+      <h3>Update (when Rob pushes changes)</h3>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyUpdate(this)">Copy</button>
+        cd ~/my-second-brain && git pull && bash setup.sh
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="troubleshooting">
+  <h2>Troubleshooting</h2>
+
+  <div class="trouble-item">
+    <h4>"Claude Code CLI not found"</h4>
+    <p>Run <code>claude --version</code> to check. If not installed, run:<br>
+    <code>curl -fsSL https://cli.anthropic.com/install.sh | sh</code><br>
+    Then close and reopen your terminal.</p>
+  </div>
+
+  <div class="trouble-item">
+    <h4>Port already in use</h4>
+    <p>Start on a different port: <code>BIAJ_PORT=5152 bash setup.sh</code></p>
+  </div>
+
+  <div class="trouble-item">
+    <h4>Page won't load</h4>
+    <p>Make sure the terminal with the server is still running. Check you're using the right URL: <code>http://localhost:5151</code></p>
+  </div>
+</section>
+
+<footer class="footer">
+  Built by Rob Goldsmith &nbsp;&middot;&nbsp; <a href="index.html">Home</a> &nbsp;&middot;&nbsp; <a href="https://github.com/robgIre/my-second-brain">GitHub</a>
+  <br><br>
+  Questions? Message Rob Goldsmith on GChat.
+</footer>
+
+<script>
+function copyCmd(btn) {
+  const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+function copyRestart(btn) {
+  navigator.clipboard.writeText('cd ~/my-second-brain && bash setup.sh').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+function copyUpdate(btn) {
+  navigator.clipboard.writeText('cd ~/my-second-brain && git pull && bash setup.sh').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
