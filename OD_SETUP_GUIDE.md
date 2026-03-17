@@ -1,12 +1,12 @@
 # My Second Brain — OD Setup Guide
 
-Hey! This guide will get you up and running on a Meta On-Demand server (OD). The setup is the same whether you're on Mac or Windows — you just need a terminal to connect.
+Hey! This is a **one-time setup** to get My Second Brain running on a Meta On-Demand server (OD). Same steps whether you're on Mac or Windows. Once done, you just reconnect and go.
 
 ---
 
 ## Why an OD?
 
-My Second Brain is a wrapper around Claude Code CLI. Claude Code only runs on ODs — not on your regular Windows or Mac laptop. If you tried running it locally and got errors about pip, Flask, or "module not found", this is why. Everyone needs an OD, regardless of what laptop you're on. Once connected, you use the Second Brain dashboard in your browser. No VS Code needed.
+My Second Brain is a wrapper around Claude Code CLI, which only runs on ODs — not on your regular Windows or Mac laptop. If you tried running it locally and got errors about pip, Flask, or "module not found", this is why. This setup is a **one-time thing**. After you've done it once, you just reconnect to your OD and start the server — takes 30 seconds.
 
 ---
 

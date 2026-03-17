@@ -384,64 +384,31 @@
 
 <section class="setup" id="setup">
   <h2>Get Started</h2>
-  <p class="subtitle">Connect to an OD server, run one command, then use the dashboard in your browser. Same steps for Mac and Windows.</p>
+  <p class="subtitle">One-time setup takes about 5 minutes. After that, you just open your browser.</p>
 
   <div class="setup-steps">
-
-    <!-- Step 1 -->
     <div class="setup-step">
-      <div class="setup-step-num">1</div>
+      <div class="setup-step-num" style="font-size:24px;">&#9889;</div>
       <div class="setup-step-body">
-        <h3>Connect to an OD server</h3>
-        <p>Open a terminal on your laptop and run:</p>
+        <h3>First time? Follow the OD Setup Guide</h3>
+        <p>You need an OD server to run Second Brain. The setup is a <strong>one-time thing</strong> — same steps whether you're on Mac or Windows. Once it's done, you never need to do it again.</p>
+        <a href="od-setup.html" class="hero-cta" style="display:inline-flex;margin-top:12px;font-size:14px;padding:12px 24px;">OD Setup Guide &rarr;</a>
+      </div>
+    </div>
+
+    <div class="setup-step" style="margin-top:16px;">
+      <div class="setup-step-num" style="background:var(--green);font-size:24px;">&#10003;</div>
+      <div class="setup-step-body">
+        <h3>Already set up? Just reconnect and go</h3>
+        <p>Open a terminal, run <strong>dev connect</strong>, then start your server:</p>
         <div class="setup-command">
-          <button class="copy-btn" onclick="copyConnect(this)">Copy</button>
-          cd<br>
-          dev connect
+          <button class="copy-btn" onclick="copyReconnect(this)">Copy</button>
+          cd ~/my-second-brain && bash setup.sh
         </div>
-        <p>Select <strong>"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"</strong> and touch your YubiKey.</p>
-        <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">First time? See the <a href="od-setup.html" style="color:var(--accent);text-decoration:none;font-weight:500;">full OD setup guide</a> for detailed steps.</p>
+        <p>Then open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">http://localhost:5151</a> in your browser.</p>
       </div>
     </div>
-
-    <div class="setup-arrow">&#8595;</div>
-
-    <!-- Step 2 -->
-    <div class="setup-step">
-      <div class="setup-step-num">2</div>
-      <div class="setup-step-body">
-        <h3>Install and start Second Brain</h3>
-        <p>Once connected to your OD, paste this and hit Enter:</p>
-        <div class="setup-command">
-          <button class="copy-btn" onclick="copyCmd(this)">Copy</button>
-          <span class="comment"># Clone and start your Second Brain</span><br>
-          git clone https://github.com/robgIre/my-second-brain.git<br>
-          cd my-second-brain<br>
-          bash setup.sh
-        </div>
-        <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">You'll see a green URL when it's ready. Keep this terminal window open — it runs the server.</p>
-      </div>
-    </div>
-
-    <div class="setup-arrow">&#8595;</div>
-
-    <!-- Step 3 -->
-    <div class="setup-step">
-      <div class="setup-step-num">3</div>
-      <div class="setup-step-body">
-        <h3>Open the dashboard in your browser</h3>
-        <p>Open your browser (Chrome, Safari, Firefox — any will work) and go to:</p>
-        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 24px;text-align:center;margin:12px 0;">
-          <a href="http://localhost:5151" style="color:var(--green);font-size:20px;font-weight:700;text-decoration:none;letter-spacing:-0.3px;">http://localhost:5151</a>
-        </div>
-        <p>Click the green <strong>"Connect Brain"</strong> button. When it says <strong>"Your brain is active"</strong> — you're all set. No VS Code needed.</p>
-      </div>
-    </div>
-
   </div>
-
-  <p class="setup-note">After connecting, go to <strong>About Me</strong> to teach your brain who you are, then try <strong>Build Now</strong> or run your <strong>Morning Routine</strong>.</p>
-  <p class="setup-note" style="margin-top:16px;">Need help getting an OD? See the <a href="od-setup.html" style="color:var(--accent);text-decoration:none;font-weight:500;">full OD setup guide</a> with detailed steps.</p>
 </section>
 
 <footer class="footer">
@@ -449,16 +416,8 @@
 </footer>
 
 <script>
-function copyConnect(btn) {
-  navigator.clipboard.writeText('cd\ndev connect').then(() => {
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
-  });
-}
-
-function copyCmd(btn) {
-  const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
-  navigator.clipboard.writeText(cmd).then(() => {
+function copyReconnect(btn) {
+  navigator.clipboard.writeText('cd ~/my-second-brain && bash setup.sh').then(() => {
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
