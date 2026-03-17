@@ -1436,7 +1436,7 @@
   let isConnected = false;
   let isRecording = false;
   let matrixInterval = null;
-  let conversationId = null;
+  let conversationId = localStorage.getItem('msb_conversation_id') || null;
 
   const API_BASE = '';
   async function api(path, opts = {}) {
@@ -1738,11 +1738,17 @@
 
   function newConversation() {
     conversationId = null;
+    localStorage.removeItem('msb_conversation_id');
     updateConversationIndicator();
     const output = document.getElementById('buildOutput');
     const steps = document.getElementById('outputSteps');
     output.classList.remove('visible');
     steps.innerHTML = '';
+  }
+
+  function saveConversationId(id) {
+    conversationId = id;
+    localStorage.setItem('msb_conversation_id', id);
   }
 
   function updateConversationIndicator() {
@@ -1810,7 +1816,7 @@
 
       // Track conversation for continuity
       if (data.conversation_id) {
-        conversationId = data.conversation_id;
+        saveConversationId(data.conversation_id);
         updateConversationIndicator();
       }
 
@@ -1995,6 +2001,7 @@
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuild(); }
     });
     loadProjects();
+    updateConversationIndicator();
   });
 </script>
 
