@@ -228,6 +228,47 @@
     line-height: 1.6;
   }
 
+  /* ===== TABS ===== */
+  .terminal-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+  }
+
+  .terminal-tab {
+    padding: 8px 18px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-tertiary);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .terminal-tab:hover { color: var(--text-secondary); }
+  .terminal-tab.active {
+    color: var(--text);
+    background: var(--bg-card);
+    border-color: var(--border);
+  }
+
+  .terminal-content {
+    display: none;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+    padding: 16px 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .terminal-content.active { display: block; }
+
   /* ===== SETUP STEPS ===== */
   .setup-steps {
     max-width: 680px;
@@ -398,18 +439,41 @@
       <div class="setup-step-num" style="background:var(--green);font-size:24px;">&#10003;</div>
       <div class="setup-step-body">
         <h3>Already set up? Each time you want to use it:</h3>
-        <p>1. Open a terminal and connect to your OD:</p>
-        <div class="setup-command" style="margin:8px 0;">
-          <button class="copy-btn" onclick="copyReconnect1(this)">Copy</button>
-          dev connect
+
+        <div class="terminal-tabs" style="margin-top:12px;">
+          <button class="terminal-tab active" onclick="showReturn('od', this)">On-Demand (OD)</button>
+          <button class="terminal-tab" onclick="showReturn('dev', this)">Dev Server</button>
         </div>
-        <p>2. Start the server:</p>
-        <div class="setup-command" style="margin:8px 0;">
-          <button class="copy-btn" onclick="copyReconnect2(this)">Copy</button>
-          cd ~/my-second-brain && bash setup.sh
+
+        <div class="terminal-content active" id="return-od">
+          <p style="margin-bottom:8px;">1. Open a terminal and connect to your OD:</p>
+          <div class="setup-command" style="margin:8px 0;">
+            <button class="copy-btn" onclick="copyReconnect1(this)">Copy</button>
+            dev connect
+          </div>
+          <p style="margin-bottom:8px;">2. Start the server:</p>
+          <div class="setup-command" style="margin:8px 0;">
+            <button class="copy-btn" onclick="copyReconnect2(this)">Copy</button>
+            cd ~/my-second-brain && bash setup.sh
+          </div>
+          <p>3. Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">http://localhost:5151</a> in your browser.</p>
         </div>
-        <p>3. Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">http://localhost:5151</a> in your browser.</p>
-        <p style="font-size:12px;color:var(--text-tertiary);margin-top:8px;">The server must be running for the dashboard to work. If you close the terminal, the dashboard stops.</p>
+
+        <div class="terminal-content" id="return-dev">
+          <p style="margin-bottom:8px;">1. SSH into your Dev Server:</p>
+          <div class="setup-command" style="margin:8px 0;">
+            <button class="copy-btn" onclick="copySsh(this)">Copy</button>
+            ssh your-devserver-name
+          </div>
+          <p style="margin-bottom:8px;">2. Start the server:</p>
+          <div class="setup-command" style="margin:8px 0;">
+            <button class="copy-btn" onclick="copyReconnect2(this)">Copy</button>
+            cd ~/my-second-brain && bash setup.sh
+          </div>
+          <p>3. Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">http://localhost:5151</a> in your browser.</p>
+        </div>
+
+        <p style="font-size:12px;color:var(--text-tertiary);margin-top:12px;">The server must be running for the dashboard to work. If you close the terminal, the dashboard stops.</p>
       </div>
     </div>
   </div>
@@ -420,6 +484,20 @@
 </footer>
 
 <script>
+function showReturn(type, tab) {
+  document.querySelectorAll('.terminal-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.terminal-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('return-' + type).classList.add('active');
+  tab.classList.add('active');
+}
+
+function copySsh(btn) {
+  navigator.clipboard.writeText('ssh your-devserver-name').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
 function copyReconnect1(btn) {
   navigator.clipboard.writeText('dev connect').then(() => {
     btn.textContent = 'Copied!';
