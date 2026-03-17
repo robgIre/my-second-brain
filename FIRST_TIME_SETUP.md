@@ -138,7 +138,7 @@ This teaches your brain who you are. Every time you use it, it already knows you
 ## What to try
 
 - **Morning Routine** — click "Run Now" on the home page. Your brain will check your emails, calendar, and tasks.
-- **Build Now** — type anything: "Prepare me for my 2pm meeting", "Summarize my open tasks", "What's happening on the GAZ 3 project?"
+- **Ask My Brain** — type anything: "Prepare me for my 2pm meeting", "Summarize my open tasks", "What's happening on the GAZ 3 project?"
 - **Add steps** — click "+ Add to my morning" or "+ Add to my evening" to customise your routines.
 
 ---
@@ -155,7 +155,7 @@ This teaches your brain who you are. Every time you use it, it already knows you
 → Claude Code may not be responding. Try running `claude --version` in a separate terminal to check.
 
 **"Address already in use"**
-→ The app is already running in another terminal. Either find and close that terminal, or start on a different port: `BIAJ_PORT=5152 python3 app.py`
+→ The app is already running in another terminal. Either find and close that terminal, or start on a different port: `MSB_PORT=5152 python3 app.py`
 
 **Page won't load in browser**
 → Make sure the terminal is still running (you should see the server output). Don't close the terminal window.

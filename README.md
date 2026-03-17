@@ -17,7 +17,7 @@ Then open [http://localhost:5151](http://localhost:5151) in your browser.
 ## What It Does
 
 - **Connect Brain** — one click to connect to Claude Code on your server
-- **Build Now** — type any task in plain language and get results
+- **Ask My Brain** — type any task in plain language and get results
 - **Morning Routine / EOD Debrief** — one-click routines, customisable in plain language
 - **About Me** — edit your profile, auto-syncs to CLAUDE.md
 - **Talk to Me** — voice input mode (coming soon)
@@ -26,7 +26,7 @@ Then open [http://localhost:5151](http://localhost:5151) in your browser.
 
 - Python 3
 - Claude Code CLI
-- An On-Demand server (OD) or local machine with Claude Code installed
+- An On-Demand server (OD) or Dev Server with Claude Code installed
 
 ## Documentation
 

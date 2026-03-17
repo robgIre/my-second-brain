@@ -21,7 +21,7 @@ git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain &
 
 There's a "Get Started" page inside the app with full instructions and troubleshooting.
 
-I'm looking for honest feedback — what works, what doesn't, what's confusing, what's missing. Try the morning routine, type something into "Build Now", fill in your About Me. Break it if you can.
+I'm looking for honest feedback — what works, what doesn't, what's confusing, what's missing. Try the morning routine, type something into "Ask My Brain", fill in your About Me. Break it if you can.
 
 Landing page: https://robgIre.github.io/my-second-brain
 
@@ -39,7 +39,7 @@ Most people in DEC aren't engineers. Asking them to open a terminal, type comman
 
 **What it does:**
 - **Connect Brain** — one click to connect to Claude Code on your OD. No terminal after initial setup.
-- **Build Now** — type any task in plain language ("prep me for my 2pm meeting", "summarize my open tasks"). Your brain executes it and shows results.
+- **Ask My Brain** — type any task in plain language ("prep me for my 2pm meeting", "summarize my open tasks"). Your brain executes it and shows results.
 - **Morning Routine / EOD Debrief** — predefined routines you can run with one click. Customise by adding your own steps in plain language.
 - **About Me** — fill in your details once. It syncs to CLAUDE.md so your brain always knows who you are.
 - **Talk to Me** — voice input mode (demo for now, full implementation coming).

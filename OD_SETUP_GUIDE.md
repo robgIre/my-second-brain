@@ -141,7 +141,7 @@ This teaches your brain who you are so it has context every time you use it.
 ## What to try first
 
 - **Morning Routine** — click "Run Now" on the home page
-- **Build Now** — type anything in plain language, e.g. "What's on my calendar today?"
+- **Ask My Brain** — type anything in plain language, e.g. "What's on my calendar today?"
 - **Evening Routine** — wrap up your day with an EOD debrief
 
 ---
@@ -168,7 +168,7 @@ cd ~/my-second-brain && git pull && bash setup.sh
 - Then close and reopen your terminal
 
 **Port already in use**
-- Start on a different port: `BIAJ_PORT=5152 bash setup.sh`
+- Start on a different port: `MSB_PORT=5152 bash setup.sh`
 
 **Page won't load**
 - Make sure the terminal with the server is still running

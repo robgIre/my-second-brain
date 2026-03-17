@@ -248,6 +248,6 @@ def api_claudemd_path():
 # ─── Run ──────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    port = int(os.environ.get("BIAJ_PORT", 5151))
+    port = int(os.environ.get("MSB_PORT", os.environ.get("BIAJ_PORT", 5151)))
     print(f"\n  My Second Brain is running at: http://localhost:{port}\n")
     app.run(host="0.0.0.0", port=port, debug=False)

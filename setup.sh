@@ -79,7 +79,7 @@ echo ""
 
 # ── Start the server ─────────────────────────────────────────────────────────
 
-PORT="${BIAJ_PORT:-5151}"
+PORT="${MSB_PORT:-${BIAJ_PORT:-5151}}"
 
 echo -e "${CYAN}${BOLD}  Starting My Second Brain...${RESET}"
 echo ""
