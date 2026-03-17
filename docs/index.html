@@ -413,7 +413,7 @@
     <div class="setup-step" style="flex-direction:column;padding:28px 20px;">
       <div style="font-size:32px;margin-bottom:12px;text-align:center;">🖥️</div>
       <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;text-align:center;">Log in via Dev Server</h3>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">1. SSH into your server <span style="font-size:11px;color:var(--text-tertiary);">(with port forwarding)</span>:</p>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">1. Open a terminal and SSH into your server:</p>
       <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--green);margin-bottom:2px;font-family:'SF Mono','Fira Code',monospace;word-break:break-all;">ssh -L 5151:localhost:5151 your-devserver-name</code>
       <span style="font-size:10px;color:var(--accent);cursor:pointer;margin-bottom:10px;display:inline-block;" onclick="navigator.clipboard.writeText('ssh -L 5151:localhost:5151 your-devserver-name');this.textContent='Copied!';setTimeout(()=>this.textContent='Click to copy',1500)">Click to copy</span>
       <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">2. Start the server:</p>
