@@ -51,11 +51,17 @@ echo -e "${GREEN}[2/4]${RESET} $PY_VERSION"
 
 # ── Step 3: Install dependencies ─────────────────────────────────────────────
 
+VENV_DIR="$PROJECT_DIR/.venv"
+
+if [ ! -d "$VENV_DIR" ]; then
+    echo -e "${GREEN}[3/4]${RESET} Creating virtual environment..."
+    python3 -m venv "$VENV_DIR"
+fi
+
+source "$VENV_DIR/bin/activate"
+
 echo -e "${GREEN}[3/4]${RESET} Installing dependencies..."
-pip3 install -q -r "$PROJECT_DIR/requirements.txt" 2>/dev/null || {
-    echo -e "${YELLOW}  pip3 install failed, trying with --user flag...${RESET}"
-    pip3 install -q --user -r "$PROJECT_DIR/requirements.txt"
-}
+pip install -q -r "$PROJECT_DIR/requirements.txt"
 echo "      Done."
 echo ""
 
