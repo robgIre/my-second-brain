@@ -396,13 +396,13 @@
   <div class="step">
     <div class="step-num">1</div>
     <div class="step-body">
-      <h3>Reserve an OD instance</h3>
-      <p>First, check for existing instances:</p>
-      <ol style="font-size:14px;color:var(--text-secondary);line-height:2;padding-left:20px;margin:12px 0;">
-        <li>Type <strong>od</strong> in your bunnylol bar (browser address bar) and hit Enter</li>
-        <li>Check if you already have any OD instances reserved</li>
-        <li>If you do, <strong>"Save &amp; Release"</strong> all active instances to avoid conflicts</li>
-      </ol>
+      <h3>Check the On Demand dashboard</h3>
+      <p>Go to your browser's address bar (where you'd normally type google.com), type <strong>od</strong>, and hit Enter. This opens the On Demand dashboard.</p>
+      <p>Look at the top of the page under <strong>"Current Instances"</strong>:</p>
+      <ul style="font-size:14px;color:var(--text-secondary);line-height:2;padding-left:20px;margin:12px 0;">
+        <li>If it says <strong>"You do not currently have any instances"</strong> — that's fine, move to Step 2</li>
+        <li>If you see an existing instance listed, click <strong>"Save &amp; Release"</strong> next to it first, then move to Step 2</li>
+      </ul>
     </div>
   </div>
 
@@ -412,25 +412,10 @@
   <div class="step">
     <div class="step-num">2</div>
     <div class="step-body">
-      <h3>Connect to your OD server</h3>
-      <p>Open a terminal on your laptop:</p>
-      <ul style="font-size:13px;color:var(--text-secondary);line-height:1.7;padding-left:20px;margin:8px 0 12px;">
-        <li><strong>Mac:</strong> Press <strong>Cmd + Space</strong>, type <strong>Terminal</strong>, hit Enter</li>
-        <li><strong>Windows:</strong> Press <strong>Win + R</strong>, type <strong>cmd</strong>, hit Enter</li>
-      </ul>
-      <p>Then run these commands:</p>
-      <div class="code-block">
-        <button class="copy-btn" onclick="copyDevConnect(this)">Copy</button>
-        cd<br>
-        dev connect
-      </div>
-      <p>When prompted, select:<br>
-      <strong>"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"</strong></p>
-      <p>Touch your <strong>YubiKey</strong> when asked.</p>
-      <p>You're connected when you see something like:</p>
-      <div class="code-block" style="color:var(--text-secondary);">
-        [yourusername@12345.od ~]
-      </div>
+      <h3>Open a terminal on your laptop</h3>
+      <p><strong>On a Mac:</strong> Press <strong>Cmd + Space</strong> to open Spotlight, type <strong>Terminal</strong>, and hit Enter.</p>
+      <p><strong>On Windows:</strong> Press <strong>Win + R</strong>, type <strong>cmd</strong>, and hit Enter.</p>
+      <p>You should see a black or white window with a blinking cursor — that's your terminal.</p>
     </div>
   </div>
 
@@ -439,6 +424,31 @@
   <!-- Step 3 -->
   <div class="step">
     <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Connect to your OD server</h3>
+      <p>In the terminal, type these two commands (or click Copy and paste them in):</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyDevConnect(this)">Copy</button>
+        cd<br>
+        dev connect
+      </div>
+      <p>A list of options will appear. Use your arrow keys to find and select:<br>
+      <strong>"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"</strong><br>
+      Then hit Enter.</p>
+      <p>It will ask you to touch your <strong>YubiKey</strong> (the small USB security key on your laptop). Tap it.</p>
+      <p>Wait a moment. You're connected when you see something like:</p>
+      <div class="code-block" style="color:var(--text-secondary);">
+        [yourusername@12345.od ~]
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);">This means you're now on a remote server, not your laptop. Everything you type from here runs on the OD.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 3 -->
+  <div class="step">
+    <div class="step-num">4</div>
     <div class="step-body">
       <h3>Check Python and Claude Code are installed</h3>
       <p>Once connected to your OD, run these checks:</p>
@@ -465,7 +475,7 @@
 
   <!-- Step 4 -->
   <div class="step">
-    <div class="step-num">4</div>
+    <div class="step-num">5</div>
     <div class="step-body">
       <h3>Install and start Second Brain</h3>
       <p>This clones the project, installs Flask, and starts the server. Takes about 30 seconds.</p>
@@ -481,7 +491,7 @@
 
   <!-- Step 5 -->
   <div class="step">
-    <div class="step-num">5</div>
+    <div class="step-num">6</div>
     <div class="step-body">
       <h3>Open the dashboard</h3>
       <p>Open your browser and go to:</p>
@@ -496,7 +506,7 @@
 
   <!-- Step 6 -->
   <div class="step">
-    <div class="step-num">6</div>
+    <div class="step-num">7</div>
     <div class="step-body">
       <h3>Set up your profile</h3>
       <p>Click <strong>"About Me"</strong> in the sidebar. Fill in your name, role, team, manager, and location. Write a short background about what you do. Click <strong>"Save & Sync"</strong>.</p>

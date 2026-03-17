@@ -10,40 +10,51 @@ My Second Brain is a wrapper around Claude Code CLI, which only runs on ODs — 
 
 ---
 
-## Step 1: Reserve an OD instance
+## Step 1: Check the On Demand dashboard
 
-1. Type **od** in your bunnylol bar (browser address bar) and hit Enter
-2. Check if you already have any OD instances reserved
-3. If you do, **"Save & Release"** all active instances to avoid conflicts
+Go to your browser's address bar (where you'd normally type google.com), type **od**, and hit Enter. This opens the On Demand dashboard.
+
+Look at the top of the page under **"Current Instances"**:
+- If it says **"You do not currently have any instances"** — that's fine, move to Step 2
+- If you see an existing instance listed, click **"Save & Release"** next to it first, then move to Step 2
 
 ---
 
-## Step 2: Connect to your OD server
+## Step 2: Open a terminal on your laptop
 
-Open a terminal on your laptop:
-- **Mac:** Press **Cmd + Space**, type **Terminal**, hit Enter
-- **Windows:** Press **Win + R**, type **cmd**, hit Enter
+**On a Mac:** Press **Cmd + Space** to open Spotlight, type **Terminal**, and hit Enter.
 
-Then run:
+**On Windows:** Press **Win + R**, type **cmd**, and hit Enter.
+
+You should see a black or white window with a blinking cursor — that's your terminal.
+
+---
+
+## Step 3: Connect to your OD server
+
+In the terminal, type these two commands (or copy and paste them):
 
 ```
 cd
 dev connect
 ```
 
-When prompted, select:
+A list of options will appear. Use your arrow keys to find and select:
 **"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"**
+Then hit Enter.
 
-Touch your **YubiKey** when asked.
+It will ask you to touch your **YubiKey** (the small USB security key on your laptop). Tap it.
 
-You're connected when you see something like:
+Wait a moment. You're connected when you see something like:
 ```
 [yourusername@12345.od ~]
 ```
 
+This means you're now on a remote server, not your laptop. Everything you type from here runs on the OD.
+
 ---
 
-## Step 3: Check Python and Claude Code are installed
+## Step 4: Check Python and Claude Code are installed
 
 Once connected to your OD, run these checks:
 
@@ -69,7 +80,7 @@ Then close and reopen your terminal.
 
 ---
 
-## Step 4: One-command install
+## Step 5: Install and start Second Brain
 
 Paste this entire line into your terminal and hit Enter:
 
@@ -106,7 +117,7 @@ You should see something like:
 
 ---
 
-## Step 5: Open the dashboard
+## Step 6: Open the dashboard
 
 1. Open your browser and go to: **http://localhost:5151**
 2. Click the green **"Connect Brain"** button
@@ -116,7 +127,7 @@ You should see something like:
 
 ---
 
-## Step 6: Set up your profile
+## Step 7: Set up your profile
 
 1. Click **"About Me"** in the sidebar
 2. Fill in your name, role, team, manager, location
