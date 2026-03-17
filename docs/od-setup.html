@@ -440,7 +440,34 @@
   <div class="step">
     <div class="step-num">3</div>
     <div class="step-body">
-      <h3>Paste this command and hit Enter</h3>
+      <h3>Check Python and Claude Code are installed</h3>
+      <p>Once connected to your OD, run these checks:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyChecks(this)">Copy</button>
+        python3 --version<br>
+        claude --version
+      </div>
+      <p>If <strong>Python 3</strong> shows a version number (e.g. <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--green);">Python 3.10.12</code>) — you're good.</p>
+      <p>If not, install it:</p>
+      <div class="code-block">
+        sudo apt-get update && sudo apt-get install -y python3 python3-pip
+      </div>
+      <p>If <strong>Claude Code</strong> shows a version number — you're good.</p>
+      <p>If not, install it:</p>
+      <div class="code-block">
+        curl -fsSL https://cli.anthropic.com/install.sh | sh
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);">Close and reopen your terminal after installing Claude Code.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 4 -->
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Install and start Second Brain</h3>
       <p>This clones the project, installs Flask, and starts the server. Takes about 30 seconds.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCmd(this)">Copy</button>
@@ -452,11 +479,11 @@
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 4 -->
+  <!-- Step 5 -->
   <div class="step">
-    <div class="step-num">4</div>
+    <div class="step-num">5</div>
     <div class="step-body">
-      <h3>Open the app</h3>
+      <h3>Open the dashboard</h3>
       <p>Open your browser and go to:</p>
       <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 24px;text-align:center;margin:12px 0;">
         <span style="color:var(--green);font-size:20px;font-weight:700;letter-spacing:-0.3px;">http://localhost:5151</span>
@@ -467,9 +494,9 @@
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 5 -->
+  <!-- Step 6 -->
   <div class="step">
-    <div class="step-num">5</div>
+    <div class="step-num">6</div>
     <div class="step-body">
       <h3>Set up your profile</h3>
       <p>Click <strong>"About Me"</strong> in the sidebar. Fill in your name, role, team, manager, and location. Write a short background about what you do. Click <strong>"Save & Sync"</strong>.</p>
@@ -548,6 +575,13 @@
 </footer>
 
 <script>
+function copyChecks(btn) {
+  navigator.clipboard.writeText('python3 --version\nclaude --version').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
 function copyDevConnect(btn) {
   navigator.clipboard.writeText('cd\ndev connect').then(() => {
     btn.textContent = 'Copied!';

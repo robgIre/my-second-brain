@@ -43,7 +43,33 @@ You're connected when you see something like:
 
 ---
 
-## Step 3: One-command install
+## Step 3: Check Python and Claude Code are installed
+
+Once connected to your OD, run these checks:
+
+```
+python3 --version
+claude --version
+```
+
+If **Python 3** shows a version number (e.g. `Python 3.10.12`) — you're good.
+
+If not, install it:
+```
+sudo apt-get update && sudo apt-get install -y python3 python3-pip
+```
+
+If **Claude Code** shows a version number — you're good.
+
+If not, install it:
+```
+curl -fsSL https://cli.anthropic.com/install.sh | sh
+```
+Then close and reopen your terminal.
+
+---
+
+## Step 4: One-command install
 
 Paste this entire line into your terminal and hit Enter:
 
@@ -80,7 +106,7 @@ You should see something like:
 
 ---
 
-## Step 4: Open the app
+## Step 5: Open the dashboard
 
 1. Open your browser and go to: **http://localhost:5151**
 2. Click the green **"Connect Brain"** button
@@ -90,7 +116,7 @@ You should see something like:
 
 ---
 
-## Step 5: Set up your profile
+## Step 6: Set up your profile
 
 1. Click **"About Me"** in the sidebar
 2. Fill in your name, role, team, manager, location
