@@ -478,7 +478,13 @@
     <div class="step-num">5</div>
     <div class="step-body">
       <h3>Install and start Second Brain</h3>
-      <p>This clones the project, installs Flask, and starts the server. Takes about 30 seconds.</p>
+      <p>First, set up the proxy so your OD can reach GitHub:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyProxy(this)">Copy</button>
+        export https_proxy=http://fwdproxy:8080<br>
+        export http_proxy=http://fwdproxy:8080
+      </div>
+      <p>Then clone the project, install Flask, and start the server. Takes about 30 seconds.</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyCmd(this)">Copy</button>
         git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
@@ -551,6 +557,7 @@
       <h3>Update (when Rob pushes changes)</h3>
       <div class="code-block">
         <button class="copy-btn" onclick="copyUpdate(this)">Copy</button>
+        export https_proxy=http://fwdproxy:8080<br>
         cd ~/my-second-brain && git pull && bash setup.sh
       </div>
     </div>
@@ -570,6 +577,14 @@
   <div class="trouble-item">
     <h4>Port already in use</h4>
     <p>Start on a different port: <code>MSB_PORT=5152 bash setup.sh</code></p>
+  </div>
+
+  <div class="trouble-item">
+    <h4>"Couldn't connect to server" when cloning</h4>
+    <p>ODs can't reach GitHub directly. Set the proxy first:<br>
+    <code>export https_proxy=http://fwdproxy:8080</code><br>
+    If that doesn't work, try: <code>export https_proxy=http://fwdproxy.any.facebook.com:8080</code><br>
+    Then retry the <code>git clone</code> command.</p>
   </div>
 
   <div class="trouble-item">
@@ -599,6 +614,13 @@ function copyDevConnect(btn) {
   });
 }
 
+function copyProxy(btn) {
+  navigator.clipboard.writeText('export https_proxy=http://fwdproxy:8080\nexport http_proxy=http://fwdproxy:8080').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
 function copyCmd(btn) {
   const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
   navigator.clipboard.writeText(cmd).then(() => {
@@ -615,7 +637,7 @@ function copyRestart(btn) {
 }
 
 function copyUpdate(btn) {
-  navigator.clipboard.writeText('cd ~/my-second-brain && git pull && bash setup.sh').then(() => {
+  navigator.clipboard.writeText('export https_proxy=http://fwdproxy:8080\ncd ~/my-second-brain && git pull && bash setup.sh').then(() => {
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
