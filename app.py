@@ -102,6 +102,37 @@ def api_about_save():
         return jsonify({"success": False, "error": "Could not find CLAUDE.md"}), 404
 
 
+# ─── API: Projects ───────────────────────────────────────────────────────────
+
+PROJECTS_FILE = os.path.join(os.path.dirname(__file__), "projects.json")
+
+
+def load_projects():
+    if os.path.exists(PROJECTS_FILE):
+        with open(PROJECTS_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+
+def save_projects(projects):
+    with open(PROJECTS_FILE, "w") as f:
+        json.dump(projects, f, indent=2)
+
+
+@app.route("/api/projects", methods=["GET"])
+def api_projects_get():
+    return jsonify({"success": True, "projects": load_projects()})
+
+
+@app.route("/api/projects", methods=["POST"])
+def api_projects_save():
+    data = request.get_json()
+    if not data or "projects" not in data:
+        return jsonify({"success": False, "error": "No projects provided"}), 400
+    save_projects(data["projects"])
+    return jsonify({"success": True})
+
+
 # ─── API: Build (send prompt to Claude) ──────────────────────────────────────
 
 

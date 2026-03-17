@@ -3,4 +3,5 @@ __pycache__/
 *.pyc
 *.pyo
 routines.json
+projects.json
 .DS_Store

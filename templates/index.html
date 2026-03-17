@@ -605,7 +605,41 @@
   }
   .project-row-badge.active { background: var(--green-light); color: var(--green); }
   .project-row-badge.review { background: rgba(245,158,11,0.1); color: var(--warning); }
+  .project-row-badge.paused { background: rgba(139,147,168,0.1); color: var(--text-secondary); }
+  .project-row-badge.done { background: var(--accent-light); color: var(--accent); }
   .project-row-detail { font-size: 11px; color: var(--text-tertiary); }
+
+  /* Project editor on About Me page */
+  .projects-section { margin-top: 24px; }
+  .projects-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .projects-section-title { font-size: 16px; font-weight: 600; }
+  .project-edit-row {
+    display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+    background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+  }
+  .project-edit-row input {
+    background: transparent; border: none; color: var(--text); font-size: 13px;
+    font-family: inherit; outline: none;
+  }
+  .project-edit-row input::placeholder { color: var(--text-tertiary); }
+  .project-edit-row .proj-name { flex: 2; font-weight: 500; }
+  .project-edit-row .proj-desc { flex: 3; color: var(--text-secondary); }
+  .project-edit-row select {
+    background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+    font-size: 11px; padding: 3px 6px; border-radius: 6px; font-family: inherit;
+  }
+  .project-edit-row .proj-remove {
+    background: none; border: none; color: var(--text-tertiary); cursor: pointer;
+    font-size: 16px; padding: 2px 6px; border-radius: 4px;
+  }
+  .project-edit-row .proj-remove:hover { color: var(--red); background: var(--red-light); }
+  .add-project-btn {
+    background: var(--accent-light); border: 1px dashed var(--border); color: var(--accent);
+    font-size: 13px; font-weight: 500; padding: 10px; border-radius: var(--radius-sm);
+    width: 100%; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .add-project-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
 
   /* Activity in right panel */
   .activity-row {
@@ -1173,31 +1207,10 @@
             <div class="panel-card">
               <div class="panel-header">
                 <div class="panel-title">📋 Active Projects</div>
-                <span class="panel-link">View all</span>
+                <span class="panel-link" onclick="showPage('about', document.querySelector('.nav-item:nth-child(2)'))">Manage</span>
               </div>
-              <div class="project-row">
-                <span class="project-row-icon">🏗️</span>
-                <span class="project-row-name">GAZ Precon</span>
-                <span class="project-row-badge active">Active</span>
-                <span class="project-row-detail">3 tasks</span>
-              </div>
-              <div class="project-row">
-                <span class="project-row-icon">📋</span>
-                <span class="project-row-name">BOQ RPL</span>
-                <span class="project-row-badge active">Active</span>
-                <span class="project-row-detail">2 tasks</span>
-              </div>
-              <div class="project-row">
-                <span class="project-row-icon">🔌</span>
-                <span class="project-row-name">Connectivity</span>
-                <span class="project-row-badge review">Review</span>
-                <span class="project-row-detail">1 pending</span>
-              </div>
-              <div class="project-row">
-                <span class="project-row-icon">🤖</span>
-                <span class="project-row-name">AI Rollout</span>
-                <span class="project-row-badge active">Active</span>
-                <span class="project-row-detail">1 task</span>
+              <div id="home-projects">
+                <div style="padding:16px;font-size:13px;color:var(--text-tertiary);">Loading projects...</div>
               </div>
             </div>
 
@@ -1269,10 +1282,22 @@
             <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" value=""></div>
           </div>
           <div class="form-group"><label class="form-label">Background</label><textarea class="form-textarea" rows="4"></textarea></div>
-          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="3" placeholder="Paste anything you want your brain to know — your H1 goals, team priorities, org mission, whatever helps."></textarea></div>
           <div class="form-actions">
             <button class="save-btn" onclick="saveAboutMe()">Save & Sync</button>
             <span class="save-indicator">Not yet synced</span>
+          </div>
+        </div>
+
+        <div class="projects-section">
+          <div class="projects-section-header">
+            <div class="projects-section-title">My Projects</div>
+            <span class="save-indicator" id="projects-save-indicator"></span>
+          </div>
+          <div id="projects-list"></div>
+          <button class="add-project-btn" onclick="addProject()">+ Add project</button>
+          <div class="form-actions" style="margin-top:12px;">
+            <button class="save-btn" onclick="saveProjects()">Save Projects</button>
           </div>
         </div>
       </div>
@@ -1572,7 +1597,7 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
     navItem.classList.add('active');
-    if (pageId === 'about') loadAboutMe();
+    if (pageId === 'about') { loadAboutMe(); loadProjects(); }
   }
 
   // ─── About Me ───────────────────────────────────────────────────────────
@@ -1618,6 +1643,89 @@
     } catch (e) {
       indicator.textContent = 'Backend not running — changes not saved';
       indicator.style.color = 'var(--warning)';
+    }
+  }
+
+  // ─── Projects ───────────────────────────────────────────────────────────
+
+  let projectsList = [];
+
+  async function loadProjects() {
+    try {
+      const data = await api('/api/projects');
+      if (data.success && data.projects) {
+        projectsList = data.projects;
+        renderProjects();
+        renderHomeProjects();
+      }
+    } catch (e) { /* backend not running */ }
+  }
+
+  function renderProjects() {
+    const container = document.getElementById('projects-list');
+    container.innerHTML = projectsList.map((p, i) => `
+      <div class="project-edit-row">
+        <input class="proj-name" placeholder="Project name" value="${p.name || ''}" onchange="projectsList[${i}].name=this.value">
+        <input class="proj-desc" placeholder="Short description" value="${p.description || ''}" onchange="projectsList[${i}].description=this.value">
+        <select onchange="projectsList[${i}].status=this.value">
+          <option value="active" ${p.status === 'active' ? 'selected' : ''}>Active</option>
+          <option value="review" ${p.status === 'review' ? 'selected' : ''}>Review</option>
+          <option value="paused" ${p.status === 'paused' ? 'selected' : ''}>Paused</option>
+          <option value="done" ${p.status === 'done' ? 'selected' : ''}>Done</option>
+        </select>
+        <button class="proj-remove" onclick="removeProject(${i})">&times;</button>
+      </div>
+    `).join('');
+  }
+
+  function renderHomeProjects() {
+    const panel = document.getElementById('home-projects');
+    if (!panel) return;
+    const icons = ['🏗️', '📋', '🔌', '🤖', '📊', '🎯', '🔬', '📦', '🚀', '💡'];
+    if (projectsList.length === 0) {
+      panel.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--text-tertiary);">No projects yet. Add them in About Me.</div>';
+      return;
+    }
+    panel.innerHTML = projectsList.filter(p => p.status !== 'done').map((p, i) => `
+      <div class="project-row">
+        <span class="project-row-icon">${icons[i % icons.length]}</span>
+        <span class="project-row-name">${p.name || 'Untitled'}</span>
+        <span class="project-row-badge ${p.status || 'active'}">${(p.status || 'active').charAt(0).toUpperCase() + (p.status || 'active').slice(1)}</span>
+      </div>
+    `).join('');
+    // Update status bar count
+    const projCount = document.querySelectorAll('.status-bar-value');
+    if (projCount[1]) projCount[1].textContent = projectsList.length;
+  }
+
+  function addProject() {
+    projectsList.push({ name: '', description: '', status: 'active' });
+    renderProjects();
+    // Focus the new name input
+    const inputs = document.querySelectorAll('#projects-list .proj-name');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function removeProject(i) {
+    projectsList.splice(i, 1);
+    renderProjects();
+  }
+
+  async function saveProjects() {
+    const indicator = document.getElementById('projects-save-indicator');
+    indicator.textContent = 'Saving...';
+    indicator.style.color = '';
+    try {
+      const data = await api('/api/projects', { method: 'POST', body: JSON.stringify({ projects: projectsList }) });
+      if (data.success) {
+        indicator.textContent = 'Saved';
+        indicator.style.color = 'var(--green)';
+        renderHomeProjects();
+        setTimeout(() => { indicator.textContent = ''; indicator.style.color = ''; }, 3000);
+      }
+    } catch (e) {
+      indicator.textContent = 'Error saving';
+      indicator.style.color = 'var(--red)';
     }
   }
 
@@ -1844,6 +1952,7 @@
     document.getElementById('buildInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuild(); }
     });
+    loadProjects();
   });
 </script>
 
