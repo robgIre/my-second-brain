@@ -399,35 +399,27 @@
     <!-- OD Login -->
     <div class="setup-step" style="flex-direction:column;padding:28px 20px;">
       <div style="font-size:32px;margin-bottom:12px;text-align:center;">☁️</div>
-      <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;text-align:center;">Log in via OD</h3>
-      <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">Open a terminal on your laptop and run:</p>
-      <div class="setup-command" style="margin:0 0 8px;font-size:12px;">
-        <button class="copy-btn" onclick="copyReconnect1(this)">Copy</button>
-        dev connect
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Then start the server:</p>
-      <div class="setup-command" style="margin:0 0 8px;font-size:12px;">
-        <button class="copy-btn" onclick="copyReconnect2(this)">Copy</button>
-        cd ~/my-second-brain && bash setup.sh
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);">Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">localhost:5151</a> in your browser.</p>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;text-align:center;">Log in via OD</h3>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">1. Open a terminal and run:</p>
+      <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--green);margin-bottom:2px;font-family:'SF Mono','Fira Code',monospace;">dev connect</code>
+      <span style="font-size:10px;color:var(--accent);cursor:pointer;margin-bottom:10px;display:inline-block;" onclick="navigator.clipboard.writeText('dev connect');this.textContent='Copied!';setTimeout(()=>this.textContent='Click to copy',1500)">Click to copy</span>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">2. Start the server:</p>
+      <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--green);margin-bottom:2px;font-family:'SF Mono','Fira Code',monospace;word-break:break-all;">cd ~/my-second-brain && bash setup.sh</code>
+      <span style="font-size:10px;color:var(--accent);cursor:pointer;margin-bottom:10px;display:inline-block;" onclick="navigator.clipboard.writeText('cd ~/my-second-brain && bash setup.sh');this.textContent='Copied!';setTimeout(()=>this.textContent='Click to copy',1500)">Click to copy</span>
+      <p style="font-size:12px;color:var(--text-secondary);">3. Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">localhost:5151</a></p>
     </div>
 
     <!-- Dev Server Login -->
     <div class="setup-step" style="flex-direction:column;padding:28px 20px;">
       <div style="font-size:32px;margin-bottom:12px;text-align:center;">🖥️</div>
-      <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;text-align:center;">Log in via Dev Server</h3>
-      <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">SSH into your Dev Server:</p>
-      <div class="setup-command" style="margin:0 0 8px;font-size:12px;">
-        <button class="copy-btn" onclick="copySsh(this)">Copy</button>
-        ssh your-devserver-name
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">Then start the server:</p>
-      <div class="setup-command" style="margin:0 0 8px;font-size:12px;">
-        <button class="copy-btn" onclick="copyReconnect2(this)">Copy</button>
-        cd ~/my-second-brain && bash setup.sh
-      </div>
-      <p style="font-size:12px;color:var(--text-secondary);">Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">localhost:5151</a> in your browser.</p>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;text-align:center;">Log in via Dev Server</h3>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">1. SSH into your server:</p>
+      <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--green);margin-bottom:2px;font-family:'SF Mono','Fira Code',monospace;">ssh your-devserver-name</code>
+      <span style="font-size:10px;color:var(--accent);cursor:pointer;margin-bottom:10px;display:inline-block;" onclick="navigator.clipboard.writeText('ssh your-devserver-name');this.textContent='Copied!';setTimeout(()=>this.textContent='Click to copy',1500)">Click to copy</span>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;">2. Start the server:</p>
+      <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--green);margin-bottom:2px;font-family:'SF Mono','Fira Code',monospace;word-break:break-all;">cd ~/my-second-brain && bash setup.sh</code>
+      <span style="font-size:10px;color:var(--accent);cursor:pointer;margin-bottom:10px;display:inline-block;" onclick="navigator.clipboard.writeText('cd ~/my-second-brain && bash setup.sh');this.textContent='Copied!';setTimeout(()=>this.textContent='Click to copy',1500)">Click to copy</span>
+      <p style="font-size:12px;color:var(--text-secondary);">3. Open <a href="http://localhost:5151" style="color:var(--green);font-weight:600;text-decoration:none;">localhost:5151</a></p>
     </div>
 
   </div>
