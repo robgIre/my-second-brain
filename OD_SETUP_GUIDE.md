@@ -10,26 +10,36 @@ My Second Brain is a wrapper around Claude Code CLI. Claude Code runs on ODs —
 
 ---
 
-## Step 1: Connect to an OD from VS Code
+## Step 1: Reserve an OD instance
 
-This works the same on **Mac and Windows**:
-
-1. Open **VS Code** on your laptop
-2. Click the **Home Page** button at the top of the left sidebar
-3. In the **"Create Environment"** area, select an environment from the dropdown (e.g. **"WWW (VPNLess)"**)
-4. Click the **play** icon and follow the on-screen instructions
-5. Complete **two-factor auth** (YubiKey) when prompted
-6. VS Code will connect to your OD automatically — you'll see the remote filesystem in the Explorer pane
-
-> **Alternative:** You can also type **od** in bunnylol to open the On Demand Dashboard, then click **"Join Workspace"** to connect from the browser.
+1. Type **od** in your bunnylol bar (browser address bar) and hit Enter
+2. Check if you already have any OD instances reserved
+3. If you do, **"Save & Release"** all active instances to avoid conflicts
 
 ---
 
-## Step 2: Open a terminal
+## Step 2: Connect to your OD server
 
-Once VS Code is connected to your OD, open a terminal:
-- Press **Ctrl + `** (backtick) to open the built-in terminal
-- Or go to **Terminal > New Terminal** in the menu
+Open a terminal on your laptop:
+- **Mac:** Press **Cmd + Space**, type **Terminal**, hit Enter
+- **Windows:** Press **Win + R**, type **cmd**, hit Enter
+
+Then run:
+
+```
+cd
+dev connect
+```
+
+When prompted, select:
+**"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"**
+
+Touch your **YubiKey** when asked.
+
+You're connected when you see something like:
+```
+[yourusername@12345.od ~]
+```
 
 ---
 

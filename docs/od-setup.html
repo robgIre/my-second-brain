@@ -396,17 +396,13 @@
   <div class="step">
     <div class="step-num">1</div>
     <div class="step-body">
-      <h3>Connect to an OD from VS Code</h3>
-      <p>This is the easiest way and works the same on <strong>Mac and Windows</strong>:</p>
+      <h3>Reserve an OD instance</h3>
+      <p>First, check for existing instances:</p>
       <ol style="font-size:14px;color:var(--text-secondary);line-height:2;padding-left:20px;margin:12px 0;">
-        <li>Open <strong>VS Code</strong> on your laptop</li>
-        <li>Click the <strong>Home Page</strong> button at the top of the left sidebar</li>
-        <li>In the <strong>"Create Environment"</strong> area, select an environment from the dropdown (e.g. <strong>"WWW (VPNLess)"</strong>)</li>
-        <li>Click the <strong>play</strong> icon and follow the on-screen instructions</li>
-        <li>Complete <strong>two-factor auth</strong> (YubiKey) when prompted</li>
-        <li>VS Code will connect to your OD automatically — you'll see the remote filesystem in the Explorer pane</li>
+        <li>Type <strong>od</strong> in your bunnylol bar (browser address bar) and hit Enter</li>
+        <li>Check if you already have any OD instances reserved</li>
+        <li>If you do, <strong>"Save &amp; Release"</strong> all active instances to avoid conflicts</li>
       </ol>
-      <p style="font-size:12px;color:var(--text-tertiary);">Alternative: you can also type <strong>od</strong> in bunnylol to open the On Demand Dashboard, then click <strong>"Join Workspace"</strong> to connect from the browser.</p>
     </div>
   </div>
 
@@ -416,8 +412,25 @@
   <div class="step">
     <div class="step-num">2</div>
     <div class="step-body">
-      <h3>Open a terminal</h3>
-      <p>Once VS Code is connected to your OD, open a terminal by pressing <strong>Ctrl + `</strong> (backtick), or go to <strong>Terminal > New Terminal</strong> in the menu.</p>
+      <h3>Connect to your OD server</h3>
+      <p>Open a terminal on your laptop:</p>
+      <ul style="font-size:13px;color:var(--text-secondary);line-height:1.7;padding-left:20px;margin:8px 0 12px;">
+        <li><strong>Mac:</strong> Press <strong>Cmd + Space</strong>, type <strong>Terminal</strong>, hit Enter</li>
+        <li><strong>Windows:</strong> Press <strong>Win + R</strong>, type <strong>cmd</strong>, hit Enter</li>
+      </ul>
+      <p>Then run these commands:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyDevConnect(this)">Copy</button>
+        cd<br>
+        dev connect
+      </div>
+      <p>When prompted, select:<br>
+      <strong>"WWW+FBSource+Configerator (Hardware: Default) (VPNLess)"</strong></p>
+      <p>Touch your <strong>YubiKey</strong> when asked.</p>
+      <p>You're connected when you see something like:</p>
+      <div class="code-block" style="color:var(--text-secondary);">
+        [yourusername@12345.od ~]
+      </div>
     </div>
   </div>
 
@@ -535,6 +548,13 @@
 </footer>
 
 <script>
+function copyDevConnect(btn) {
+  navigator.clipboard.writeText('cd\ndev connect').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
 function copyCmd(btn) {
   const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
   navigator.clipboard.writeText(cmd).then(() => {
