@@ -396,8 +396,17 @@
   <div class="step">
     <div class="step-num">1</div>
     <div class="step-body">
-      <h3>Get an OD</h3>
-      <p>Type <strong>od</strong> in your bunnylol bar (browser address bar) and hit Enter. This takes you to the On Demand page. You'll see your workspaces listed — click <strong>"Join Workspace"</strong> on your default workspace, or click <strong>"Create New Workspace"</strong> if you don't have one. Wait for it to spin up (usually 1-2 minutes), then click <strong>"Open"</strong> to launch VS Code connected to your OD.</p>
+      <h3>Connect to an OD from VS Code</h3>
+      <p>This is the easiest way and works the same on <strong>Mac and Windows</strong>:</p>
+      <ol style="font-size:14px;color:var(--text-secondary);line-height:2;padding-left:20px;margin:12px 0;">
+        <li>Open <strong>VS Code</strong> on your laptop</li>
+        <li>Click the <strong>Home Page</strong> button at the top of the left sidebar</li>
+        <li>In the <strong>"Create Environment"</strong> area, select an environment from the dropdown (e.g. <strong>"WWW (VPNLess)"</strong>)</li>
+        <li>Click the <strong>play</strong> icon and follow the on-screen instructions</li>
+        <li>Complete <strong>two-factor auth</strong> (YubiKey) when prompted</li>
+        <li>VS Code will connect to your OD automatically — you'll see the remote filesystem in the Explorer pane</li>
+      </ol>
+      <p style="font-size:12px;color:var(--text-tertiary);">Alternative: you can also type <strong>od</strong> in bunnylol to open the On Demand Dashboard, then click <strong>"Join Workspace"</strong> to connect from the browser.</p>
     </div>
   </div>
 
@@ -408,7 +417,7 @@
     <div class="step-num">2</div>
     <div class="step-body">
       <h3>Open a terminal</h3>
-      <p>In VS Code on your OD, open a terminal by pressing <strong>Ctrl + `</strong> (backtick), or go to <strong>Terminal > New Terminal</strong> in the menu.</p>
+      <p>Once VS Code is connected to your OD, open a terminal by pressing <strong>Ctrl + `</strong> (backtick), or go to <strong>Terminal > New Terminal</strong> in the menu.</p>
     </div>
   </div>
 
