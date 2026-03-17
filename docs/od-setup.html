@@ -386,7 +386,7 @@
 <section class="callout">
   <div class="callout-box">
     <h2>Why do I need an OD or Dev Server?</h2>
-    <p>My Second Brain is a wrapper around Claude Code CLI, which only runs on remote servers (ODs or Dev Servers) — not on your regular Windows or Mac laptop. If you tried running it locally and got errors about pip, Flask, or "module not found", this is why. This guide covers OD setup. If you have a <strong>reserved Dev Server</strong>, you can SSH in and follow from Step 4 onwards. This setup is a <strong>one-time thing</strong>. After that, you just reconnect and start the server — takes 30 seconds.</p>
+    <p>My Second Brain is a wrapper around Claude Code CLI, which only runs on remote servers (ODs or Dev Servers) — not on your regular Windows or Mac laptop. If you tried running it locally and got errors about pip, Flask, or "module not found", this is why. This guide covers OD setup. If you have a <strong>reserved Dev Server</strong>, SSH in with port forwarding (<code>ssh -L 5151:localhost:5151 your-devserver-name</code>) and follow from Step 4 onwards. This setup is a <strong>one-time thing</strong>. After that, you just reconnect and start the server — takes 30 seconds.</p>
   </div>
 </section>
 
@@ -526,7 +526,7 @@
     </div>
     <div class="try-card">
       <div class="icon">&#128296;</div>
-      <h3>Build Now</h3>
+      <h3>Ask My Brain</h3>
       <p>Type anything: "What's on my calendar today?"</p>
     </div>
     <div class="try-card">
