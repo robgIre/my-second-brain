@@ -1132,9 +1132,13 @@
             <div class="build-section">
               <div class="build-header">
                 <div class="build-title">🧠 Ask My Brain</div>
-                <div class="mode-toggle">
-                  <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')" title="Type your request">⌨️</button>
-                  <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')" title="Speak your request">🎙️</button>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span id="conversationIndicator" style="display:none;font-size:11px;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:12px;font-weight:500;">Conversation active</span>
+                  <button id="newChatBtn" onclick="newConversation()" style="display:none;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;font-family:inherit;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--text-tertiary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">+ New Chat</button>
+                  <div class="mode-toggle">
+                    <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')" title="Type your request">⌨️</button>
+                    <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')" title="Speak your request">🎙️</button>
+                  </div>
                 </div>
               </div>
 
@@ -1432,6 +1436,7 @@
   let isConnected = false;
   let isRecording = false;
   let matrixInterval = null;
+  let conversationId = null;
 
   const API_BASE = '';
   async function api(path, opts = {}) {
@@ -1729,6 +1734,29 @@
     }
   }
 
+  // ─── Conversation management ─────────────────────────────────────────
+
+  function newConversation() {
+    conversationId = null;
+    updateConversationIndicator();
+    const output = document.getElementById('buildOutput');
+    const steps = document.getElementById('outputSteps');
+    output.classList.remove('visible');
+    steps.innerHTML = '';
+  }
+
+  function updateConversationIndicator() {
+    const indicator = document.getElementById('conversationIndicator');
+    const newChatBtn = document.getElementById('newChatBtn');
+    if (conversationId) {
+      indicator.style.display = 'inline';
+      newChatBtn.style.display = 'inline';
+    } else {
+      indicator.style.display = 'none';
+      newChatBtn.style.display = 'none';
+    }
+  }
+
   // ─── Ask My Brain ─────────────────────────────────────────────────────
 
   function setMode(mode) {
@@ -1777,8 +1805,14 @@
     try {
       const data = await api('/api/build', {
         method: 'POST',
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, conversation_id: conversationId }),
       });
+
+      // Track conversation for continuity
+      if (data.conversation_id) {
+        conversationId = data.conversation_id;
+        updateConversationIndicator();
+      }
 
       stopMatrix();
       output.classList.add('visible');
@@ -1877,7 +1911,15 @@
     btn.textContent = '⏳ Running...';
     btn.style.background = 'rgba(245,158,11,0.08)'; btn.style.color = '#f59e0b'; btn.style.borderColor = 'rgba(245,158,11,0.2)';
     try {
-      const data = await api('/api/routines/' + routineId + '/run', { method: 'POST' });
+      const data = await api('/api/routines/' + routineId + '/run', {
+        method: 'POST',
+        body: JSON.stringify({ conversation_id: conversationId }),
+      });
+      // Track conversation so follow-up messages continue this session
+      if (data.conversation_id) {
+        conversationId = data.conversation_id;
+        updateConversationIndicator();
+      }
       btn.textContent = '✓ Complete';
       btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
       if (data.success && data.output) {

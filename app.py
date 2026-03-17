@@ -147,7 +147,8 @@ def api_build():
     if not prompt:
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
-    result = run_prompt(prompt, timeout=180)
+    conversation_id = data.get("conversation_id") if data else None
+    result = run_prompt(prompt, timeout=180, conversation_id=conversation_id)
     return jsonify(result)
 
 
@@ -259,7 +260,9 @@ def api_routines_run(routine_id):
     steps_text = "\n".join(f"{i+1}. {s}" for i, s in enumerate(routine["steps"]))
     prompt = f"Please execute the following routine steps in order:\n\n{steps_text}\n\nProvide a summary of each step's results."
 
-    result = run_prompt(prompt, timeout=300)
+    data = request.get_json() or {}
+    conversation_id = data.get("conversation_id")
+    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id)
     return jsonify(result)
 
 
