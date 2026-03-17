@@ -1,4 +1,4 @@
-"""Brain In A Jar — Flask backend for the Second Brain Command Center."""
+"""My Second Brain — Flask backend for the Second Brain Command Center."""
 
 import json
 import os
@@ -159,8 +159,8 @@ DEFAULT_ROUTINES = {
         "name": "Morning Routine",
         "icon": "sunrise",
         "steps": [
-            "Check what emails I received overnight and summarize the important ones",
             "Review my calendar for today and flag meetings I need to prepare for",
+            "Check for any new Workplace posts or updates from my team",
             "Fetch my open tasks and sort by priority",
             "Give me a summary of my top 3 priorities for the day",
         ],
@@ -249,5 +249,5 @@ def api_claudemd_path():
 
 if __name__ == "__main__":
     port = int(os.environ.get("BIAJ_PORT", 5151))
-    print(f"\n  Brain In A Jar is running at: http://localhost:{port}\n")
+    print(f"\n  My Second Brain is running at: http://localhost:{port}\n")
     app.run(host="0.0.0.0", port=port, debug=False)

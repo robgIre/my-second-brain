@@ -3,32 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brain In A Jar</title>
+<title>My Second Brain</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
   :root {
-    --bg: #f5f6f8;
-    --bg-white: #ffffff;
-    --bg-hover: #f0f1f4;
-    --border: #e4e7ec;
-    --border-light: #eef0f4;
-    --text: #1a1d26;
-    --text-secondary: #5a6178;
-    --text-tertiary: #8b93a8;
-    --accent: #4f6ef7;
-    --accent-hover: #3d5ce5;
-    --accent-light: #eef1fe;
+    --bg: #0f1117;
+    --bg-card: #1a1d26;
+    --bg-card-hover: #21242f;
+    --bg-input: #161820;
+    --border: #2a2d3a;
+    --border-light: #232636;
+    --text: #e4e7ec;
+    --text-secondary: #8b93a8;
+    --text-tertiary: #5a6178;
+    --accent: #7c6ef7;
+    --accent-hover: #9488ff;
+    --accent-light: rgba(124,110,247,0.1);
+    --accent-glow: rgba(124,110,247,0.15);
     --green: #10b981;
-    --green-light: #ecfdf5;
+    --green-light: rgba(16,185,129,0.1);
     --green-glow: rgba(16,185,129,0.15);
     --red: #ef4444;
-    --red-light: #fef2f2;
+    --red-light: rgba(239,68,68,0.1);
     --red-glow: rgba(239,68,68,0.12);
     --warning: #f59e0b;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
-    --shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+    --cyan: #22d3ee;
+    --pink: #c47a9e;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
     --radius: 12px;
     --radius-sm: 8px;
     --radius-lg: 16px;
@@ -53,7 +57,7 @@
     justify-content: space-between;
     padding: 0 24px;
     height: 56px;
-    background: var(--bg-white);
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
@@ -91,15 +95,8 @@
     transition: all 0.4s;
   }
 
-  .status-pill.connected {
-    background: var(--green-light);
-    color: var(--green);
-  }
-
-  .status-pill.disconnected {
-    background: var(--red-light);
-    color: var(--red);
-  }
+  .status-pill.connected { background: var(--green-light); color: var(--green); }
+  .status-pill.disconnected { background: var(--red-light); color: var(--red); }
 
   .status-dot {
     width: 7px;
@@ -135,7 +132,7 @@
   /* ===== SIDEBAR ===== */
   .sidebar {
     width: 200px;
-    background: var(--bg-white);
+    background: var(--bg-card);
     border-right: 1px solid var(--border);
     padding: 12px 8px;
     flex-shrink: 0;
@@ -155,10 +152,10 @@
     margin-bottom: 2px;
   }
 
-  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
   .nav-item.active { background: var(--accent-light); color: var(--accent); }
   .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-  .nav-divider { height: 1px; background: var(--border-light); margin: 8px 12px; }
+  .nav-divider { height: 1px; background: var(--border); margin: 8px 12px; }
 
   /* ===== MAIN ===== */
   .main { flex: 1; overflow-y: auto; }
@@ -166,7 +163,10 @@
   .page.active { display: block; }
 
   /* ===== HOME PAGE ===== */
-  .home-content { padding: 24px 32px; max-width: 860px; }
+  .home-content { padding: 24px 32px; }
+  .home-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+  .home-left { min-width: 0; }
+  .home-right { display: flex; flex-direction: column; gap: 16px; }
 
   /* Hero / Connection Bar */
   .connection-bar {
@@ -174,11 +174,11 @@
     align-items: center;
     gap: 16px;
     padding: 16px 20px;
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     transition: all 0.4s;
   }
 
@@ -251,13 +251,58 @@
     pointer-events: none;
   }
 
-  /* ===== BUILD NOW ===== */
+  /* ===== ROUTINE CARDS ===== */
+  .routines-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .routine-home-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+  }
+
+  .routine-home-card:hover { box-shadow: var(--shadow-md); border-color: rgba(124,110,247,0.25); }
+
+  .routine-home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .routine-home-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .routine-home-meta { font-size: 11px; color: var(--text-tertiary); }
+  .routine-home-steps { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; line-height: 1.6; }
+
+  .routine-run-btn {
+    padding: 7px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+
+  .routine-run-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(124,110,247,0.25); }
+
+  /* ===== ASK MY BRAIN ===== */
   .build-section {
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     overflow: hidden;
   }
 
@@ -279,10 +324,10 @@
   /* Talk / Write toggle */
   .mode-toggle {
     display: flex;
-    background: var(--bg);
+    background: rgba(255,255,255,0.04);
     border-radius: 8px;
     padding: 3px;
-    border: 1px solid var(--border-light);
+    border: 1px solid var(--border);
   }
 
   .mode-btn {
@@ -293,7 +338,7 @@
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     font-family: inherit;
     color: var(--text-tertiary);
@@ -302,8 +347,8 @@
   }
 
   .mode-btn.active {
-    background: var(--bg-white);
-    color: var(--text);
+    background: var(--bg-card);
+    color: var(--accent);
     box-shadow: var(--shadow-sm);
   }
 
@@ -320,7 +365,7 @@
   .build-textarea {
     flex: 1;
     padding: 11px 14px;
-    background: var(--bg);
+    background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     color: var(--text);
@@ -333,7 +378,7 @@
     line-height: 1.5;
   }
 
-  .build-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,110,247,0.08); }
+  .build-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
   .build-textarea::placeholder { color: var(--text-tertiary); }
 
   .build-send {
@@ -352,7 +397,7 @@
     height: 44px;
   }
 
-  .build-send:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(79,110,247,0.2); }
+  .build-send:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 3px 8px var(--accent-glow); }
   .build-send:disabled { opacity: 0.5; pointer-events: none; }
 
   /* Voice mode */
@@ -368,7 +413,7 @@
     height: 64px;
     border-radius: 50%;
     border: 2px solid var(--border);
-    background: var(--bg-white);
+    background: var(--bg-card);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -423,8 +468,8 @@
 
   .quick-chip {
     padding: 5px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border-light);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
@@ -434,11 +479,11 @@
     font-family: inherit;
   }
 
-  .quick-chip:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.2); }
+  .quick-chip:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(124,110,247,0.25); }
 
   /* Build output */
   .build-output {
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid var(--border);
     padding: 16px 20px;
     display: none;
   }
@@ -468,81 +513,133 @@
 
   .output-step-icon.done { background: var(--green-light); color: var(--green); }
   .output-step-icon.running { background: rgba(245,158,11,0.1); color: var(--warning); }
-  .output-step-icon.pending { background: var(--bg); color: var(--text-tertiary); }
+  .output-step-icon.pending { background: rgba(255,255,255,0.04); color: var(--text-tertiary); }
 
-  /* ===== ROUTINE CARDS ===== */
-  .routines-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 20px;
+  /* ===== MATRIX RAIN ANIMATION ===== */
+  .matrix-overlay {
+    position: relative;
+    overflow: hidden;
+    min-height: 80px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    margin-top: 12px;
+    display: none;
   }
 
-  .routine-home-card {
-    background: var(--bg-white);
+  .matrix-overlay.active { display: block; }
+
+  .matrix-canvas {
+    width: 100%;
+    height: 120px;
+    opacity: 0.6;
+  }
+
+  .matrix-status {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    right: 16px;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 500;
+    text-shadow: 0 0 8px rgba(34,211,238,0.4);
+    z-index: 2;
+  }
+
+  /* ===== RIGHT PANEL: PROJECTS & ACTIVITY ===== */
+  .panel-card {
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 18px;
     box-shadow: var(--shadow-sm);
-    transition: all 0.15s;
+    overflow: hidden;
   }
 
-  .routine-home-card:hover { box-shadow: var(--shadow-md); border-color: rgba(79,110,247,0.2); }
-
-  .routine-home-header {
+  .panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    padding: 14px 16px 10px;
   }
 
-  .routine-home-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-  .routine-home-meta { font-size: 11px; color: var(--text-tertiary); }
-  .routine-home-steps { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; line-height: 1.6; }
-
-  .routine-run-btn {
-    padding: 7px 16px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 12px;
+  .panel-title {
+    font-size: 13px;
     font-weight: 600;
-    font-family: inherit;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-  }
-
-  .routine-run-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.2); }
-
-  /* ===== STATUS BAR ===== */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 12px 18px;
-    background: var(--bg-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    font-size: 12px;
-    color: var(--text-tertiary);
-    transition: opacity 0.4s;
-  }
-
-  .status-bar-item {
     display: flex;
     align-items: center;
     gap: 6px;
+    color: var(--text);
   }
 
-  .status-bar-value { font-weight: 600; color: var(--text-secondary); }
-  .status-bar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+  .panel-link {
+    font-size: 11px;
+    color: var(--accent);
+    cursor: pointer;
+    font-weight: 500;
+  }
 
-  .content-disabled { opacity: 0.35; pointer-events: none; transition: all 0.5s; }
-  .content-enabled { opacity: 1; pointer-events: all; transition: all 0.5s; }
+  .panel-link:hover { text-decoration: underline; }
 
-  /* ===== GREETING BAR ===== */
+  /* Projects list in right panel */
+  .project-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  .project-row:hover { background: rgba(255,255,255,0.02); }
+
+  .project-row-icon { font-size: 14px; }
+  .project-row-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .project-row-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .project-row-badge.active { background: var(--green-light); color: var(--green); }
+  .project-row-badge.review { background: rgba(245,158,11,0.1); color: var(--warning); }
+  .project-row-detail { font-size: 11px; color: var(--text-tertiary); }
+
+  /* Activity in right panel */
+  .activity-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .activity-row-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .activity-row-icon.task { background: var(--accent-light); }
+  .activity-row-icon.routine { background: var(--green-light); }
+  .activity-row-icon.memory { background: rgba(168,85,247,0.08); }
+  .activity-row-icon.sync { background: rgba(245,158,11,0.08); }
+  .activity-row-icon.meeting { background: rgba(236,72,153,0.08); }
+
+  .activity-row-body { flex: 1; min-width: 0; }
+  .activity-row-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .activity-row-text strong { color: var(--text); font-weight: 600; }
+  .activity-row-meta { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+
+  /* ===== GREETING ===== */
   .greeting-bar {
     display: flex;
     align-items: center;
@@ -563,176 +660,32 @@
     line-height: 1.5;
   }
 
-  .greeting-stats {
-    display: flex;
-    gap: 6px;
-  }
-
-  .greeting-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 16px;
-    background: var(--bg-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    min-width: 80px;
-  }
-
-  .greeting-stat-value {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1;
-  }
-
-  .greeting-stat-label {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 4px;
-    font-weight: 500;
-  }
-
-  .greeting-stat-value.accent { color: var(--accent); }
-  .greeting-stat-value.green { color: var(--green); }
-  .greeting-stat-value.warning { color: var(--warning); }
-
-  /* ===== PROJECTS STRIP ===== */
-  .projects-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .project-mini-card {
-    background: var(--bg-white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .project-mini-card:hover {
-    border-color: rgba(79,110,247,0.25);
-    box-shadow: var(--shadow-md);
-  }
-
-  .project-mini-top {
+  /* ===== STATUS BAR ===== */
+  .status-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  .project-mini-icon { font-size: 16px; }
-
-  .project-mini-badge {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-
-  .project-mini-badge.active { background: var(--green-light); color: var(--green); }
-  .project-mini-badge.review { background: rgba(245,158,11,0.1); color: var(--warning); }
-
-  .project-mini-name {
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .project-mini-detail {
-    font-size: 11px;
-    color: var(--text-tertiary);
-  }
-
-  /* ===== ACTIVITY FEED ===== */
-  .activity-section {
-    background: var(--bg-white);
+    gap: 24px;
+    padding: 12px 18px;
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
-    overflow: hidden;
-  }
-
-  .activity-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 12px;
-  }
-
-  .activity-title {
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .activity-filter {
     font-size: 12px;
-    color: var(--accent);
-    cursor: pointer;
-    font-weight: 500;
+    color: var(--text-tertiary);
+    transition: opacity 0.4s;
   }
 
-  .activity-filter:hover { text-decoration: underline; }
-
-  .activity-list { padding: 0 20px 8px; }
-
-  .activity-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-light);
-  }
-
-  .activity-item:last-child { border-bottom: none; }
-
-  .activity-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+  .status-bar-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    margin-top: 1px;
+    gap: 6px;
   }
 
-  .activity-icon.task { background: var(--accent-light); }
-  .activity-icon.routine { background: var(--green-light); }
-  .activity-icon.memory { background: rgba(168,85,247,0.08); }
-  .activity-icon.sync { background: rgba(245,158,11,0.08); }
-  .activity-icon.meeting { background: rgba(236,72,153,0.08); }
+  .status-bar-value { font-weight: 600; color: var(--text-secondary); }
+  .status-bar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
 
-  .activity-body { flex: 1; min-width: 0; }
-
-  .activity-text {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-  }
-
-  .activity-text strong { color: var(--text); font-weight: 600; }
-
-  .activity-meta {
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 2px;
-  }
+  .content-disabled { opacity: 0.35; pointer-events: none; transition: all 0.5s; }
+  .content-enabled { opacity: 1; pointer-events: all; transition: all 0.5s; }
 
   /* ===== SECTION LABEL ===== */
   .section-label {
@@ -751,7 +704,7 @@
 
   /* Forms */
   .form-card {
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px;
@@ -772,7 +725,7 @@
   .form-input, .form-textarea {
     width: 100%;
     padding: 9px 12px;
-    background: var(--bg);
+    background: var(--bg-input);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     color: var(--text);
@@ -784,8 +737,8 @@
   .form-input:focus, .form-textarea:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(79,110,247,0.08);
-    background: var(--bg-white);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    background: var(--bg-card);
   }
 
   .form-textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
@@ -797,7 +750,7 @@
     gap: 12px;
     margin-top: 20px;
     padding-top: 18px;
-    border-top: 1px solid var(--border-light);
+    border-top: 1px solid var(--border);
   }
 
   .save-btn {
@@ -814,12 +767,11 @@
   }
 
   .save-btn:hover { background: var(--accent-hover); }
-
   .save-indicator { font-size: 12px; color: var(--text-tertiary); }
 
   /* Routines page */
   .routine-full-card {
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 22px;
@@ -837,7 +789,7 @@
     align-items: center;
     gap: 12px;
     padding: 9px 0;
-    border-bottom: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border);
     font-size: 13px;
     color: var(--text-secondary);
   }
@@ -855,7 +807,7 @@
 
   /* Server page */
   .server-card {
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
@@ -869,11 +821,11 @@
 
   .server-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
   .server-card.selected { border-color: var(--green); background: var(--green-light); }
-  .server-card-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: var(--radius-sm); }
+  .server-card-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); border-radius: var(--radius-sm); }
   .server-card-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
   .server-card-info p { font-size: 12px; color: var(--text-tertiary); }
 
-  .log-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: var(--text-tertiary); border-bottom: 1px solid var(--border-light); }
+  .log-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: var(--text-tertiary); border-bottom: 1px solid var(--border); }
   .log-ts { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--text-tertiary); min-width: 55px; }
   .log-d { width: 5px; height: 5px; border-radius: 50%; }
   .log-d.g { background: var(--green); }
@@ -884,11 +836,11 @@
   .info-block h2 { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
   .info-block p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; max-width: 580px; }
 
-  /* ===== GETTING STARTED ===== */
+  /* Getting Started */
   .setup-steps { counter-reset: setup-step; }
 
   .setup-step-card {
-    background: var(--bg-white);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 20px 22px;
@@ -913,21 +865,13 @@
     flex-shrink: 0;
   }
 
-  .setup-step-body h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .setup-step-body p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
+  .setup-step-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .setup-step-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 
   .setup-command-box {
-    background: #1a1d26;
-    color: #e4e7ec;
+    background: #0f1117;
+    color: var(--cyan);
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 14px 16px;
     font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
@@ -945,10 +889,10 @@
     top: 8px;
     right: 8px;
     padding: 4px 10px;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
     border-radius: 6px;
-    color: #e4e7ec;
+    color: var(--text-secondary);
     font-size: 11px;
     font-weight: 500;
     cursor: pointer;
@@ -956,7 +900,7 @@
     transition: all 0.15s;
   }
 
-  .copy-btn:hover { background: rgba(255,255,255,0.2); }
+  .copy-btn:hover { background: rgba(255,255,255,0.1); }
 
   .setup-tip {
     display: flex;
@@ -972,11 +916,7 @@
     line-height: 1.6;
   }
 
-  .setup-tip-icon {
-    font-size: 16px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
+  .setup-tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
   /* Easter egg tooltip */
   .easter-egg { position: relative; }
@@ -988,7 +928,7 @@
     left: 50%;
     transform: translateX(-50%) translateY(4px);
     background: var(--text);
-    color: var(--bg-white);
+    color: var(--bg);
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 11px;
@@ -1009,6 +949,11 @@
     border-right: 4px solid transparent;
     border-bottom: 4px solid var(--text);
   }
+
+  @media (max-width: 1100px) {
+    .home-grid { grid-template-columns: 1fr; }
+    .home-right { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -1025,7 +970,7 @@
       </svg>
       <span class="egg-tooltip">"The Man With Two Brains" — Carl Reiner, 1983</span>
     </div>
-    <span class="header-title">Brain In A Jar</span>
+    <span class="header-title">My Second Brain</span>
   </div>
   <div class="header-right">
     <div class="status-pill disconnected" id="statusPill">
@@ -1057,22 +1002,8 @@
         <!-- Greeting Bar -->
         <div class="greeting-bar">
           <div class="greeting-text">
-            <h1>Good morning, Rob</h1>
-            <p>Monday 16 March — You have 4 meetings today and 7 open tasks</p>
-          </div>
-          <div class="greeting-stats">
-            <div class="greeting-stat">
-              <span class="greeting-stat-value accent">4</span>
-              <span class="greeting-stat-label">Meetings</span>
-            </div>
-            <div class="greeting-stat">
-              <span class="greeting-stat-value warning">7</span>
-              <span class="greeting-stat-label">Open Tasks</span>
-            </div>
-            <div class="greeting-stat">
-              <span class="greeting-stat-value green">3</span>
-              <span class="greeting-stat-label">Done Today</span>
-            </div>
+            <h1>Good morning</h1>
+            <p id="greetingSubtext">Connect your brain to get started</p>
           </div>
         </div>
 
@@ -1094,23 +1025,18 @@
                   <stop offset="100%" style="stop-color:#c47a9e"/>
                 </radialGradient>
               </defs>
-              <!-- Flask shape -->
               <path d="M 22 6 L 22 22 L 8 54 Q 5 62 14 65 L 42 65 Q 51 62 48 54 L 34 22 L 34 6"
                     fill="none" stroke="var(--border)" stroke-width="1.5" stroke-linecap="round"/>
-              <!-- Cork -->
               <rect x="20" y="4" width="16" height="4" rx="2" fill="var(--border)"/>
-              <!-- Fluid -->
               <path id="miniFluid"
                     d="M 23 26 L 10 52 Q 7 60 14 63 L 42 63 Q 49 60 46 52 L 33 26 Z"
                     fill="url(#flRed)"/>
-              <!-- Brain -->
               <g id="miniBrain">
                 <ellipse cx="28" cy="44" rx="12" ry="10" fill="url(#bGrad)" opacity="0.8"/>
                 <path d="M 20 41 Q 24 38 28 41 Q 32 44 36 41" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
                 <path d="M 19 46 Q 24 43 28 46 Q 32 49 37 46" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
                 <line x1="28" y1="35" x2="28" y2="53" stroke="rgba(196,122,158,0.25)" stroke-width="0.6"/>
               </g>
-              <!-- Electrode wires -->
               <line x1="24" y1="1" x2="24" y2="5" stroke="rgba(180,160,60,0.4)" stroke-width="1"/>
               <line x1="32" y1="1" x2="32" y2="5" stroke="rgba(180,160,60,0.4)" stroke-width="1"/>
               <circle cx="24" cy="1" r="1.5" fill="rgba(180,160,60,0.5)"/>
@@ -1128,188 +1054,197 @@
           </button>
         </div>
 
-        <!-- Build Now -->
-        <div class="build-section">
-          <div class="build-header">
-            <div class="build-title">🔨 Build Now</div>
-            <div class="mode-toggle">
-              <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')">✍️ Write to Me</button>
-              <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')">🎙️ Talk to Me</button>
-            </div>
-          </div>
+        <div class="home-grid">
+          <div class="home-left">
 
-          <div class="build-body">
-            <!-- Write mode -->
-            <div class="write-mode" id="writeMode">
-              <div class="build-input-row">
-                <textarea class="build-textarea" id="buildInput" placeholder="Tell your brain what to do..." rows="1" oninput="autoResize(this)"></textarea>
-                <button class="build-send" id="buildBtn" onclick="sendBuild()">Build It</button>
+            <!-- Routine Cards (NOW AT TOP) -->
+            <div class="section-label">Quick Routines</div>
+            <div class="routines-row content-disabled" id="routineCards">
+              <div class="routine-home-card">
+                <div class="routine-home-header">
+                  <div class="routine-home-title">🌅 Morning Routine</div>
+                  <div class="routine-home-meta">~3 min</div>
+                </div>
+                <div class="routine-home-steps">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Review today's calendar</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Fetch & prioritize tasks</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Flag meetings needing prep</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Daily priorities summary</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+                  <button class="routine-run-btn" onclick="runRoutine(this, 'morning')">▶ Run Now</button>
+                  <button class="routine-run-btn" onclick="addStepPrompt('morning')" style="border-style:dashed;">+ Add step</button>
+                </div>
               </div>
-            </div>
-
-            <!-- Talk mode -->
-            <div class="talk-mode" id="talkMode">
-              <div class="voice-area">
-                <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
-                <div class="mic-label" id="micLabel">Click to start speaking</div>
-                <div class="voice-waveform" id="waveform" style="display: none;">
-                  <div class="wave-bar" style="animation-delay: 0s; height: 8px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.1s; height: 12px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.2s; height: 6px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.3s; height: 16px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.4s; height: 10px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.15s; height: 14px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.25s; height: 8px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.35s; height: 18px;"></div>
-                  <div class="wave-bar" style="animation-delay: 0.05s; height: 6px;"></div>
+              <div class="routine-home-card">
+                <div class="routine-home-header">
+                  <div class="routine-home-title">🌙 EOD Debrief</div>
+                  <div class="routine-home-meta">~2 min</div>
+                </div>
+                <div class="routine-home-steps">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Summarize accomplishments</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Save learnings to memory</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Flag items for tomorrow</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Update project statuses</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+                  <button class="routine-run-btn" onclick="runRoutine(this, 'evening')">▶ Run Now</button>
+                  <button class="routine-run-btn" onclick="addStepPrompt('evening')" style="border-style:dashed;">+ Add step</button>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Quick chips -->
-          <div class="quick-actions">
-            <button class="quick-chip" onclick="setExample('Prepare me for my 2pm meeting with Scott')">Prep meeting</button>
-            <button class="quick-chip" onclick="setExample('Check my emails and flag anything urgent')">Check emails</button>
-            <button class="quick-chip" onclick="setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
-            <button class="quick-chip" onclick="setExample('Create a weekly recap of my work')">Weekly recap</button>
-            <button class="quick-chip" onclick="setExample('Research the latest on the GAZ 3 project')">Research project</button>
-          </div>
+            <!-- Ask My Brain -->
+            <div class="build-section">
+              <div class="build-header">
+                <div class="build-title">🧠 Ask My Brain</div>
+                <div class="mode-toggle">
+                  <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')" title="Type your request">⌨️</button>
+                  <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')" title="Speak your request">🎙️</button>
+                </div>
+              </div>
 
-          <!-- Output area -->
-          <div class="build-output" id="buildOutput">
-            <div id="outputSteps"></div>
-          </div>
-        </div>
+              <div class="build-body">
+                <!-- Write mode -->
+                <div class="write-mode" id="writeMode">
+                  <div class="build-input-row">
+                    <textarea class="build-textarea" id="buildInput" placeholder="Ask your brain anything..." rows="1" oninput="autoResize(this)"></textarea>
+                    <button class="build-send" id="buildBtn" onclick="sendBuild()">Ask</button>
+                  </div>
+                </div>
 
-        <!-- Projects Strip -->
-        <div class="section-label">Active Projects</div>
-        <div class="projects-strip content-disabled" id="projectsStrip">
-          <div class="project-mini-card">
-            <div class="project-mini-top">
-              <span class="project-mini-icon">🏗️</span>
-              <span class="project-mini-badge active">Active</span>
-            </div>
-            <div class="project-mini-name">GAZ Precon</div>
-            <div class="project-mini-detail">3 open tasks</div>
-          </div>
-          <div class="project-mini-card">
-            <div class="project-mini-top">
-              <span class="project-mini-icon">📋</span>
-              <span class="project-mini-badge active">Active</span>
-            </div>
-            <div class="project-mini-name">BOQ RPL</div>
-            <div class="project-mini-detail">2 open tasks</div>
-          </div>
-          <div class="project-mini-card">
-            <div class="project-mini-top">
-              <span class="project-mini-icon">🔌</span>
-              <span class="project-mini-badge review">Review</span>
-            </div>
-            <div class="project-mini-name">Connectivity</div>
-            <div class="project-mini-detail">1 pending review</div>
-          </div>
-          <div class="project-mini-card">
-            <div class="project-mini-top">
-              <span class="project-mini-icon">🤖</span>
-              <span class="project-mini-badge active">Active</span>
-            </div>
-            <div class="project-mini-name">AI Rollout</div>
-            <div class="project-mini-detail">1 open task</div>
-          </div>
-        </div>
+                <!-- Talk mode -->
+                <div class="talk-mode" id="talkMode">
+                  <div class="voice-area">
+                    <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
+                    <div class="mic-label" id="micLabel">Click to start speaking</div>
+                    <div class="voice-waveform" id="waveform" style="display: none;">
+                      <div class="wave-bar" style="animation-delay: 0s; height: 8px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.1s; height: 12px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.2s; height: 6px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.3s; height: 16px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.4s; height: 10px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.15s; height: 14px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.25s; height: 8px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.35s; height: 18px;"></div>
+                      <div class="wave-bar" style="animation-delay: 0.05s; height: 6px;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-        <!-- Routine Cards -->
-        <div class="section-label">Quick Routines</div>
-        <div class="routines-row content-disabled" id="routineCards">
-          <div class="routine-home-card">
-            <div class="routine-home-header">
-              <div class="routine-home-title">🌅 Morning Routine</div>
-              <div class="routine-home-meta">~3 min</div>
-            </div>
-            <div class="routine-home-steps">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Check overnight emails</div>
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Review today's calendar</div>
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Fetch & prioritize tasks</div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Daily priorities summary</div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-              <button class="routine-run-btn" onclick="runRoutine(this, 'morning')">▶ Run Now</button>
-              <button class="routine-run-btn" onclick="addStepPrompt('morning')" style="border-style:dashed;">+ Add to my morning</button>
-            </div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:10px;line-height:1.5;font-style:italic;">Run me each morning so I can get you up to speed before your first meeting.</div>
-          </div>
-          <div class="routine-home-card">
-            <div class="routine-home-header">
-              <div class="routine-home-title">🌙 EOD Debrief</div>
-              <div class="routine-home-meta">~2 min</div>
-            </div>
-            <div class="routine-home-steps">
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Summarize accomplishments</div>
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Save learnings to memory</div>
-              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Flag items for tomorrow</div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Update project statuses</div>
-            </div>
-            <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-              <button class="routine-run-btn" onclick="runRoutine(this, 'evening')">▶ Run Now</button>
-              <button class="routine-run-btn" onclick="addStepPrompt('evening')" style="border-style:dashed;">+ Add to my evening</button>
-            </div>
-            <div style="font-size:11px;color:var(--text-tertiary);margin-top:10px;line-height:1.5;font-style:italic;">Run me in the evening so I remember what we did today and you hit the ground running tomorrow.</div>
-          </div>
-        </div>
+              <!-- Quick chips -->
+              <div class="quick-actions">
+                <button class="quick-chip" onclick="setExample('Prepare me for my 2pm meeting with Scott')">Prep meeting</button>
+                <button class="quick-chip" onclick="setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
+                <button class="quick-chip" onclick="setExample('Create a weekly recap of my work')">Weekly recap</button>
+                <button class="quick-chip" onclick="setExample('What did I work on yesterday?')">Yesterday's work</button>
+                <button class="quick-chip" onclick="setExample('Draft a status update for my manager')">Status update</button>
+                <button class="quick-chip" onclick="setExample('Research the latest on the GAZ 3 project')">Research project</button>
+              </div>
 
-        <!-- Activity Feed -->
-        <div class="activity-section content-disabled" id="activityFeed">
-          <div class="activity-header">
-            <div class="activity-title">Recent Activity</div>
-            <span class="activity-filter">View all</span>
-          </div>
-          <div class="activity-list">
-            <div class="activity-item">
-              <div class="activity-icon routine">✓</div>
-              <div class="activity-body">
-                <div class="activity-text"><strong>Morning Routine</strong> completed — 4 priorities identified, 2 meetings flagged for prep</div>
-                <div class="activity-meta">Today at 08:32 — 3 min</div>
+              <!-- Matrix loading animation -->
+              <div class="matrix-overlay" id="matrixOverlay">
+                <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
+                <div class="matrix-status" id="matrixStatus">Thinking...</div>
+              </div>
+
+              <!-- Output area -->
+              <div class="build-output" id="buildOutput">
+                <div id="outputSteps"></div>
               </div>
             </div>
-            <div class="activity-item">
-              <div class="activity-icon task">📌</div>
-              <div class="activity-body">
-                <div class="activity-text">Created task <strong>"Review GAZ 3 scope changes"</strong> from morning brief</div>
-                <div class="activity-meta">Today at 08:35</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon meeting">📅</div>
-              <div class="activity-body">
-                <div class="activity-text">Prepared briefing for <strong>2pm meeting with Scott</strong> — 3 talking points, 1 decision needed</div>
-                <div class="activity-meta">Today at 09:15 — 2 min</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon memory">🧠</div>
-              <div class="activity-body">
-                <div class="activity-text">Saved memory: <strong>"CLN waste water — contractor confirmed March 28 start"</strong></div>
-                <div class="activity-meta">Yesterday at 17:48</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-icon sync">🔄</div>
-              <div class="activity-body">
-                <div class="activity-text">CLAUDE.md synced — <strong>2 projects updated</strong>, 1 new collaborator added</div>
-                <div class="activity-meta">Yesterday at 17:45</div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Status Bar -->
-        <div class="status-bar content-disabled" id="statusBar">
-          <div class="status-bar-item"><span class="status-bar-value">--</span> memories</div>
-          <div class="status-bar-item"><span class="status-bar-value">--</span> projects</div>
-          <div class="status-bar-item"><span class="status-bar-value">--</span> routines</div>
-          <div class="status-bar-item"><span class="status-bar-dot" style="background: var(--text-tertiary);"></span> CLAUDE.md</div>
-          <div class="status-bar-item" style="margin-left: auto; color: var(--text-tertiary);">Last sync: --</div>
+            <!-- Status Bar -->
+            <div class="status-bar content-disabled" id="statusBar">
+              <div class="status-bar-item"><span class="status-bar-value">--</span> memories</div>
+              <div class="status-bar-item"><span class="status-bar-value">--</span> projects</div>
+              <div class="status-bar-item"><span class="status-bar-value">--</span> routines</div>
+              <div class="status-bar-item"><span class="status-bar-dot" style="background: var(--text-tertiary);"></span> CLAUDE.md</div>
+              <div class="status-bar-item" style="margin-left: auto; color: var(--text-tertiary);">Last sync: --</div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT PANEL -->
+          <div class="home-right content-disabled" id="rightPanel">
+
+            <!-- Projects -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">📋 Active Projects</div>
+                <span class="panel-link">View all</span>
+              </div>
+              <div class="project-row">
+                <span class="project-row-icon">🏗️</span>
+                <span class="project-row-name">GAZ Precon</span>
+                <span class="project-row-badge active">Active</span>
+                <span class="project-row-detail">3 tasks</span>
+              </div>
+              <div class="project-row">
+                <span class="project-row-icon">📋</span>
+                <span class="project-row-name">BOQ RPL</span>
+                <span class="project-row-badge active">Active</span>
+                <span class="project-row-detail">2 tasks</span>
+              </div>
+              <div class="project-row">
+                <span class="project-row-icon">🔌</span>
+                <span class="project-row-name">Connectivity</span>
+                <span class="project-row-badge review">Review</span>
+                <span class="project-row-detail">1 pending</span>
+              </div>
+              <div class="project-row">
+                <span class="project-row-icon">🤖</span>
+                <span class="project-row-name">AI Rollout</span>
+                <span class="project-row-badge active">Active</span>
+                <span class="project-row-detail">1 task</span>
+              </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">⚡ Recent Activity</div>
+                <span class="panel-link">View all</span>
+              </div>
+              <div class="activity-row">
+                <div class="activity-row-icon routine">✓</div>
+                <div class="activity-row-body">
+                  <div class="activity-row-text"><strong>Morning Routine</strong> completed — 4 priorities identified</div>
+                  <div class="activity-row-meta">Today at 08:32</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-row-icon task">📌</div>
+                <div class="activity-row-body">
+                  <div class="activity-row-text">Created task <strong>"Review GAZ 3 scope changes"</strong></div>
+                  <div class="activity-row-meta">Today at 08:35</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-row-icon meeting">📅</div>
+                <div class="activity-row-body">
+                  <div class="activity-row-text">Prepared briefing for <strong>2pm with Scott</strong></div>
+                  <div class="activity-row-meta">Today at 09:15</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-row-icon memory">🧠</div>
+                <div class="activity-row-body">
+                  <div class="activity-row-text">Saved memory: <strong>"CLN waste water — Mar 28 start"</strong></div>
+                  <div class="activity-row-meta">Yesterday 17:48</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-row-icon sync">🔄</div>
+                <div class="activity-row-body">
+                  <div class="activity-row-text">CLAUDE.md synced — <strong>2 projects updated</strong></div>
+                  <div class="activity-row-meta">Yesterday 17:45</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
 
       </div>
@@ -1322,22 +1257,22 @@
         <div class="page-desc">Edit your profile. Changes auto-sync to your CLAUDE.md so your brain always knows who you are.</div>
         <div class="form-card">
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" value="Rob Goldsmith"></div>
-            <div class="form-group"><label class="form-label">Role</label><input class="form-input" value="Lease Preconstruction Manager"></div>
+            <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" value=""></div>
+            <div class="form-group"><label class="form-label">Role</label><input class="form-input" value=""></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Team</label><input class="form-input" value="Planning & Development"></div>
-            <div class="form-group"><label class="form-label">Manager</label><input class="form-input" value="Scott Leimgruber"></div>
+            <div class="form-group"><label class="form-label">Team</label><input class="form-input" value=""></div>
+            <div class="form-group"><label class="form-label">Manager</label><input class="form-input" value=""></div>
           </div>
           <div class="form-row">
-            <div class="form-group"><label class="form-label">Location</label><input class="form-input" value="Dublin, IRL"></div>
-            <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" value="2020-09-14"></div>
+            <div class="form-group"><label class="form-label">Location</label><input class="form-input" value=""></div>
+            <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" value=""></div>
           </div>
-          <div class="form-group"><label class="form-label">Background</label><textarea class="form-textarea" rows="4">Lease Preconstruction Manager in the Infrastructure org, responsible for preconstruction management across multiple data center campuses (GAZ 1-3, CAZ 1-3, CMS 1-9, RCD 5-6). Produces Bills of Quantities for RPL. Precon Manager for CLN waste water project. Leads AI tool rollout across the Planning & Development team.</textarea></div>
-          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="3">Be direct and concise. Ask clarifying questions before making assumptions. Be proactive. No flattery or excessive agreement. Challenge flawed ideas.</textarea></div>
+          <div class="form-group"><label class="form-label">Background</label><textarea class="form-textarea" rows="4"></textarea></div>
+          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="3"></textarea></div>
           <div class="form-actions">
             <button class="save-btn" onclick="saveAboutMe()">Save & Sync</button>
-            <span class="save-indicator">Last synced: 5 minutes ago</span>
+            <span class="save-indicator">Not yet synced</span>
           </div>
         </div>
       </div>
@@ -1349,11 +1284,11 @@
         <div class="page-title">My Routines</div>
         <div class="page-desc">Define what your brain does for you. Write steps in plain language — no coding needed.</div>
         <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">🌅 Morning Routine</div><div class="routine-full-meta">Last run: Today 08:30 | ~3 min</div></div>
+          <div class="routine-full-header"><div class="routine-full-title">🌅 Morning Routine</div><div class="routine-full-meta">~3 min</div></div>
           <ol class="routine-steps-list">
-            <li class="routine-step-item"><span class="step-num">1</span> Check what emails I received overnight and summarize the important ones</li>
-            <li class="routine-step-item"><span class="step-num">2</span> Review my calendar for today and flag meetings I need to prepare for</li>
-            <li class="routine-step-item"><span class="step-num">3</span> Fetch my open tasks and sort by priority</li>
+            <li class="routine-step-item"><span class="step-num">1</span> Review my calendar for today and flag meetings I need to prepare for</li>
+            <li class="routine-step-item"><span class="step-num">2</span> Fetch my open tasks and sort by priority</li>
+            <li class="routine-step-item"><span class="step-num">3</span> Check for any new Workplace posts from my team</li>
             <li class="routine-step-item"><span class="step-num">4</span> Give me a summary of my top 3 priorities for the day</li>
           </ol>
           <div class="routine-full-actions">
@@ -1363,7 +1298,7 @@
           </div>
         </div>
         <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">🌙 End of Day Debrief</div><div class="routine-full-meta">Last run: Yesterday 17:45 | ~2 min</div></div>
+          <div class="routine-full-header"><div class="routine-full-title">🌙 End of Day Debrief</div><div class="routine-full-meta">~2 min</div></div>
           <ol class="routine-steps-list">
             <li class="routine-step-item"><span class="step-num">1</span> Summarize everything I accomplished today</li>
             <li class="routine-step-item"><span class="step-num">2</span> Save any important learnings or decisions to memory</li>
@@ -1387,12 +1322,11 @@
         <div class="page-desc">Three steps to connect your Second Brain. Takes about 2 minutes.</div>
 
         <div class="setup-steps">
-
           <div class="setup-step-card">
             <div class="setup-step-num">1</div>
             <div class="setup-step-body">
               <h3>Open your OD terminal</h3>
-              <p>Go to your On-Demand server and open a terminal window. In VS Code, use <strong>Ctrl+`</strong> (backtick) or go to Terminal > New Terminal.</p>
+              <p>Connect to your On-Demand server using <strong>dev connect</strong> from your laptop terminal.</p>
             </div>
           </div>
 
@@ -1402,7 +1336,6 @@
               <h3>Paste the setup command</h3>
               <p>Copy this command and paste it into your terminal. It installs everything and starts your brain.</p>
               <div class="setup-command-box">git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh<button class="copy-btn" onclick="copySetupCommand(this)">Copy</button></div>
-              <p style="font-size:11px;color:var(--text-tertiary);margin-top:4px;">This clones the repo, installs Flask (one dependency), checks Claude Code is available, and starts the server.</p>
             </div>
           </div>
 
@@ -1410,21 +1343,20 @@
             <div class="setup-step-num">3</div>
             <div class="setup-step-body">
               <h3>Click "Connect Brain" on the home page</h3>
-              <p>Once the server is running, come back here and click the green <strong>Connect Brain</strong> button on the Home page. That tests the connection to Claude Code and activates your brain.</p>
+              <p>Once the server is running, come back here and click the green <strong>Connect Brain</strong> button on the Home page.</p>
             </div>
           </div>
-
         </div>
 
         <div class="info-block" style="margin-top: 28px;">
           <h2>After setup</h2>
-          <p>Go to <strong>About Me</strong> and fill in your details — this teaches your brain who you are. Then try running your <strong>Morning Routine</strong> from the home page, or type anything into <strong>Build Now</strong>.</p>
+          <p>Go to <strong>About Me</strong> and fill in your details — this teaches your brain who you are. Then try running your <strong>Morning Routine</strong>, or type anything into <strong>Ask My Brain</strong>.</p>
         </div>
 
         <div class="setup-tip">
           <span class="setup-tip-icon">💡</span>
           <div>
-            <strong>Troubleshooting:</strong> If "Connect Brain" fails, check that Claude Code is installed on your OD by running <code style="background:rgba(0,0,0,0.06);padding:2px 5px;border-radius:3px;">claude --version</code> in your terminal. If Google Drive isn't mounted, run <code style="background:rgba(0,0,0,0.06);padding:2px 5px;border-radius:3px;">mclone mount</code> first. Questions? Message Rob Goldsmith on GChat.
+            <strong>Troubleshooting:</strong> If "Connect Brain" fails, check that Claude Code is installed on your OD by running <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:3px;">claude --version</code> in your terminal. Questions? Message Rob Goldsmith on GChat.
           </div>
         </div>
       </div>
@@ -1439,15 +1371,14 @@
         <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">🖥️</div><div class="server-card-info"><h3>Dev Server</h3><p>Existing devserver. Persistent dev environment.</p></div></div>
         <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">💻</div><div class="server-card-info"><h3>Local Machine (Mac)</h3><p>Run on your Mac. Requires Claude Code installed.</p></div></div>
         <div style="margin-top: 20px;">
-          <div class="form-group" style="max-width: 360px;"><label class="form-label">Server ID</label><input class="form-input" value="OD-48291" placeholder="e.g., OD-12345"></div>
+          <div class="form-group" style="max-width: 360px;"><label class="form-label">Server ID</label><input class="form-input" value="" placeholder="e.g., OD-12345"></div>
           <button class="save-btn" onclick="toggleConnection()">Connect</button>
         </div>
         <div style="margin-top: 28px;">
           <div class="form-label" style="margin-bottom: 10px;">Connection Log</div>
-          <div class="log-line"><span class="log-ts">09:15</span><span class="log-d g"></span> Connected to OD-48291</div>
+          <div class="log-line"><span class="log-ts">09:15</span><span class="log-d g"></span> Connected to OD</div>
           <div class="log-line"><span class="log-ts">08:30</span><span class="log-d g"></span> Morning routine completed</div>
           <div class="log-line"><span class="log-ts">08:28</span><span class="log-d g"></span> Claude Code session started</div>
-          <div class="log-line"><span class="log-ts">Yest.</span><span class="log-d r"></span> Connection timeout — reconnected</div>
         </div>
       </div>
     </div>
@@ -1458,9 +1389,9 @@
         <div class="page-title">How It Works</div>
         <div class="page-desc">Everything you need to know about your Second Brain.</div>
         <div class="info-block"><h2>🧠 What is the Second Brain?</h2><p>An AI-powered personal assistant that remembers everything about you, your projects, and your work. It uses Claude Code with PARA (Projects, Areas, Resources, Archives) to organise your knowledge and automate routine tasks. Think of it as a chief of staff that never forgets.</p></div>
-        <div class="info-block"><h2>🔨 What is Build Now?</h2><p>Type or speak any task in plain language. Your brain translates it into actions and runs them. You see progress in real-time. No commands, no terminal, no code.</p></div>
+        <div class="info-block"><h2>💬 What is Ask My Brain?</h2><p>Type or speak any task in plain language. Your brain translates it into actions and runs them. You see progress in real-time. No commands, no terminal, no code.</p></div>
         <div class="info-block"><h2>🗄️ How does it remember?</h2><p>Your brain stores information in a file called CLAUDE.md. The About Me page and routines auto-sync to this file. Every new session reads it first so it knows who you are and what you're working on.</p></div>
-        <div class="info-block"><h2>⚡ What are Routines?</h2><p>Sets of instructions in plain language. Click "Run" and your brain executes each step. Morning Routine can check emails, review your calendar, and prioritize your day — all in about 3 minutes.</p></div>
+        <div class="info-block"><h2>⚡ What are Routines?</h2><p>Sets of instructions in plain language. Click "Run" and your brain executes each step. Morning Routine can review your calendar, check tasks, and prioritize your day — all in about 3 minutes.</p></div>
         <div class="info-block"><h2>🔒 Is my data safe?</h2><p>Yes. Everything runs within Meta's infrastructure. Your data stays on your server and syncs via Google Drive. Nothing leaves Meta's network.</p></div>
       </div>
     </div>
@@ -1468,15 +1399,15 @@
   </main>
 </div>
 
-<div style="text-align:center;padding:12px 0;font-size:11px;color:var(--text-tertiary);border-top:1px solid var(--border-light);">
+<div style="text-align:center;padding:12px 0;font-size:11px;color:var(--text-tertiary);border-top:1px solid var(--border);">
   Built by Rob Goldsmith
 </div>
 
 <script>
   let isConnected = false;
   let isRecording = false;
+  let matrixInterval = null;
 
-  // Helper: detect if backend is running
   const API_BASE = '';
   async function api(path, opts = {}) {
     const res = await fetch(API_BASE + path, {
@@ -1484,6 +1415,50 @@
       ...opts,
     });
     return res.json();
+  }
+
+  // ─── Matrix Rain ──────────────────────────────────────────────────────
+  function startMatrix() {
+    const canvas = document.getElementById('matrixCanvas');
+    const overlay = document.getElementById('matrixOverlay');
+    overlay.classList.add('active');
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+    const fontSize = 12;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
+
+    function draw() {
+      ctx.fillStyle = 'rgba(15, 17, 23, 0.15)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#22d3ee';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.globalAlpha = Math.random() * 0.5 + 0.2;
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    matrixInterval = setInterval(draw, 50);
+  }
+
+  function stopMatrix() {
+    if (matrixInterval) clearInterval(matrixInterval);
+    matrixInterval = null;
+    document.getElementById('matrixOverlay').classList.remove('active');
+  }
+
+  function setMatrixStatus(text) {
+    document.getElementById('matrixStatus').textContent = text;
   }
 
   // ─── UI update helpers ──────────────────────────────────────────────────
@@ -1510,10 +1485,8 @@
     miniFluid.setAttribute('fill', 'url(#flGreen)');
     headerFluid.setAttribute('fill', 'rgba(16,185,129,0.2)');
 
-    // Enable content sections
     document.getElementById('routineCards').className = 'routines-row content-enabled';
-    document.getElementById('projectsStrip').className = 'projects-strip content-enabled';
-    document.getElementById('activityFeed').className = 'activity-section content-enabled';
+    document.getElementById('rightPanel').className = 'home-right content-enabled';
     const statusBar = document.getElementById('statusBar');
     statusBar.className = 'status-bar content-enabled';
 
@@ -1550,8 +1523,7 @@
     headerFluid.setAttribute('fill', 'rgba(239,68,68,0.2)');
 
     document.getElementById('routineCards').className = 'routines-row content-disabled';
-    document.getElementById('projectsStrip').className = 'projects-strip content-disabled';
-    document.getElementById('activityFeed').className = 'activity-section content-disabled';
+    document.getElementById('rightPanel').className = 'home-right content-disabled';
     const statusBar = document.getElementById('statusBar');
     statusBar.className = 'status-bar content-disabled';
     const vals = statusBar.querySelectorAll('.status-bar-value');
@@ -1582,7 +1554,6 @@
           btn.textContent = 'Retry';
         }
       } catch (e) {
-        // Backend not running — fall back to simulated connection
         console.log('Backend not available, using simulated mode');
         setTimeout(() => setConnectedUI('Local (demo mode)', { memories: 47, projects: 12, routines: 3 }), 1500);
       }
@@ -1601,8 +1572,6 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
     navItem.classList.add('active');
-
-    // Load data when switching to About Me page
     if (pageId === 'about') loadAboutMe();
   }
 
@@ -1623,32 +1592,21 @@
         if (a.started) inputs[5].value = a.started;
         if (a.background) textareas[0].value = a.background;
       }
-    } catch (e) { /* backend not running, keep defaults */ }
+    } catch (e) { /* backend not running */ }
   }
 
   async function saveAboutMe() {
     const inputs = document.querySelectorAll('#page-about .form-input');
     const textareas = document.querySelectorAll('#page-about .form-textarea');
     const indicator = document.querySelector('.save-indicator');
-
     const payload = {
-      name: inputs[0].value,
-      role: inputs[1].value,
-      team: inputs[2].value,
-      manager: inputs[3].value,
-      location: inputs[4].value,
-      started: inputs[5].value,
-      background: textareas[0].value,
-      preferences: textareas[1].value,
+      name: inputs[0].value, role: inputs[1].value, team: inputs[2].value,
+      manager: inputs[3].value, location: inputs[4].value, started: inputs[5].value,
+      background: textareas[0].value, preferences: textareas[1].value,
     };
-
     indicator.textContent = 'Saving...';
-
     try {
-      const data = await api('/api/about', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
+      const data = await api('/api/about', { method: 'POST', body: JSON.stringify(payload) });
       if (data.success) {
         indicator.textContent = 'Saved and synced to CLAUDE.md just now';
         indicator.style.color = 'var(--green)';
@@ -1663,14 +1621,13 @@
     }
   }
 
-  // ─── Build Now ──────────────────────────────────────────────────────────
+  // ─── Ask My Brain ─────────────────────────────────────────────────────
 
   function setMode(mode) {
     const writeBtn = document.getElementById('writeModeBtn');
     const talkBtn = document.getElementById('talkModeBtn');
     const writeMode = document.getElementById('writeMode');
     const talkMode = document.getElementById('talkMode');
-
     if (mode === 'write') {
       writeBtn.classList.add('active'); talkBtn.classList.remove('active');
       writeMode.style.display = 'block'; talkMode.style.display = 'none';
@@ -1700,13 +1657,14 @@
     const steps = document.getElementById('outputSteps');
     const btn = document.getElementById('buildBtn');
 
-    output.classList.add('visible');
     btn.disabled = true;
-    btn.textContent = 'Building...';
+    btn.textContent = 'Thinking...';
     steps.innerHTML = '';
+    output.classList.remove('visible');
 
-    // Show initial step
-    addOutputStep(steps, 'Understanding your request...', 'running');
+    // Start matrix animation
+    startMatrix();
+    setMatrixStatus('Understanding your request...');
 
     try {
       const data = await api('/api/build', {
@@ -1714,40 +1672,40 @@
         body: JSON.stringify({ prompt }),
       });
 
-      // Mark first step done
-      markLastStepDone(steps);
+      stopMatrix();
+      output.classList.add('visible');
+      addOutputStep(steps, 'Request understood', 'done');
 
       if (data.success) {
         addOutputStep(steps, 'Processing complete', 'done');
-
-        // Show the actual output
         const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;';
+        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
         resultDiv.textContent = data.output;
         steps.appendChild(resultDiv);
       } else {
-        addOutputStep(steps, 'Error: ' + (data.error || 'Build failed'), 'running');
+        addOutputStep(steps, 'Error: ' + (data.error || 'Request failed'), 'running');
       }
     } catch (e) {
-      // Fallback to simulated build
-      markLastStepDone(steps);
+      // Simulated fallback with matrix
       const simSteps = [
         { text: 'Searching relevant data sources...', delay: 800 },
         { text: 'Processing and analyzing results...', delay: 2200 },
         { text: 'Generating output...', delay: 3800 },
-        { text: 'Done — output saved to your workspace (demo mode)', delay: 5200 },
       ];
-      simSteps.forEach((step, i) => {
-        setTimeout(() => {
-          markLastStepDone(steps);
-          const isLast = i === simSteps.length - 1;
-          addOutputStep(steps, step.text, isLast ? 'done' : 'running');
-        }, step.delay);
+      simSteps.forEach(step => {
+        setTimeout(() => setMatrixStatus(step.text), step.delay);
       });
+      setTimeout(() => {
+        stopMatrix();
+        output.classList.add('visible');
+        addOutputStep(steps, 'Request understood', 'done');
+        addOutputStep(steps, 'Analysis complete', 'done');
+        addOutputStep(steps, 'Done — output saved to your workspace (demo mode)', 'done');
+      }, 5200);
     }
 
     btn.disabled = false;
-    btn.textContent = 'Build It';
+    btn.textContent = 'Ask';
     input.value = '';
     input.style.height = 'auto';
   }
@@ -1780,22 +1738,18 @@
     const mic = document.getElementById('micBtn');
     const label = document.getElementById('micLabel');
     const wave = document.getElementById('waveform');
-
     if (!isRecording) {
       isRecording = true;
       mic.classList.add('recording');
       mic.textContent = '⏹️';
       label.textContent = 'Listening...';
       wave.style.display = 'flex';
-
-      // Demo: simulate speech-to-text after 3s
       setTimeout(() => {
         isRecording = false;
         mic.classList.remove('recording');
         mic.textContent = '🎙️';
         label.textContent = 'Click to start speaking';
         wave.style.display = 'none';
-
         document.getElementById('writeModeBtn').click();
         document.getElementById('buildInput').value = 'Prepare me for my 2pm meeting with Scott and summarize the key discussion points from last time';
       }, 3000);
@@ -1813,42 +1767,29 @@
   async function runRoutine(btn, routineId) {
     const orig = btn.textContent;
     btn.textContent = '⏳ Running...';
-    btn.style.background = 'rgba(245,158,11,0.08)';
-    btn.style.color = '#f59e0b';
-    btn.style.borderColor = 'rgba(245,158,11,0.2)';
-
+    btn.style.background = 'rgba(245,158,11,0.08)'; btn.style.color = '#f59e0b'; btn.style.borderColor = 'rgba(245,158,11,0.2)';
     try {
       const data = await api('/api/routines/' + routineId + '/run', { method: 'POST' });
-
       btn.textContent = '✓ Complete';
-      btn.style.background = 'var(--green-light)';
-      btn.style.color = 'var(--green)';
-      btn.style.borderColor = 'rgba(16,185,129,0.2)';
-
+      btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
       if (data.success && data.output) {
-        // Show output in the build output area
         const output = document.getElementById('buildOutput');
         const steps = document.getElementById('outputSteps');
         output.classList.add('visible');
         steps.innerHTML = '';
         addOutputStep(steps, routineId + ' routine completed', 'done');
         const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;';
+        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
         resultDiv.textContent = data.output;
         steps.appendChild(resultDiv);
       }
     } catch (e) {
-      // Simulated fallback
       btn.textContent = '✓ Complete';
-      btn.style.background = 'var(--green-light)';
-      btn.style.color = 'var(--green)';
-      btn.style.borderColor = 'rgba(16,185,129,0.2)';
+      btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
     }
-
     setTimeout(() => { btn.textContent = orig; btn.style = ''; }, 3000);
   }
 
-  // Simulated run for buttons without a routine ID (e.g. full routines page)
   function simulateRun(btn) {
     const orig = btn.textContent;
     btn.textContent = '⏳ Running...';
@@ -1864,18 +1805,13 @@
     const label = routine === 'morning' ? 'morning' : 'evening';
     const step = prompt('Add a step to your ' + label + ' routine.\n\nWrite it in plain language, e.g.:\n"Check if any contractors sent updates overnight"');
     if (!step || !step.trim()) return;
-
     try {
       const data = await api('/api/routines/' + routine + '/add-step', {
-        method: 'POST',
-        body: JSON.stringify({ step: step.trim() }),
+        method: 'POST', body: JSON.stringify({ step: step.trim() }),
       });
-      if (data.success) {
-        alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '"\n\nThis will run next time you hit Run Now.');
-      }
+      if (data.success) alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '"');
     } catch (e) {
-      // Fallback for demo mode
-      alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '"\n\nThis will run next time you hit Run Now. (demo mode)');
+      alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '" (demo mode)');
     }
   }
 
@@ -1892,35 +1828,21 @@
     const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
     navigator.clipboard.writeText(cmd).then(() => {
       btn.textContent = 'Copied!';
-      btn.style.background = 'rgba(16,185,129,0.2)';
-      btn.style.borderColor = 'rgba(16,185,129,0.3)';
-      setTimeout(() => {
-        btn.textContent = 'Copy';
-        btn.style.background = '';
-        btn.style.borderColor = '';
-      }, 2000);
+      btn.style.background = 'rgba(16,185,129,0.2)'; btn.style.borderColor = 'rgba(16,185,129,0.3)';
+      setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; btn.style.borderColor = ''; }, 2000);
     }).catch(() => {
-      // Fallback for older browsers
       const ta = document.createElement('textarea');
-      ta.value = cmd;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+      ta.value = cmd; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
       btn.textContent = 'Copied!';
       setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
     });
   }
 
-  // ─── Keyboard shortcut: Enter to send build ─────────────────────────────
+  // ─── Keyboard shortcut: Enter to send ─────────────────────────────────
 
   document.addEventListener('DOMContentLoaded', () => {
-    const buildInput = document.getElementById('buildInput');
-    buildInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendBuild();
-      }
+    document.getElementById('buildInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuild(); }
     });
   });
 </script>
