@@ -508,10 +508,10 @@
       <p style="margin-top:12px;padding:14px 18px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
         <strong style="color:var(--yellow);">Page won't load?</strong> This is the most common issue. It means port 5151 isn't being forwarded from the OD to your laptop. Close your terminal, open a new one, and reconnect using SSH with port forwarding:
         <span style="display:block;margin-top:8px;">
-          <code>ssh -L 5151:localhost:5151 yourusername@123456.od.fbinfra.net</code>
+          <code>ssh -L 5151:localhost:5151 yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code>
         </span>
         <span style="display:block;margin-top:6px;font-size:12px;color:var(--text-tertiary);">
-          Replace the hostname with yours — you can find it in your terminal prompt (e.g. <code>roygsims@279152.od</code> means <code>roygsims@279152.od.fbinfra.net</code>). Once connected, run <code>cd ~/my-second-brain && bash setup.sh</code> and try the URL again.
+          Replace the hostname with yours — you can find it in your terminal prompt (e.g. <code>yourusername@987654.od</code> means <code>yourusername@987654.od.fbinfra.net</code>). Once connected, run <code>cd ~/my-second-brain && bash setup.sh</code> and try the URL again.
         </span>
       </p>
     </div>
@@ -600,8 +600,8 @@
     <h4>"This site can't be reached" / "localhost refused to connect"</h4>
     <p>This is the most common issue. It means port 5151 isn't being forwarded from the OD to your laptop.<br><br>
     <strong>Fix:</strong> Close your terminal and reconnect using SSH with port forwarding:<br>
-    <code>ssh -L 5151:localhost:5151 yourusername@123456.od.fbinfra.net</code><br><br>
-    Replace the hostname with yours — check your terminal prompt (e.g. <code>roygsims@279152.od</code> means <code>roygsims@279152.od.fbinfra.net</code>).<br><br>
+    <code>ssh -L 5151:localhost:5151 yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code><br><br>
+    Replace the hostname with yours — check your terminal prompt (e.g. <code>yourusername@987654.od</code> means <code>yourusername@987654.od.fbinfra.net</code>).<br><br>
     Once connected, restart the server: <code>cd ~/my-second-brain && bash setup.sh</code><br>
     Then open <code>http://localhost:5151</code> in your browser.</p>
   </div>
