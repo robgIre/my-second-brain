@@ -12,7 +12,7 @@ def is_claude_installed():
     return shutil.which("claude") is not None
 
 
-def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False, max_turns=None):
+def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
     """Send a prompt to Claude Code CLI and return the response.
 
     Uses --print flag for non-interactive single-shot execution.
@@ -26,8 +26,6 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False, max
 
     try:
         cmd = ["claude", "-p", "-", "--output-format", "json"]
-        if max_turns is not None:
-            cmd.extend(["--max-turns", str(max_turns)])
         if allow_tools:
             for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])
@@ -67,7 +65,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False, max
         return {"success": False, "error": str(e)}
 
 
-def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None, allow_tools=False, max_turns=None, model=None):
+def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None, allow_tools=False, model=None):
     """Send a prompt to Claude Code and stream output line-by-line into a queue.
 
     Call from a thread. Puts dicts into output_queue as they arrive.
@@ -85,8 +83,6 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         cmd = ["claude", "-p", "--output-format", "json"]
         if model:
             cmd.extend(["--model", model])
-        if max_turns is not None:
-            cmd.extend(["--max-turns", str(max_turns)])
         if allow_tools:
             for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])

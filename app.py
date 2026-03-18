@@ -164,9 +164,9 @@ def api_build():
     mode = data.get("mode", "fast") if data else "fast"
 
     if mode == "deep":
-        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True, max_turns=5)
+        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True)
     else:
-        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=False, max_turns=1)
+        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=False)
 
     return jsonify(result)
 
@@ -200,14 +200,11 @@ def api_build_stream():
         stream_kwargs = {
             "conversation_id": conversation_id,
             "allow_tools": True,
-            "max_turns": 5,
         }
     else:
-        # Fast mode: no tools, single turn — answers in seconds
         stream_kwargs = {
             "conversation_id": conversation_id,
             "allow_tools": False,
-            "max_turns": 1,
         }
 
     output_queue = queue.Queue()
@@ -310,7 +307,7 @@ def api_routines_run(routine_id):
 
     data = request.get_json() or {}
     conversation_id = data.get("conversation_id")
-    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True, max_turns=5)
+    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True)
     return jsonify(result)
 
 

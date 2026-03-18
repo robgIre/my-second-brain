@@ -1925,17 +1925,17 @@
         updateConversationIndicator();
       }
 
-      if (data.success && data.output) {
+      if (data.success) {
         addOutputStep(steps, 'Complete', 'done');
         const resultDiv = document.createElement('div');
         resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
-        resultDiv.textContent = data.output;
+        resultDiv.textContent = data.output || '(No output returned)';
         steps.appendChild(resultDiv);
         addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
         attachedFileIds = [];
         renderAttachedFiles();
       } else {
-        addOutputStep(steps, 'Error: ' + (data.error || 'No response'), 'running');
+        addOutputStep(steps, 'Error: ' + (data.error || 'Unknown error'), 'running');
       }
     } catch (e) {
       stopMatrix();
