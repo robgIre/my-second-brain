@@ -5,8 +5,10 @@ import os
 import queue
 import threading
 import time
+import uuid
 
 from flask import Flask, jsonify, render_template, request, Response, send_from_directory
+from PyPDF2 import PdfReader
 
 from utils.claude_runner import check_connection, run_prompt, run_prompt_streaming, is_claude_installed
 from utils.claudemd_sync import (
@@ -163,6 +165,17 @@ def api_build_stream():
     if not prompt:
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
+    # Prepend any attached document text to the prompt
+    file_ids = data.get("file_ids", [])
+    if file_ids:
+        doc_parts = []
+        for fid in file_ids:
+            doc = uploaded_docs.get(fid)
+            if doc:
+                doc_parts.append(f"--- Document: {doc['filename']} ---\n{doc['text']}\n--- End of {doc['filename']} ---")
+        if doc_parts:
+            prompt = "\n\n".join(doc_parts) + "\n\n" + prompt
+
     conversation_id = data.get("conversation_id")
     mode = data.get("mode", "fast")  # "fast" or "deep"
 
@@ -283,6 +296,81 @@ def api_routines_run(routine_id):
     conversation_id = data.get("conversation_id")
     result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True, max_turns=5)
     return jsonify(result)
+
+
+# ─── API: File Upload ─────────────────────────────────────────────────────────
+
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# In-memory store of extracted text from uploads (keyed by file_id)
+uploaded_docs = {}
+
+ALLOWED_EXTENSIONS = {"pdf", "txt", "md", "csv"}
+MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
+
+
+@app.route("/api/upload", methods=["POST"])
+def api_upload():
+    """Upload a document and extract its text content."""
+    if "file" not in request.files:
+        return jsonify({"success": False, "error": "No file provided"}), 400
+
+    file = request.files["file"]
+    if not file.filename:
+        return jsonify({"success": False, "error": "No file selected"}), 400
+
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in ALLOWED_EXTENSIONS:
+        return jsonify({"success": False, "error": f"Unsupported file type: .{ext}. Use PDF, TXT, MD, or CSV."}), 400
+
+    # Read file content
+    file_bytes = file.read()
+    if len(file_bytes) > MAX_FILE_SIZE:
+        return jsonify({"success": False, "error": "File too large (max 20 MB)"}), 400
+
+    # Extract text
+    try:
+        if ext == "pdf":
+            import io
+            reader = PdfReader(io.BytesIO(file_bytes))
+            text = "\n\n".join(page.extract_text() or "" for page in reader.pages)
+            if not text.strip():
+                return jsonify({"success": False, "error": "Could not extract text from PDF (may be scanned/image-based)"}), 400
+        else:
+            text = file_bytes.decode("utf-8", errors="replace")
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Failed to read file: {str(e)}"}), 400
+
+    # Store with a unique ID
+    file_id = str(uuid.uuid4())[:8]
+    # Truncate very long docs to avoid overloading the prompt
+    max_chars = 80000
+    truncated = len(text) > max_chars
+    if truncated:
+        text = text[:max_chars]
+
+    uploaded_docs[file_id] = {
+        "filename": file.filename,
+        "text": text,
+        "char_count": len(text),
+        "truncated": truncated,
+    }
+
+    return jsonify({
+        "success": True,
+        "file_id": file_id,
+        "filename": file.filename,
+        "char_count": len(text),
+        "truncated": truncated,
+    })
+
+
+@app.route("/api/upload/<file_id>", methods=["DELETE"])
+def api_upload_delete(file_id):
+    """Remove an uploaded document from memory."""
+    uploaded_docs.pop(file_id, None)
+    return jsonify({"success": True})
 
 
 # ─── API: CLAUDE.md info ─────────────────────────────────────────────────────

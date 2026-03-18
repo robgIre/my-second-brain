@@ -984,6 +984,60 @@
     border-bottom: 4px solid var(--text);
   }
 
+  /* ===== ATTACH BUTTON & FILE CHIPS ===== */
+  .attach-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-tertiary);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .attach-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  .attached-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 20px 10px;
+  }
+
+  .attached-files:empty { display: none; }
+
+  .file-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    background: var(--accent-light);
+    border: 1px solid rgba(124,110,247,0.2);
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .file-chip-remove {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 2px;
+    line-height: 1;
+    opacity: 0.6;
+  }
+
+  .file-chip-remove:hover { opacity: 1; }
+
   @media (max-width: 1100px) {
     .home-grid { grid-template-columns: 1fr; }
     .home-right { display: none; }
@@ -1165,6 +1219,8 @@
                 <!-- Write mode -->
                 <div class="write-mode" id="writeMode">
                   <div class="build-input-row">
+                    <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach a document (PDF, TXT, MD, CSV)">📎</button>
+                    <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv" style="display:none" onchange="handleFileUpload(this)">
                     <textarea class="build-textarea" id="buildInput" placeholder="Ask your brain anything..." rows="1" oninput="autoResize(this)"></textarea>
                     <button class="build-send" id="buildBtn" onclick="sendBuild()">Ask</button>
                   </div>
@@ -1198,6 +1254,9 @@
                 <button class="quick-chip" onclick="setDepth('fast');setExample('What did I work on yesterday?')">Yesterday's work</button>
                 <button class="quick-chip" onclick="setDepth('fast');setExample('Draft a status update for my manager')">Status update</button>
               </div>
+
+              <!-- Attached files -->
+              <div class="attached-files" id="attachedFiles"></div>
 
               <!-- Matrix loading animation -->
               <div class="matrix-overlay" id="matrixOverlay">
@@ -1849,7 +1908,7 @@
       const res = await fetch('/api/build/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode }),
+        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) }),
       });
 
       if (!res.ok) {
@@ -1907,6 +1966,9 @@
       if (!hasError) {
         addOutputStep(steps, 'Complete', 'done');
         addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
+        // Clear attached files after successful send
+        attachedFileIds = [];
+        renderAttachedFiles();
       }
 
       // Remove empty result div if nothing was streamed
@@ -2143,6 +2205,57 @@
     } catch (e) {
       alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '" (demo mode)');
     }
+  }
+
+  // ─── File Upload ────────────────────────────────────────────────────────
+
+  let attachedFileIds = []; // [{id, filename}]
+
+  async function handleFileUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+    input.value = ''; // reset so same file can be re-selected
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const attachBtn = document.querySelector('.attach-btn');
+    attachBtn.textContent = '...';
+    attachBtn.style.pointerEvents = 'none';
+
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.success) {
+        attachedFileIds.push({ id: data.file_id, filename: data.filename });
+        renderAttachedFiles();
+        addActivity('📎', 'task', '<strong>Attached:</strong> ' + escapeHtml(data.filename) + (data.truncated ? ' (truncated)' : ''));
+      } else {
+        alert(data.error || 'Upload failed');
+      }
+    } catch (e) {
+      alert('Upload failed — server not reachable');
+    }
+
+    attachBtn.textContent = '📎';
+    attachBtn.style.pointerEvents = '';
+  }
+
+  function renderAttachedFiles() {
+    const container = document.getElementById('attachedFiles');
+    container.innerHTML = attachedFileIds.map((f, i) =>
+      '<div class="file-chip">' +
+        '<span>📄 ' + escapeHtml(f.filename) + '</span>' +
+        '<button class="file-chip-remove" onclick="removeAttachedFile(' + i + ')" title="Remove">&times;</button>' +
+      '</div>'
+    ).join('');
+  }
+
+  async function removeAttachedFile(index) {
+    const file = attachedFileIds[index];
+    attachedFileIds.splice(index, 1);
+    renderAttachedFiles();
+    try { await fetch('/api/upload/' + file.id, { method: 'DELETE' }); } catch (e) { /* ok */ }
   }
 
   // ─── Server page ────────────────────────────────────────────────────────
