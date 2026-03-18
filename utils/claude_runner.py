@@ -27,7 +27,8 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
     try:
         cmd = ["claude", "--print", "--output-format", "json"]
         if allow_tools:
-            cmd.extend(["--allowedTools", "Bash(*)", "Read", "Write", "Edit"])
+            for tool in ["Bash(*)", "Read", "Write", "Edit"]:
+                cmd.extend(["--allowedTools", tool])
         cmd.append(prompt)
         if conversation_id:
             cmd.extend(["--conversation-id", conversation_id])
