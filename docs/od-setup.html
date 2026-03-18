@@ -473,9 +473,30 @@
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 4 -->
+  <!-- Step 4b: Authenticate -->
   <div class="step">
     <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Authenticate internal tools</h3>
+      <p>This lets your brain access your calendar, tasks, and other internal tools. Run this command:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyJfAuth(this)">Copy</button>
+        jf authenticate
+      </div>
+      <p>It will show an error with a URL — that's expected. Open that URL in your browser (<strong>https://www.internalfb.com/intern/jf/authenticate/</strong>), follow the steps, and it will give you a command to paste back into your terminal. It looks like:</p>
+      <div class="code-block" style="color:var(--text-secondary);">
+        jf auth 100034... &lt;token&gt;
+      </div>
+      <p>Paste that command and hit Enter. When you see <strong style="color:var(--green);">"success — Jellyfish is now authenticated"</strong> you're done.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);">This token expires periodically. If your calendar or tasks stop working later, just repeat this step.</p>
+    </div>
+  </div>
+
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 5 -->
+  <div class="step">
+    <div class="step-num">6</div>
     <div class="step-body">
       <h3>Install and start Second Brain</h3>
       <p>First, set up the proxy so your OD can reach GitHub:</p>
@@ -495,9 +516,9 @@
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 5 -->
+  <!-- Step 7 -->
   <div class="step">
-    <div class="step-num">6</div>
+    <div class="step-num">7</div>
     <div class="step-body">
       <h3>Open the dashboard</h3>
       <p>Open your browser and go to:</p>
@@ -519,9 +540,9 @@
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 6 -->
+  <!-- Step 8 -->
   <div class="step">
-    <div class="step-num">7</div>
+    <div class="step-num">8</div>
     <div class="step-body">
       <h3>Set up your profile</h3>
       <p>Click <strong>"About Me"</strong> in the sidebar. Fill in your name, role, team, manager, and location. Write a short background about what you do. Click <strong>"Save & Sync"</strong>.</p>
@@ -623,6 +644,13 @@ function copyChecks(btn) {
 
 function copyDevConnect(btn) {
   navigator.clipboard.writeText('cd\ndev connect').then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+function copyJfAuth(btn) {
+  navigator.clipboard.writeText('jf authenticate').then(() => {
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
