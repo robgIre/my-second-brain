@@ -1170,7 +1170,7 @@
                 <div class="talk-mode" id="talkMode">
                   <div class="voice-area">
                     <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
-                    <div class="mic-label" id="micLabel">Click to start speaking</div>
+                    <div class="mic-label" id="micLabel">Click the mic to start speaking (Chrome/Edge required)</div>
                     <div class="voice-waveform" id="waveform" style="display: none;">
                       <div class="wave-bar" style="animation-delay: 0s; height: 8px;"></div>
                       <div class="wave-bar" style="animation-delay: 0.1s; height: 12px;"></div>
@@ -1188,12 +1188,11 @@
 
               <!-- Quick chips -->
               <div class="quick-actions">
-                <button class="quick-chip" onclick="setExample('Prepare me for my 2pm meeting with Scott')">Prep meeting</button>
+                <button class="quick-chip" onclick="setExample('What meetings do I have today?')">Today's meetings</button>
                 <button class="quick-chip" onclick="setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
                 <button class="quick-chip" onclick="setExample('Create a weekly recap of my work')">Weekly recap</button>
                 <button class="quick-chip" onclick="setExample('What did I work on yesterday?')">Yesterday's work</button>
                 <button class="quick-chip" onclick="setExample('Draft a status update for my manager')">Status update</button>
-                <button class="quick-chip" onclick="setExample('Research the latest on the GAZ 3 project')">Research project</button>
               </div>
 
               <!-- Matrix loading animation -->
@@ -1237,42 +1236,10 @@
             <div class="panel-card">
               <div class="panel-header">
                 <div class="panel-title">⚡ Recent Activity</div>
-                <span class="panel-link">View all</span>
+                <span class="panel-link" onclick="clearActivity()" style="cursor:pointer;">Clear</span>
               </div>
-              <div class="activity-row">
-                <div class="activity-row-icon routine">✓</div>
-                <div class="activity-row-body">
-                  <div class="activity-row-text"><strong>Morning Routine</strong> completed — 4 priorities identified</div>
-                  <div class="activity-row-meta">Today at 08:32</div>
-                </div>
-              </div>
-              <div class="activity-row">
-                <div class="activity-row-icon task">📌</div>
-                <div class="activity-row-body">
-                  <div class="activity-row-text">Created task <strong>"Review GAZ 3 scope changes"</strong></div>
-                  <div class="activity-row-meta">Today at 08:35</div>
-                </div>
-              </div>
-              <div class="activity-row">
-                <div class="activity-row-icon meeting">📅</div>
-                <div class="activity-row-body">
-                  <div class="activity-row-text">Prepared briefing for <strong>2pm with Scott</strong></div>
-                  <div class="activity-row-meta">Today at 09:15</div>
-                </div>
-              </div>
-              <div class="activity-row">
-                <div class="activity-row-icon memory">🧠</div>
-                <div class="activity-row-body">
-                  <div class="activity-row-text">Saved memory: <strong>"CLN waste water — Mar 28 start"</strong></div>
-                  <div class="activity-row-meta">Yesterday 17:48</div>
-                </div>
-              </div>
-              <div class="activity-row">
-                <div class="activity-row-icon sync">🔄</div>
-                <div class="activity-row-body">
-                  <div class="activity-row-text">CLAUDE.md synced — <strong>2 projects updated</strong></div>
-                  <div class="activity-row-meta">Yesterday 17:45</div>
-                </div>
+              <div id="activityFeed">
+                <div style="padding:16px;font-size:12px;color:var(--text-tertiary);text-align:center;">No activity yet this session. Ask your brain something to get started.</div>
               </div>
             </div>
 
@@ -1532,6 +1499,7 @@
 
     document.getElementById('routineCards').className = 'routines-row content-enabled';
     document.getElementById('rightPanel').className = 'home-right content-enabled';
+    addActivity('🔗', 'sync', '<strong>Connected</strong> to ' + (serverId || 'server'));
     const statusBar = document.getElementById('statusBar');
     statusBar.className = 'status-bar content-enabled';
 
@@ -1800,6 +1768,36 @@
     setMode('write');
   }
 
+  // ─── Activity Feed (real, session-based) ────────────────────────────────
+
+  function addActivity(icon, iconClass, text) {
+    const feed = document.getElementById('activityFeed');
+    if (!feed) return;
+    // Remove the empty state message if present
+    const empty = feed.querySelector('[style*="text-align:center"]');
+    if (empty) empty.remove();
+
+    const now = new Date();
+    const timeStr = 'Today at ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const row = document.createElement('div');
+    row.className = 'activity-row';
+    row.innerHTML = '<div class="activity-row-icon ' + iconClass + '">' + icon + '</div>'
+      + '<div class="activity-row-body">'
+      + '<div class="activity-row-text">' + text + '</div>'
+      + '<div class="activity-row-meta">' + timeStr + '</div>'
+      + '</div>';
+    feed.insertBefore(row, feed.firstChild);
+
+    // Keep max 10 entries
+    while (feed.children.length > 10) feed.removeChild(feed.lastChild);
+  }
+
+  function clearActivity() {
+    const feed = document.getElementById('activityFeed');
+    if (feed) feed.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--text-tertiary);text-align:center;">No activity yet this session. Ask your brain something to get started.</div>';
+  }
+
   function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
@@ -1845,6 +1843,9 @@
         resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
         resultDiv.textContent = data.output;
         steps.appendChild(resultDiv);
+        // Log to activity feed
+        const shortPrompt = prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt;
+        addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
       } else {
         addOutputStep(steps, 'Error: ' + (data.error || 'Request failed'), 'running');
       }
@@ -1897,31 +1898,139 @@
 
   // ─── Voice / Talk mode ──────────────────────────────────────────────────
 
-  function toggleMic() {
+  let recognition = null;
+  let micRestartCount = 0;
+  const MAX_MIC_RESTARTS = 3;
+
+  function resetMicUI(label, message) {
+    const mic = document.getElementById('micBtn');
+    const wave = document.getElementById('waveform');
+    isRecording = false;
+    mic.classList.remove('recording');
+    mic.textContent = '🎙️';
+    wave.style.display = 'none';
+    label.textContent = message || 'Click to start speaking';
+    recognition = null;
+    micRestartCount = 0;
+  }
+
+  async function toggleMic() {
     const mic = document.getElementById('micBtn');
     const label = document.getElementById('micLabel');
     const wave = document.getElementById('waveform');
+
+    // Check browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      label.textContent = 'Voice input requires Chrome or Edge browser';
+      label.style.color = 'var(--red)';
+      setTimeout(() => { label.style.color = ''; }, 4000);
+      return;
+    }
+
+    // Check secure context (needed for microphone access)
+    if (!window.isSecureContext) {
+      label.textContent = 'Voice requires HTTPS or localhost';
+      label.style.color = 'var(--red)';
+      setTimeout(() => { label.style.color = ''; }, 4000);
+      return;
+    }
+
     if (!isRecording) {
+      // Request microphone permission first
+      try {
+        label.textContent = 'Requesting microphone access...';
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Got permission — stop the stream (SpeechRecognition handles its own)
+        stream.getTracks().forEach(track => track.stop());
+      } catch (err) {
+        console.error('Microphone permission error:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          label.textContent = 'Microphone blocked — check browser permissions';
+        } else if (err.name === 'NotFoundError') {
+          label.textContent = 'No microphone found on this device';
+        } else {
+          label.textContent = 'Microphone error: ' + err.message;
+        }
+        label.style.color = 'var(--red)';
+        setTimeout(() => { label.style.color = ''; }, 5000);
+        return;
+      }
+
+      // Start recording
       isRecording = true;
+      micRestartCount = 0;
       mic.classList.add('recording');
       mic.textContent = '⏹️';
-      label.textContent = 'Listening...';
+      label.textContent = 'Listening... speak now';
       wave.style.display = 'flex';
-      setTimeout(() => {
-        isRecording = false;
-        mic.classList.remove('recording');
-        mic.textContent = '🎙️';
-        label.textContent = 'Click to start speaking';
-        wave.style.display = 'none';
-        document.getElementById('writeModeBtn').click();
-        document.getElementById('buildInput').value = 'Prepare me for my 2pm meeting with Scott and summarize the key discussion points from last time';
-      }, 3000);
+
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      let finalTranscript = '';
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        document.getElementById('buildInput').value = finalTranscript + interim;
+        label.textContent = 'Listening... (click stop when done)';
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed') {
+          resetMicUI(label, 'Microphone blocked — check browser permissions');
+        } else if (event.error === 'no-speech') {
+          label.textContent = 'No speech detected — try again';
+        } else if (event.error === 'network') {
+          resetMicUI(label, 'Network error — speech recognition needs internet');
+        } else if (event.error === 'aborted') {
+          // User or system aborted — handled by onend
+        } else {
+          resetMicUI(label, 'Error: ' + event.error);
+        }
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          micRestartCount++;
+          if (micRestartCount < MAX_MIC_RESTARTS) {
+            // Browser stopped on its own — restart to keep listening
+            try { recognition.start(); } catch(e) { resetMicUI(label, 'Microphone stopped unexpectedly'); }
+          } else {
+            // Too many restarts — stop gracefully
+            const transcript = document.getElementById('buildInput').value.trim();
+            resetMicUI(label, transcript ? 'Done — your text is in the input box' : 'Microphone timed out — try again');
+            if (transcript) document.getElementById('writeModeBtn').click();
+          }
+        } else {
+          // User clicked stop
+          const transcript = document.getElementById('buildInput').value.trim();
+          resetMicUI(label, transcript ? 'Done — your text is in the input box' : 'Click to start speaking');
+          if (transcript) document.getElementById('writeModeBtn').click();
+        }
+      };
+
+      try {
+        recognition.start();
+      } catch(e) {
+        console.error('Failed to start speech recognition:', e);
+        resetMicUI(label, 'Could not start voice input — try Chrome browser');
+      }
     } else {
       isRecording = false;
-      mic.classList.remove('recording');
-      mic.textContent = '🎙️';
-      label.textContent = 'Click to start speaking';
-      wave.style.display = 'none';
+      if (recognition) {
+        try { recognition.stop(); } catch(e) { resetMicUI(label); }
+      }
     }
   }
 
@@ -1943,6 +2052,7 @@
       }
       btn.textContent = '✓ Complete';
       btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
+      addActivity('✓', 'routine', '<strong>' + routineId.charAt(0).toUpperCase() + routineId.slice(1) + ' Routine</strong> completed');
       if (data.success && data.output) {
         const output = document.getElementById('buildOutput');
         const steps = document.getElementById('outputSteps');
