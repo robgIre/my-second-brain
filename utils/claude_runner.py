@@ -79,7 +79,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         return
 
     try:
-        cmd = ["claude", "-p", "--output-format", "stream-json"]
+        cmd = ["claude", "-p", "--verbose", "--output-format", "stream-json"]
         if model:
             cmd.extend(["--model", model])
         if max_turns is not None:
