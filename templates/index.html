@@ -254,7 +254,7 @@
   /* ===== ROUTINE CARDS ===== */
   .routines-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 14px;
     margin-bottom: 20px;
   }
@@ -1124,6 +1124,21 @@
                 <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
                   <button class="routine-run-btn" onclick="runRoutine(this, 'evening')">▶ Run Now</button>
                   <button class="routine-run-btn" onclick="addStepPrompt('evening')" style="border-style:dashed;">+ Add step</button>
+                </div>
+              </div>
+              <div class="routine-home-card">
+                <div class="routine-home-header">
+                  <div class="routine-home-title">📰 DC Morning Brief</div>
+                  <div class="routine-home-meta">External</div>
+                </div>
+                <div class="routine-home-steps">
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Latest DC project updates</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Key metrics & milestones</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Risks & escalations</div>
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Daily priorities overview</div>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+                  <a href="https://dcbrief-23i9znrd.manus.space" target="_blank" class="routine-run-btn" style="text-decoration:none;text-align:center;">🔗 Open Brief</a>
                 </div>
               </div>
             </div>
