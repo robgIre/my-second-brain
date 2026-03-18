@@ -30,7 +30,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
             for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])
         if conversation_id:
-            cmd.extend(["--conversation-id", conversation_id])
+            cmd.extend(["-c", conversation_id])
 
         result = subprocess.run(
             cmd,
@@ -79,7 +79,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=120, conversation_id=None
     try:
         cmd = ["claude", "--print", prompt]
         if conversation_id:
-            cmd.extend(["--conversation-id", conversation_id])
+            cmd.extend(["-c", conversation_id])
 
         proc = subprocess.Popen(
             cmd,
