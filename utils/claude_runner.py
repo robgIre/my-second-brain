@@ -79,7 +79,10 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         return
 
     try:
-        cmd = ["claude", "-p", "--verbose", "--output-format", "stream-json"]
+        # Use JSON output to get session_id, but also capture text via a
+        # two-pass approach: run with --output-format json and stream stdout
+        # line by line (the CLI outputs text progressively before the final JSON).
+        cmd = ["claude", "-p", "--output-format", "json"]
         if model:
             cmd.extend(["--model", model])
         if max_turns is not None:
@@ -102,34 +105,27 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         proc.stdin.write(prompt)
         proc.stdin.close()
 
-        session_id = None
-        for line in proc.stdout:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                event = json.loads(line)
-                msg_type = event.get("type", "")
-
-                if msg_type == "assistant":
-                    # Text content from assistant
-                    content = event.get("content", [])
-                    for block in content:
-                        if block.get("type") == "text":
-                            output_queue.put({"type": "text", "text": block["text"]})
-                elif msg_type == "result":
-                    # Final result with session_id
-                    session_id = event.get("session_id")
-                    result_text = event.get("result", "")
-                    if result_text:
-                        output_queue.put({"type": "result", "text": result_text})
-                    if event.get("is_error"):
-                        output_queue.put({"type": "error", "text": result_text or "Unknown error"})
-            except (json.JSONDecodeError, ValueError):
-                # Plain text fallback
-                output_queue.put({"type": "text", "text": line})
-
+        # Read all stdout — with json output format, it's one JSON blob at the end
+        stdout_text = proc.stdout.read()
         proc.wait(timeout=timeout)
+
+        session_id = None
+
+        # Try to parse as JSON (the expected format)
+        try:
+            parsed = json.loads(stdout_text.strip())
+            result_text = parsed.get("result", "")
+            session_id = parsed.get("session_id")
+            is_error = parsed.get("is_error", False)
+
+            if is_error:
+                output_queue.put({"type": "error", "text": result_text or "Unknown error"})
+            elif result_text:
+                output_queue.put({"type": "result", "text": result_text})
+        except (json.JSONDecodeError, ValueError):
+            # Not JSON — treat as plain text
+            if stdout_text.strip():
+                output_queue.put({"type": "result", "text": stdout_text.strip()})
 
         if proc.returncode != 0:
             stderr = proc.stderr.read().strip()
