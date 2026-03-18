@@ -148,7 +148,7 @@ def api_build():
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
     conversation_id = data.get("conversation_id") if data else None
-    result = run_prompt(prompt, timeout=180, conversation_id=conversation_id)
+    result = run_prompt(prompt, timeout=180, conversation_id=conversation_id, allow_tools=True)
     return jsonify(result)
 
 
@@ -262,7 +262,7 @@ def api_routines_run(routine_id):
 
     data = request.get_json() or {}
     conversation_id = data.get("conversation_id")
-    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id)
+    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True)
     return jsonify(result)
 
 

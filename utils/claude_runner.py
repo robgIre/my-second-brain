@@ -12,19 +12,23 @@ def is_claude_installed():
     return shutil.which("claude") is not None
 
 
-def run_prompt(prompt, timeout=120, conversation_id=None):
+def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
     """Send a prompt to Claude Code CLI and return the response.
 
     Uses --print flag for non-interactive single-shot execution.
     Uses --output-format json to capture session_id for conversation continuity.
     Pass conversation_id to continue an existing conversation.
+    Pass allow_tools=True to pre-approve Bash, Read, and Write tools.
     Returns dict with 'success', 'output', 'conversation_id', and optionally 'error'.
     """
     if not is_claude_installed():
         return {"success": False, "error": "Claude Code CLI not found. Install it first."}
 
     try:
-        cmd = ["claude", "--print", "--output-format", "json", prompt]
+        cmd = ["claude", "--print", "--output-format", "json"]
+        if allow_tools:
+            cmd.extend(["--allowedTools", "Bash(*)", "Read", "Write", "Edit"])
+        cmd.append(prompt)
         if conversation_id:
             cmd.extend(["--conversation-id", conversation_id])
 
