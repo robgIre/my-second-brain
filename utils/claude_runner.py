@@ -12,7 +12,7 @@ def is_claude_installed():
     return shutil.which("claude") is not None
 
 
-def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
+def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False, max_turns=None):
     """Send a prompt to Claude Code CLI and return the response.
 
     Uses --print flag for non-interactive single-shot execution.
@@ -26,6 +26,8 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
 
     try:
         cmd = ["claude", "-p", "-", "--output-format", "json"]
+        if max_turns is not None:
+            cmd.extend(["--max-turns", str(max_turns)])
         if allow_tools:
             for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])
@@ -65,11 +67,11 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
         return {"success": False, "error": str(e)}
 
 
-def run_prompt_streaming(prompt, output_queue, timeout=120, conversation_id=None):
+def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None, allow_tools=False, max_turns=None, model=None):
     """Send a prompt to Claude Code and stream output line-by-line into a queue.
 
-    Call from a thread. Puts lines into output_queue as they arrive.
-    Puts None when done. Returns conversation_id via a final message.
+    Call from a thread. Puts dicts into output_queue as they arrive.
+    Puts None when done. Sends conversation_id via a final 'done' message.
     """
     if not is_claude_installed():
         output_queue.put({"type": "error", "text": "Claude Code CLI not found."})
@@ -77,19 +79,55 @@ def run_prompt_streaming(prompt, output_queue, timeout=120, conversation_id=None
         return
 
     try:
-        cmd = ["claude", "--print", prompt]
+        cmd = ["claude", "-p", "--output-format", "stream-json"]
+        if model:
+            cmd.extend(["--model", model])
+        if max_turns is not None:
+            cmd.extend(["--max-turns", str(max_turns)])
+        if allow_tools:
+            for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
+                cmd.extend(["--allowedTools", tool])
         if conversation_id:
             cmd.extend(["-c", conversation_id])
 
         proc = subprocess.Popen(
             cmd,
+            stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
         )
 
+        # Send prompt via stdin
+        proc.stdin.write(prompt)
+        proc.stdin.close()
+
+        session_id = None
         for line in proc.stdout:
-            output_queue.put({"type": "output", "text": line.rstrip()})
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+                msg_type = event.get("type", "")
+
+                if msg_type == "assistant":
+                    # Text content from assistant
+                    content = event.get("content", [])
+                    for block in content:
+                        if block.get("type") == "text":
+                            output_queue.put({"type": "text", "text": block["text"]})
+                elif msg_type == "result":
+                    # Final result with session_id
+                    session_id = event.get("session_id")
+                    result_text = event.get("result", "")
+                    if result_text:
+                        output_queue.put({"type": "result", "text": result_text})
+                    if event.get("is_error"):
+                        output_queue.put({"type": "error", "text": result_text or "Unknown error"})
+            except (json.JSONDecodeError, ValueError):
+                # Plain text fallback
+                output_queue.put({"type": "text", "text": line})
 
         proc.wait(timeout=timeout)
 
@@ -97,6 +135,9 @@ def run_prompt_streaming(prompt, output_queue, timeout=120, conversation_id=None
             stderr = proc.stderr.read().strip()
             if stderr:
                 output_queue.put({"type": "error", "text": stderr})
+
+        # Send session_id so frontend can continue the conversation
+        output_queue.put({"type": "session", "session_id": session_id})
 
     except subprocess.TimeoutExpired:
         proc.kill()

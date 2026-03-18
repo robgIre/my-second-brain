@@ -1036,7 +1036,7 @@
         <!-- Greeting Bar -->
         <div class="greeting-bar">
           <div class="greeting-text">
-            <h1>Good morning</h1>
+            <h1 id="greetingTitle">Good morning</h1>
             <p id="greetingSubtext">Connect your brain to get started</p>
           </div>
         </div>
@@ -1150,6 +1150,10 @@
                 <div style="display:flex;align-items:center;gap:8px;">
                   <span id="conversationIndicator" style="display:none;font-size:11px;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:12px;font-weight:500;cursor:default;" title="Your brain remembers everything in this session. Keep it going all day — your EOD debrief will have full context.">Conversation active</span>
                   <button id="newChatBtn" onclick="if(confirm('This will clear your brain\'s memory of today\'s conversation. Your EOD debrief won\'t remember earlier chats.\n\nStart fresh?')) newConversation()" style="display:none;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;font-family:inherit;transition:all 0.15s;" title="Starts a completely new session — your brain will forget everything from this conversation" onmouseover="this.style.borderColor='var(--text-tertiary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">+ New Chat</button>
+                  <div class="mode-toggle" id="depthToggle">
+                    <button class="mode-btn active" id="fastModeBtn" onclick="setDepth('fast')" title="Fast — quick answers, no tool use">Fast</button>
+                    <button class="mode-btn" id="deepModeBtn" onclick="setDepth('deep')" title="Deep — uses tools to read files, run commands, check calendar">Deep</button>
+                  </div>
                   <div class="mode-toggle">
                     <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')" title="Type your request">⌨️</button>
                     <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')" title="Speak your request">🎙️</button>
@@ -1188,11 +1192,11 @@
 
               <!-- Quick chips -->
               <div class="quick-actions">
-                <button class="quick-chip" onclick="setExample('What meetings do I have today?')">Today's meetings</button>
-                <button class="quick-chip" onclick="setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
-                <button class="quick-chip" onclick="setExample('Create a weekly recap of my work')">Weekly recap</button>
-                <button class="quick-chip" onclick="setExample('What did I work on yesterday?')">Yesterday's work</button>
-                <button class="quick-chip" onclick="setExample('Draft a status update for my manager')">Status update</button>
+                <button class="quick-chip" onclick="setDepth('deep');setExample('What meetings do I have today?')">Today's meetings</button>
+                <button class="quick-chip" onclick="setDepth('deep');setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
+                <button class="quick-chip" onclick="setDepth('fast');setExample('Create a weekly recap of my work')">Weekly recap</button>
+                <button class="quick-chip" onclick="setDepth('fast');setExample('What did I work on yesterday?')">Yesterday's work</button>
+                <button class="quick-chip" onclick="setDepth('fast');setExample('Draft a status update for my manager')">Status update</button>
               </div>
 
               <!-- Matrix loading animation -->
@@ -1419,6 +1423,7 @@
   let isRecording = false;
   let matrixInterval = null;
   let conversationId = localStorage.getItem('msb_conversation_id') || null;
+  let depthMode = 'fast'; // 'fast' or 'deep'
 
   const API_BASE = '';
   async function api(path, opts = {}) {
@@ -1500,6 +1505,7 @@
     document.getElementById('routineCards').className = 'routines-row content-enabled';
     document.getElementById('rightPanel').className = 'home-right content-enabled';
     addActivity('🔗', 'sync', '<strong>Connected</strong> to ' + (serverId || 'server'));
+    loadProjects();
     const statusBar = document.getElementById('statusBar');
     statusBar.className = 'status-bar content-enabled';
 
@@ -1762,6 +1768,20 @@
     }
   }
 
+  function setDepth(mode) {
+    depthMode = mode;
+    const fastBtn = document.getElementById('fastModeBtn');
+    const deepBtn = document.getElementById('deepModeBtn');
+    const input = document.getElementById('buildInput');
+    if (mode === 'fast') {
+      fastBtn.classList.add('active'); deepBtn.classList.remove('active');
+      input.placeholder = 'Ask your brain anything...';
+    } else {
+      deepBtn.classList.add('active'); fastBtn.classList.remove('active');
+      input.placeholder = 'Ask something that needs tools (files, calendar, tasks)...';
+    }
+  }
+
   function setExample(text) {
     document.getElementById('buildInput').value = text;
     document.getElementById('buildInput').focus();
@@ -1821,57 +1841,86 @@
     startMatrix();
     setMatrixStatus('Understanding your request...');
 
+    const shortPrompt = prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt;
+    input.value = '';
+    input.style.height = 'auto';
+
     try {
-      const data = await api('/api/build', {
+      const res = await fetch('/api/build/stream', {
         method: 'POST',
-        body: JSON.stringify({ prompt, conversation_id: conversationId }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode }),
       });
 
-      // Track conversation for continuity
-      if (data.conversation_id) {
-        saveConversationId(data.conversation_id);
-        updateConversationIndicator();
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Request failed');
       }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
 
       stopMatrix();
       output.classList.add('visible');
       addOutputStep(steps, 'Request understood', 'done');
 
-      if (data.success) {
-        addOutputStep(steps, 'Processing complete', 'done');
-        const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
-        resultDiv.textContent = data.output;
-        steps.appendChild(resultDiv);
-        // Log to activity feed
-        const shortPrompt = prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt;
+      // Create result container for streamed text
+      const resultDiv = document.createElement('div');
+      resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
+      steps.appendChild(resultDiv);
+
+      let fullText = '';
+      let buffer = '';
+      let hasError = false;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line in buffer
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+            if (event.type === 'text' || event.type === 'result') {
+              fullText = event.text || fullText;
+              resultDiv.textContent = fullText;
+              resultDiv.scrollTop = resultDiv.scrollHeight;
+            } else if (event.type === 'session') {
+              if (event.session_id) {
+                saveConversationId(event.session_id);
+                updateConversationIndicator();
+              }
+            } else if (event.type === 'error') {
+              hasError = true;
+              addOutputStep(steps, 'Error: ' + (event.text || 'Unknown error'), 'running');
+            } else if (event.type === 'done') {
+              // Stream complete
+            }
+          } catch (parseErr) { /* skip unparseable lines */ }
+        }
+      }
+
+      if (!hasError) {
+        addOutputStep(steps, 'Complete', 'done');
         addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
-      } else {
-        addOutputStep(steps, 'Error: ' + (data.error || 'Request failed'), 'running');
+      }
+
+      // Remove empty result div if nothing was streamed
+      if (!fullText && !hasError) {
+        resultDiv.remove();
       }
     } catch (e) {
-      // Simulated fallback with matrix
-      const simSteps = [
-        { text: 'Searching relevant data sources...', delay: 800 },
-        { text: 'Processing and analyzing results...', delay: 2200 },
-        { text: 'Generating output...', delay: 3800 },
-      ];
-      simSteps.forEach(step => {
-        setTimeout(() => setMatrixStatus(step.text), step.delay);
-      });
-      setTimeout(() => {
-        stopMatrix();
-        output.classList.add('visible');
-        addOutputStep(steps, 'Request understood', 'done');
-        addOutputStep(steps, 'Analysis complete', 'done');
-        addOutputStep(steps, 'Done — output saved to your workspace (demo mode)', 'done');
-      }, 5200);
+      stopMatrix();
+      output.classList.add('visible');
+      addOutputStep(steps, 'Error: ' + e.message, 'running');
     }
 
     btn.disabled = false;
     btn.textContent = 'Ask';
-    input.value = '';
-    input.style.height = 'auto';
   }
 
   function addOutputStep(container, text, state) {
@@ -2121,10 +2170,21 @@
 
   // ─── Keyboard shortcut: Enter to send ─────────────────────────────────
 
+  function updateGreeting() {
+    const h = new Date().getHours();
+    let greeting;
+    if (h < 12) greeting = 'Good morning';
+    else if (h < 17) greeting = 'Good afternoon';
+    else greeting = 'Good evening';
+    const el = document.getElementById('greetingTitle');
+    if (el) el.textContent = greeting;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('buildInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuild(); }
     });
+    updateGreeting();
     loadProjects();
     updateConversationIndicator();
   });

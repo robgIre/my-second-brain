@@ -148,7 +148,7 @@ def api_build():
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
     conversation_id = data.get("conversation_id") if data else None
-    result = run_prompt(prompt, timeout=180, conversation_id=conversation_id, allow_tools=True)
+    result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True)
     return jsonify(result)
 
 
@@ -163,10 +163,29 @@ def api_build_stream():
     if not prompt:
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
+    conversation_id = data.get("conversation_id")
+    mode = data.get("mode", "fast")  # "fast" or "deep"
+
+    if mode == "deep":
+        stream_kwargs = {
+            "conversation_id": conversation_id,
+            "allow_tools": True,
+            "max_turns": 5,
+        }
+    else:
+        # Fast mode: Sonnet, no tools, single turn — answers in seconds
+        stream_kwargs = {
+            "conversation_id": conversation_id,
+            "allow_tools": False,
+            "max_turns": 1,
+            "model": "claude-sonnet-4-6",
+        }
+
     output_queue = queue.Queue()
     thread = threading.Thread(
         target=run_prompt_streaming,
         args=(prompt, output_queue),
+        kwargs=stream_kwargs,
         daemon=True,
     )
     thread.start()
@@ -262,7 +281,7 @@ def api_routines_run(routine_id):
 
     data = request.get_json() or {}
     conversation_id = data.get("conversation_id")
-    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True)
+    result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True, max_turns=5)
     return jsonify(result)
 
 
