@@ -186,12 +186,11 @@ def api_build_stream():
             "max_turns": 5,
         }
     else:
-        # Fast mode: Sonnet, no tools, single turn — answers in seconds
+        # Fast mode: no tools, single turn — answers in seconds
         stream_kwargs = {
             "conversation_id": conversation_id,
             "allow_tools": False,
             "max_turns": 1,
-            "model": "claude-sonnet-4-6",
         }
 
     output_queue = queue.Queue()
