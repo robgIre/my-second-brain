@@ -25,7 +25,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
         return {"success": False, "error": "Claude Code CLI not found. Install it first."}
 
     try:
-        cmd = ["claude", "--print", prompt, "--output-format", "json"]
+        cmd = ["claude", "-p", "-", "--output-format", "json"]
         if allow_tools:
             for tool in ["Bash(*)", "Read", "Write", "Edit"]:
                 cmd.extend(["--allowedTools", tool])
@@ -34,6 +34,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
 
         result = subprocess.run(
             cmd,
+            input=prompt,
             capture_output=True,
             text=True,
             timeout=timeout,
