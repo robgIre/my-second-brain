@@ -149,8 +149,25 @@ def api_build():
     if not prompt:
         return jsonify({"success": False, "error": "No prompt provided"}), 400
 
+    # Prepend any attached document text
+    file_ids = data.get("file_ids", []) if data else []
+    if file_ids:
+        doc_parts = []
+        for fid in file_ids:
+            doc = uploaded_docs.get(fid)
+            if doc:
+                doc_parts.append(f"--- Document: {doc['filename']} ---\n{doc['text']}\n--- End of {doc['filename']} ---")
+        if doc_parts:
+            prompt = "\n\n".join(doc_parts) + "\n\n" + prompt
+
     conversation_id = data.get("conversation_id") if data else None
-    result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True)
+    mode = data.get("mode", "fast") if data else "fast"
+
+    if mode == "deep":
+        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True, max_turns=5)
+    else:
+        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=False, max_turns=1)
+
     return jsonify(result)
 
 

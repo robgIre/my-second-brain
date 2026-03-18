@@ -1905,80 +1905,42 @@
     input.style.height = 'auto';
 
     try {
-      const res = await fetch('/api/build/stream', {
+      const data = await api('/api/build', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) }),
+        body: JSON.stringify({
+          prompt,
+          conversation_id: conversationId,
+          mode: depthMode,
+          file_ids: attachedFileIds.map(f => f.id),
+        }),
       });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || 'Request failed');
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
 
       stopMatrix();
       output.classList.add('visible');
       addOutputStep(steps, 'Request understood', 'done');
 
-      // Create result container for streamed text
-      const resultDiv = document.createElement('div');
-      resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
-      steps.appendChild(resultDiv);
-
-      let fullText = '';
-      let buffer = '';
-      let hasError = false;
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop(); // keep incomplete line in buffer
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          try {
-            const event = JSON.parse(line.slice(6));
-            if (event.type === 'text' || event.type === 'result') {
-              fullText = event.text || fullText;
-              resultDiv.textContent = fullText;
-              resultDiv.scrollTop = resultDiv.scrollHeight;
-            } else if (event.type === 'session') {
-              if (event.session_id) {
-                saveConversationId(event.session_id);
-                updateConversationIndicator();
-              }
-            } else if (event.type === 'error') {
-              hasError = true;
-              addOutputStep(steps, 'Error: ' + (event.text || 'Unknown error'), 'running');
-            } else if (event.type === 'done') {
-              // Stream complete
-            }
-          } catch (parseErr) { /* skip unparseable lines */ }
-        }
+      // Track conversation for continuity
+      if (data.conversation_id) {
+        saveConversationId(data.conversation_id);
+        updateConversationIndicator();
       }
 
-      if (!hasError) {
+      if (data.success && data.output) {
         addOutputStep(steps, 'Complete', 'done');
+        const resultDiv = document.createElement('div');
+        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
+        resultDiv.textContent = data.output;
+        steps.appendChild(resultDiv);
         addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
-        // Clear attached files after successful send
         attachedFileIds = [];
         renderAttachedFiles();
-      }
-
-      // Remove empty result div if nothing was streamed
-      if (!fullText && !hasError) {
-        resultDiv.remove();
+      } else {
+        addOutputStep(steps, 'Error: ' + (data.error || 'No response'), 'running');
       }
     } catch (e) {
       stopMatrix();
       output.classList.add('visible');
-      addOutputStep(steps, 'Error: ' + e.message, 'running');
+      addOutputStep(steps, 'Error: ' + (e.message || 'Request failed'), 'running');
     }
 
     btn.disabled = false;
