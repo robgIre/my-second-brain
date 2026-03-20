@@ -311,6 +311,102 @@ def api_routines_run(routine_id):
     return jsonify(result)
 
 
+# ─── API: Scheduled Routines ─────────────────────────────────────────────────
+
+SCHEDULES_FILE = os.path.join(os.path.dirname(__file__), "schedules.json")
+scheduled_results = {}  # In-memory store of auto-run results
+
+
+def load_schedules():
+    if os.path.exists(SCHEDULES_FILE):
+        with open(SCHEDULES_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+
+def save_schedules(schedules):
+    with open(SCHEDULES_FILE, "w") as f:
+        json.dump(schedules, f, indent=2)
+
+
+@app.route("/api/schedules", methods=["GET"])
+def api_schedules_get():
+    return jsonify({"success": True, "schedules": load_schedules()})
+
+
+@app.route("/api/schedules", methods=["POST"])
+def api_schedules_save():
+    data = request.get_json()
+    if data is None:
+        return jsonify({"success": False, "error": "No data"}), 400
+    save_schedules(data)
+    return jsonify({"success": True})
+
+
+@app.route("/api/schedules/last-result", methods=["GET"])
+def api_schedules_last_result():
+    return jsonify({"success": True, "results": scheduled_results})
+
+
+def run_scheduled_routine(routine_id):
+    """Run a routine in the background (called by scheduler)."""
+    if not connection_state["connected"]:
+        return
+
+    routines = load_routines()
+    if routine_id not in routines:
+        return
+
+    routine = routines[routine_id]
+    steps_text = "\n".join(f"{i+1}. {s}" for i, s in enumerate(routine["steps"]))
+
+    # Include scratchpad notes for EOD debrief
+    extra_context = ""
+    if routine_id == "evening":
+        pad = load_scratchpad()
+        if pad.get("notes"):
+            extra_context = f"\n\nHere are my notes from today's scratchpad — use these as context:\n\n{pad['notes']}\n"
+
+    prompt = f"Please execute the following routine steps in order:\n\n{steps_text}{extra_context}\n\nProvide a summary of each step's results."
+
+    result = run_prompt(prompt, timeout=300, conversation_id=None, allow_tools=True)
+    scheduled_results[routine_id] = {
+        "output": result.get("output", ""),
+        "success": result.get("success", False),
+        "ran_at": time.strftime("%Y-%m-%d %H:%M"),
+    }
+
+
+def scheduler_loop():
+    """Background thread that checks schedules every 60 seconds."""
+    ran_today = {}
+    while True:
+        time.sleep(60)
+        try:
+            schedules = load_schedules()
+            now = time.strftime("%H:%M")
+            today = time.strftime("%Y-%m-%d")
+
+            for routine_id, config in schedules.items():
+                if not config.get("enabled"):
+                    continue
+                scheduled_time = config.get("time", "")
+                if now == scheduled_time and ran_today.get(routine_id) != today:
+                    ran_today[routine_id] = today
+                    threading.Thread(
+                        target=run_scheduled_routine,
+                        args=(routine_id,),
+                        daemon=True,
+                    ).start()
+        except Exception:
+            pass  # Don't crash the scheduler
+
+
+# Start scheduler on app boot
+scheduler_thread = threading.Thread(target=scheduler_loop, daemon=True)
+scheduler_thread.start()
+
+
 # ─── API: Scratchpad (Daily Log) ──────────────────────────────────────────────
 
 SCRATCHPAD_FILE = os.path.join(os.path.dirname(__file__), "scratchpad.json")

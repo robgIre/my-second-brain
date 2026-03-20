@@ -365,6 +365,17 @@
 
   .routine-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.15); }
 
+  .schedule-time {
+    width: 70px; padding: 3px 4px; font-size: 10px; font-family: inherit;
+    border: 1px solid var(--border-light); border-radius: 3px;
+    color: var(--text-tertiary); background: var(--bg-input);
+    transition: all 0.1s;
+  }
+
+  .schedule-time::-webkit-calendar-picker-indicator { opacity: 0.4; cursor: pointer; }
+  .schedule-time:focus { outline: none; border-color: var(--accent); color: var(--text); }
+  .schedule-time.set { color: var(--green); border-color: rgba(16,185,129,0.3); font-weight: 600; }
+
   /* ===== SCRATCHPAD WIDGET ===== */
   .scratchpad-textarea {
     width: 100%; height: 100%; min-height: 120px;
@@ -683,14 +694,20 @@
                 <div class="routine-item-name" style="color:var(--accent);">&#9728;&#65039; Morning Routine</div>
                 <div class="routine-item-desc">Calendar, tasks, priorities</div>
               </div>
-              <button class="routine-btn" onclick="runRoutine(this, 'morning')">Run</button>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <input type="time" class="schedule-time" id="schedule-morning" onchange="saveSchedule('morning')" title="Auto-run at this time">
+                <button class="routine-btn" onclick="runRoutine(this, 'morning')">Run</button>
+              </div>
             </div>
             <div class="routine-item">
               <div class="routine-item-info">
                 <div class="routine-item-name" style="color:#8b5cf6;">&#127769; EOD Debrief</div>
                 <div class="routine-item-desc">Accomplishments, follow-ups</div>
               </div>
-              <button class="routine-btn" onclick="runRoutine(this, 'evening')">Run</button>
+              <div style="display:flex;align-items:center;gap:4px;">
+                <input type="time" class="schedule-time" id="schedule-evening" onchange="saveSchedule('evening')" title="Auto-run at this time">
+                <button class="routine-btn" onclick="runRoutine(this, 'evening')">Run</button>
+              </div>
             </div>
             <div class="routine-item">
               <div class="routine-item-info">
@@ -970,6 +987,60 @@
   function clearDoneActions() { actionItems = actionItems.filter(a => !a.done); renderActionItems(); saveActionItems(); }
   async function saveActionItems() { try { await api('/api/actionitems', { method: 'POST', body: JSON.stringify({ items: actionItems }) }); } catch(e) {} }
 
+  // ─── Schedules ──────────────────────────────────────────────────
+  async function loadSchedules() {
+    try {
+      const d = await api('/api/schedules');
+      if (d.success && d.schedules) {
+        for (const [id, config] of Object.entries(d.schedules)) {
+          const el = document.getElementById('schedule-' + id);
+          if (el && config.time) {
+            el.value = config.time;
+            if (config.enabled) el.classList.add('set');
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
+  async function saveSchedule(routineId) {
+    const el = document.getElementById('schedule-' + routineId);
+    const timeVal = el.value;
+
+    // Load existing schedules, update this one
+    let schedules = {};
+    try {
+      const d = await api('/api/schedules');
+      if (d.success) schedules = d.schedules || {};
+    } catch(e) {}
+
+    if (timeVal) {
+      schedules[routineId] = { time: timeVal, enabled: true };
+      el.classList.add('set');
+    } else {
+      delete schedules[routineId];
+      el.classList.remove('set');
+    }
+
+    try { await api('/api/schedules', { method: 'POST', body: JSON.stringify(schedules) }); } catch(e) {}
+  }
+
+  // Check for auto-run results every 2 minutes
+  async function checkScheduledResults() {
+    try {
+      const d = await api('/api/schedules/last-result');
+      if (d.success && d.results) {
+        for (const [id, result] of Object.entries(d.results)) {
+          if (result.output && !result._shown) {
+            document.getElementById('outputResult').textContent = '[Auto-run ' + id + ' at ' + result.ran_at + ']\n\n' + result.output;
+            document.getElementById('buildOutput').classList.add('visible');
+            result._shown = true;
+          }
+        }
+      }
+    } catch(e) {}
+  }
+
   // ─── Connection ─────────────────────────────────────────────────
   function setConnectedUI(serverId, stats) {
     isConnected = true;
@@ -981,7 +1052,7 @@
     document.getElementById('quickChips').classList.remove('content-disabled');
     document.getElementById('widgetGrid').classList.remove('content-disabled');
     if (stats) document.getElementById('headerStat').textContent = (stats.memories||0) + ' memories · ' + (stats.projects||0) + ' projects';
-    loadScratchpad(); loadActionItems(); loadProjects();
+    loadScratchpad(); loadActionItems(); loadProjects(); loadSchedules();
   }
 
   function setDisconnectedUI() {
@@ -1223,6 +1294,8 @@
     document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IE', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
     loadProjects();
     updateConversationIndicator();
+    // Check for auto-run results every 2 minutes
+    setInterval(checkScheduledResults, 120000);
   });
 </script>
 </body>
