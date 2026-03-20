@@ -35,7 +35,7 @@ else
     exit 1
 fi
 
-echo -e "${GREEN}[1/4]${RESET} Found project at:"
+echo -e "${GREEN}[1/5]${RESET} Found project at:"
 echo "      $PROJECT_DIR"
 echo ""
 
@@ -47,7 +47,7 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 PY_VERSION=$(python3 --version 2>&1)
-echo -e "${GREEN}[2/4]${RESET} $PY_VERSION"
+echo -e "${GREEN}[2/5]${RESET} $PY_VERSION"
 
 # ── Step 3: Install dependencies ─────────────────────────────────────────────
 
@@ -60,19 +60,57 @@ fi
 
 source "$VENV_DIR/bin/activate"
 
-echo -e "${GREEN}[3/4]${RESET} Installing dependencies..."
-pip install -q -r "$PROJECT_DIR/requirements.txt"
+echo -e "${GREEN}[3/5]${RESET} Installing dependencies..."
+pip install -q --proxy http://fwdproxy:8080 -r "$PROJECT_DIR/requirements.txt" 2>/dev/null \
+    || pip install -q -r "$PROJECT_DIR/requirements.txt"
 echo "      Done."
 echo ""
 
 # ── Step 4: Check Claude Code ────────────────────────────────────────────────
 
 if command -v claude &> /dev/null; then
-    echo -e "${GREEN}[4/4]${RESET} Claude Code CLI found."
+    echo -e "${GREEN}[4/5]${RESET} Claude Code CLI found."
 else
-    echo -e "${YELLOW}[4/4]${RESET} Claude Code CLI not found in PATH."
+    echo -e "${YELLOW}[4/5]${RESET} Claude Code CLI not found in PATH."
     echo "      The app will still run, but you won't be able to connect until Claude Code is installed."
     echo "      See: https://www.internalfb.com/wiki/Thomas_Wu/Building_Your_AI_Toolkit_at_Meta/"
+fi
+
+# ── Step 5: Install plugins (if not already installed) ───────────────────────
+
+if command -v claude &> /dev/null; then
+    PLUGINS_NEEDED=(
+        "calendar@claude-templates"
+        "para-workspace@claude-templates"
+        "data@claude-templates"
+        "debrief@claude-templates"
+        "gdrive-mount@claude-templates"
+    )
+
+    SETTINGS_FILE="$HOME/.claude/settings.json"
+    INSTALLED_ANY=false
+
+    for plugin in "${PLUGINS_NEEDED[@]}"; do
+        # Check if plugin is already enabled in settings.json
+        plugin_key=$(echo "$plugin" | sed 's/@/-at-/g')
+        if [ -f "$SETTINGS_FILE" ] && grep -q "\"$plugin\"" "$SETTINGS_FILE" 2>/dev/null; then
+            continue
+        fi
+        if [ "$INSTALLED_ANY" = false ]; then
+            echo ""
+            echo -e "${GREEN}[5/5]${RESET} Installing plugins..."
+            INSTALLED_ANY=true
+        fi
+        claude plugin install "$plugin" 2>/dev/null || true
+    done
+
+    if [ "$INSTALLED_ANY" = true ]; then
+        echo "      Done."
+    else
+        echo -e "${GREEN}[5/5]${RESET} Plugins already installed."
+    fi
+else
+    echo -e "${YELLOW}[5/5]${RESET} Skipping plugin install (Claude Code not found)."
 fi
 
 echo ""

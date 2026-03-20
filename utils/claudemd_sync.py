@@ -77,13 +77,25 @@ def parse_about_me(content):
     return about
 
 
+def find_or_create_claudemd():
+    """Find the user's CLAUDE.md file, or create one at ~/.claude/CLAUDE.md."""
+    path = find_claudemd()
+    if path:
+        return path
+    # No CLAUDE.md found — create at default location
+    default_path = Path.home() / ".claude" / "CLAUDE.md"
+    default_path.parent.mkdir(parents=True, exist_ok=True)
+    default_path.write_text("# My Second Brain\n", encoding="utf-8")
+    return default_path
+
+
 def update_about_me(data):
     """Update the About Me section in CLAUDE.md.
 
     data: dict with keys like name, role, team, manager, location, started, background, preferences
     Returns True on success, False on failure.
     """
-    path = find_claudemd()
+    path = find_or_create_claudemd()
     if not path:
         return False
 
