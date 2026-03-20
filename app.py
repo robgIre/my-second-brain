@@ -422,7 +422,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 uploaded_docs = {}
 
 ALLOWED_EXTENSIONS = {"pdf", "txt", "md", "csv"}
-MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100 MB
 
 
 @app.route("/api/upload", methods=["POST"])
@@ -442,14 +442,18 @@ def api_upload():
     # Read file content
     file_bytes = file.read()
     if len(file_bytes) > MAX_FILE_SIZE:
-        return jsonify({"success": False, "error": "File too large (max 20 MB)"}), 400
+        return jsonify({"success": False, "error": "File too large (max 100 MB)"}), 400
 
     # Extract text
+    MAX_PDF_PAGES = 50
     try:
         if ext == "pdf":
             import io
             reader = PdfReader(io.BytesIO(file_bytes))
-            text = "\n\n".join(page.extract_text() or "" for page in reader.pages)
+            pages_to_read = reader.pages[:MAX_PDF_PAGES]
+            text = "\n\n".join(page.extract_text() or "" for page in pages_to_read)
+            if len(reader.pages) > MAX_PDF_PAGES:
+                text += f"\n\n[Note: PDF has {len(reader.pages)} pages. Extracted first {MAX_PDF_PAGES} pages.]"
             if not text.strip():
                 return jsonify({"success": False, "error": "Could not extract text from PDF (may be scanned/image-based)"}), 400
         else:
