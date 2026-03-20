@@ -8,34 +8,29 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
   :root {
-    --bg: #0f1117;
-    --bg-card: #1a1d26;
-    --bg-card-hover: #21242f;
-    --bg-input: #161820;
-    --border: #2a2d3a;
-    --border-light: #232636;
-    --text: #e4e7ec;
-    --text-secondary: #8b93a8;
-    --text-tertiary: #5a6178;
-    --accent: #7c6ef7;
-    --accent-hover: #9488ff;
-    --accent-light: rgba(124,110,247,0.1);
-    --accent-glow: rgba(124,110,247,0.15);
+    --bg: #f5f6f8;
+    --bg-card: #ffffff;
+    --bg-input: #f8f9fb;
+    --bg-hover: #f0f1f4;
+    --border: #e2e4e9;
+    --border-light: #ecedf0;
+    --text: #1a1d26;
+    --text-secondary: #5f6677;
+    --text-tertiary: #9098a9;
+    --accent: #4f6ef7;
+    --accent-hover: #3d5ce5;
+    --accent-light: rgba(79,110,247,0.08);
+    --accent-glow: rgba(79,110,247,0.12);
     --green: #10b981;
-    --green-light: rgba(16,185,129,0.1);
-    --green-glow: rgba(16,185,129,0.15);
+    --green-light: rgba(16,185,129,0.08);
     --red: #ef4444;
-    --red-light: rgba(239,68,68,0.1);
-    --red-glow: rgba(239,68,68,0.12);
+    --red-light: rgba(239,68,68,0.06);
     --warning: #f59e0b;
-    --cyan: #22d3ee;
-    --pink: #c47a9e;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-    --shadow-md: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
-    --radius: 12px;
-    --radius-sm: 8px;
-    --radius-lg: 16px;
+    --warning-light: rgba(245,158,11,0.08);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+    --radius: 10px;
+    --radius-sm: 6px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -44,1004 +39,519 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
+    overflow: hidden;
   }
 
   /* ===== HEADER ===== */
   .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 24px;
-    height: 56px;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 48px;
+    background: var(--bg-card); border-bottom: 2px solid var(--accent);
+    flex-shrink: 0;
   }
 
   .header-left { display: flex; align-items: center; gap: 10px; }
 
-  .header-flask {
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: default;
+  .header-logo { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: default; position: relative; }
+  .header-logo:hover .egg-tooltip { opacity: 1; }
+
+  .egg-tooltip {
+    position: absolute; top: calc(100% + 6px); left: 50%;
+    transform: translateX(-50%); background: var(--text); color: white;
+    padding: 4px 10px; border-radius: 4px; font-size: 10px;
+    white-space: nowrap; opacity: 0; transition: opacity 0.15s;
+    pointer-events: none; z-index: 200;
   }
 
-  .header-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.3px;
+  .header-title { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+
+  .header-center { display: flex; align-items: center; gap: 8px; }
+
+  .conn-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; border: none; font-family: inherit;
   }
 
-  .header-right { display: flex; align-items: center; gap: 12px; }
+  .conn-pill.disconnected { background: var(--red-light); color: var(--red); }
+  .conn-pill.connected { background: var(--green-light); color: var(--green); }
+  .conn-pill.connecting { background: var(--warning-light); color: var(--warning); }
 
-  .status-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px 4px 8px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    transition: all 0.4s;
-  }
-
-  .status-pill.connected { background: var(--green-light); color: var(--green); }
-  .status-pill.disconnected { background: var(--red-light); color: var(--red); }
-
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    transition: all 0.4s;
-  }
-
-  .connected .status-dot { background: var(--green); animation: pulse-g 2s ease-in-out infinite; }
-  .disconnected .status-dot { background: var(--red); animation: pulse-r 3s ease-in-out infinite; }
+  .conn-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .conn-pill.connected .conn-dot { background: var(--green); animation: pulse-g 2s infinite; }
+  .conn-pill.disconnected .conn-dot { background: var(--red); }
 
   @keyframes pulse-g { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 0 4px rgba(16,185,129,0); } }
-  @keyframes pulse-r { 0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.2); } 50% { box-shadow: 0 0 0 4px rgba(239,68,68,0); } }
 
-  .header-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    padding: 6px 14px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    font-family: inherit;
-    transition: all 0.15s;
-  }
+  .header-right { display: flex; align-items: center; gap: 6px; }
 
-  .header-btn:hover { border-color: var(--text-tertiary); color: var(--text); background: var(--bg); }
+  .header-stat { font-size: 10px; color: var(--text-tertiary); font-weight: 500; }
 
   /* ===== LAYOUT ===== */
-  .layout { display: flex; flex: 1; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
 
   /* ===== SIDEBAR ===== */
   .sidebar {
-    width: 200px;
-    background: var(--bg-card);
+    width: 172px; background: var(--bg-card);
     border-right: 1px solid var(--border);
-    padding: 12px 8px;
-    flex-shrink: 0;
+    padding: 8px 6px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto;
   }
 
   .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: var(--radius-sm);
-    margin-bottom: 2px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; color: var(--text-secondary);
+    cursor: pointer; transition: all 0.1s;
+    font-size: 12px; font-weight: 500;
+    border-radius: var(--radius-sm); margin-bottom: 1px;
   }
 
-  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
-  .nav-item.active { background: var(--accent-light); color: var(--accent); }
-  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-  .nav-divider { height: 1px; background: var(--border); margin: 8px 12px; }
+  .nav-item:hover { background: var(--bg-hover); color: var(--text); }
+  .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .nav-icon { font-size: 13px; width: 18px; text-align: center; }
+
+  .nav-divider { height: 1px; background: var(--border-light); margin: 5px 10px; }
+
+  .nav-section-label {
+    font-size: 9px; font-weight: 600; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    padding: 6px 10px 3px; margin-top: 2px;
+  }
+
+  .nav-link {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 10px; color: var(--text-tertiary);
+    cursor: pointer; transition: all 0.1s;
+    font-size: 11px; font-weight: 500;
+    border-radius: var(--radius-sm); margin-bottom: 1px;
+    text-decoration: none;
+  }
+
+  .nav-link:hover { background: var(--bg-hover); color: var(--text-secondary); }
+  .nav-link-icon { font-size: 12px; width: 18px; text-align: center; }
+
+  .sidebar-spacer { flex: 1; }
 
   /* ===== MAIN ===== */
-  .main { flex: 1; overflow-y: auto; }
-  .page { display: none; }
-  .page.active { display: block; }
+  .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .page { display: none; flex-direction: column; height: 100%; overflow-y: auto; }
+  .page.active { display: flex; }
 
-  /* ===== HOME PAGE ===== */
-  .home-content { padding: 24px 32px; }
-  .home-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
-  .home-left { min-width: 0; }
-  .home-right { display: flex; flex-direction: column; gap: 16px; }
-
-  /* Hero / Connection Bar */
-  .connection-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
-    transition: all 0.4s;
-  }
-
-  .connection-bar.connected { border-color: rgba(16,185,129,0.25); }
-  .connection-bar.disconnected { border-color: rgba(239,68,68,0.15); }
-
-  .flask-indicator {
-    width: 56px;
-    height: 72px;
+  /* ===== COMMAND CENTER ===== */
+  .cc-top {
+    padding: 16px 24px 12px;
     flex-shrink: 0;
-    position: relative;
   }
 
-  .flask-indicator svg { width: 56px; height: 72px; }
-
-  .connection-info { flex: 1; }
-
-  .connection-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 2px;
-    transition: color 0.4s;
+  .cc-greeting {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 12px;
   }
 
-  .connection-title.connected { color: var(--green); }
-  .connection-title.disconnected { color: var(--text-tertiary); }
-
-  .connection-detail {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    font-weight: 400;
+  .cc-greeting h1 {
+    font-size: 17px; font-weight: 700; letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #1a1d26, #4f6ef7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
+  .cc-greeting-date { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
 
-  .connect-action-btn {
-    padding: 9px 24px;
-    border-radius: var(--radius-sm);
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .connect-action-btn.connect {
-    background: var(--green);
-    color: white;
-    box-shadow: 0 1px 3px rgba(16,185,129,0.2);
-  }
-
-  .connect-action-btn.connect:hover {
-    background: #0ea572;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(16,185,129,0.25);
-  }
-
-  .connect-action-btn.disconnect {
-    background: var(--bg);
-    color: var(--text-tertiary);
-    border: 1px solid var(--border);
-  }
-
-  .connect-action-btn.disconnect:hover { color: var(--red); border-color: var(--red); background: var(--red-light); }
-
-  .connect-action-btn.connecting {
-    background: var(--bg);
-    color: var(--warning);
-    border: 1px solid rgba(245,158,11,0.3);
-    pointer-events: none;
-  }
-
-  /* ===== ROUTINE CARDS ===== */
-  .routines-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 20px;
-  }
-
-  .routine-home-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 18px;
+  /* Ask My Brain — prominent at top */
+  .brain-bar {
+    display: flex; gap: 8px; align-items: center;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px 12px;
     box-shadow: var(--shadow-sm);
-    transition: all 0.15s;
+    border-left: 3px solid var(--accent);
   }
 
-  .routine-home-card:hover { box-shadow: var(--shadow-md); border-color: rgba(124,110,247,0.25); }
-
-  .routine-home-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
+  .brain-bar-input {
+    flex: 1; padding: 8px 10px; background: var(--bg-input);
+    border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 13px; font-family: inherit;
+    resize: none; min-height: 36px; max-height: 100px;
+    line-height: 1.4; transition: border-color 0.12s;
   }
 
-  .routine-home-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-  .routine-home-meta { font-size: 11px; color: var(--text-tertiary); }
-  .routine-home-steps { font-size: 12px; color: var(--text-tertiary); margin-bottom: 12px; line-height: 1.6; }
+  .brain-bar-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .brain-bar-input::placeholder { color: var(--text-tertiary); }
 
-  .routine-run-btn {
-    padding: 7px 16px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: inherit;
-    color: var(--text-secondary);
-    transition: all 0.15s;
+  .brain-bar-btn {
+    padding: 8px 16px; border-radius: var(--radius-sm);
+    border: none; cursor: pointer; font-size: 12px;
+    font-weight: 600; font-family: inherit; transition: all 0.1s;
+    height: 36px; white-space: nowrap;
   }
 
-  .routine-run-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(124,110,247,0.25); }
+  .brain-bar-btn.ask { background: var(--accent); color: white; }
+  .brain-bar-btn.ask:hover { background: var(--accent-hover); }
+  .brain-bar-btn.ask:disabled { opacity: 0.5; pointer-events: none; }
 
-  /* ===== ASK MY BRAIN ===== */
-  .build-section {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 20px;
-    overflow: hidden;
+  .attach-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; background: none;
+    border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 15px; color: var(--text-tertiary);
+    transition: all 0.1s; flex-shrink: 0;
   }
 
-  .build-header {
-    padding: 18px 20px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .attach-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .brain-bar-controls {
+    display: flex; align-items: center; gap: 4px;
   }
 
-  .build-title {
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Talk / Write toggle */
   .mode-toggle {
-    display: flex;
-    background: rgba(255,255,255,0.04);
-    border-radius: 8px;
-    padding: 3px;
-    border: 1px solid var(--border);
+    display: flex; background: var(--bg-input);
+    border-radius: 4px; padding: 2px;
+    border: 1px solid var(--border-light);
   }
 
   .mode-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    color: var(--text-tertiary);
-    background: transparent;
-    transition: all 0.2s;
+    padding: 3px 10px; border: none; border-radius: 3px;
+    cursor: pointer; font-size: 10px; font-weight: 600;
+    font-family: inherit; color: var(--text-tertiary);
+    background: transparent; transition: all 0.1s;
   }
 
-  .mode-btn.active {
-    background: var(--bg-card);
-    color: var(--accent);
-    box-shadow: var(--shadow-sm);
+  .mode-btn.active { background: var(--bg-card); color: var(--accent); box-shadow: var(--shadow-sm); }
+
+  .convo-pill {
+    display: none; font-size: 9px; color: var(--green);
+    background: var(--green-light); padding: 2px 7px;
+    border-radius: 8px; font-weight: 600;
   }
 
-  .mode-btn:hover:not(.active) { color: var(--text-secondary); }
-
-  .build-body { padding: 14px 20px 18px; }
-
-  /* Write mode */
-  .write-mode { display: block; }
-  .talk-mode { display: none; }
-
-  .build-input-row { display: flex; gap: 10px; align-items: flex-end; }
-
-  .build-textarea {
-    flex: 1;
-    padding: 11px 14px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-size: 14px;
-    font-family: inherit;
-    resize: none;
-    min-height: 44px;
-    max-height: 120px;
-    transition: border-color 0.2s;
-    line-height: 1.5;
-  }
-
-  .build-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  .build-textarea::placeholder { color: var(--text-tertiary); }
-
-  .build-send {
-    padding: 11px 20px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.15s;
-    white-space: nowrap;
+  /* Brain output + thinking */
+  .brain-extras {
+    padding: 0 24px;
     flex-shrink: 0;
-    height: 44px;
   }
 
-  .build-send:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 3px 8px var(--accent-glow); }
-  .build-send:disabled { opacity: 0.5; pointer-events: none; }
+  .attached-files { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px 0; }
+  .attached-files:empty { display: none; padding: 0; }
 
-  /* Voice mode */
-  .voice-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
+  .file-chip {
+    display: flex; align-items: center; gap: 3px;
+    padding: 2px 7px; background: var(--accent-light);
+    border: 1px solid rgba(79,110,247,0.12); border-radius: 10px;
+    font-size: 10px; font-weight: 500; color: var(--accent);
   }
 
-  .mic-btn {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--bg-card);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-md);
+  .file-chip-remove { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 12px; opacity: 0.6; }
+  .file-chip-remove:hover { opacity: 1; }
+
+  .thinking-overlay {
+    position: relative; overflow: hidden;
+    height: 80px; background: var(--bg-input);
+    border-radius: var(--radius-sm); border: 1px solid var(--border-light);
+    margin-top: 8px; display: none;
   }
 
-  .mic-btn:hover { border-color: var(--accent); transform: scale(1.05); box-shadow: var(--shadow-lg); }
+  .thinking-overlay.active { display: block; }
 
-  .mic-btn.recording {
-    border-color: var(--red);
-    background: var(--red-light);
-    animation: mic-pulse 1.5s ease-in-out infinite;
+  .thinking-canvas { width: 100%; height: 80px; opacity: 0.7; }
+
+  .thinking-status {
+    position: absolute; bottom: 8px; left: 14px;
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    z-index: 2; display: flex; align-items: center; gap: 6px;
   }
 
-  @keyframes mic-pulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.15); }
-    50% { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+  .thinking-dots::after {
+    content: ''; animation: dots 1.5s infinite;
   }
 
-  .mic-label { font-size: 12px; color: var(--text-tertiary); margin-top: 10px; font-weight: 500; }
-
-  .voice-waveform {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    height: 24px;
-    margin-top: 12px;
+  @keyframes dots {
+    0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
   }
 
-  .wave-bar {
-    width: 3px;
-    background: var(--red);
-    border-radius: 2px;
-    animation: wave 0.8s ease-in-out infinite;
+  .brain-output {
+    margin-top: 8px; padding: 14px 16px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm); font-size: 13px;
+    color: var(--text-secondary); line-height: 1.7;
+    white-space: pre-wrap; max-height: 350px;
+    overflow-y: auto; display: none;
   }
 
-  @keyframes wave {
-    0%,100% { height: 6px; }
-    50% { height: 20px; }
-  }
+  .brain-output.visible { display: block; }
 
-  /* Quick actions */
-  .quick-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 20px 16px;
-  }
+  /* Quick chips */
+  .quick-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 0 0; }
 
   .quick-chip {
-    padding: 5px 12px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: inherit;
+    padding: 3px 9px; background: var(--bg);
+    border: 1px solid var(--border-light); border-radius: 12px;
+    font-size: 10px; font-weight: 500; color: var(--text-tertiary);
+    cursor: pointer; font-family: inherit; transition: all 0.1s;
   }
 
-  .quick-chip:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(124,110,247,0.25); }
+  .quick-chip:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.15); }
 
-  /* Build output */
-  .build-output {
-    border-top: 1px solid var(--border);
-    padding: 16px 20px;
-    display: none;
+  /* ===== DASHBOARD WIDGETS — 3 column ===== */
+  .cc-widgets {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    padding: 12px 24px 16px;
+    flex: 1;
+    min-height: 0;
   }
 
-  .build-output.visible { display: block; }
-
-  .output-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 6px 0;
-    font-size: 13px;
-    color: var(--text-secondary);
+  .widget {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column;
+    overflow: hidden; min-height: 0;
   }
 
-  .output-step-icon {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
+  .widget-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--border-light);
     flex-shrink: 0;
-    margin-top: 1px;
   }
 
-  .output-step-icon.done { background: var(--green-light); color: var(--green); }
-  .output-step-icon.running { background: rgba(245,158,11,0.1); color: var(--warning); }
-  .output-step-icon.pending { background: rgba(255,255,255,0.04); color: var(--text-tertiary); }
-
-  /* ===== MATRIX RAIN ANIMATION ===== */
-  .matrix-overlay {
-    position: relative;
-    overflow: hidden;
-    min-height: 80px;
-    background: var(--bg-input);
-    border-radius: var(--radius-sm);
-    margin-top: 12px;
-    display: none;
+  .widget-title {
+    font-size: 11px; font-weight: 600; color: var(--text);
+    text-transform: uppercase; letter-spacing: 0.4px;
+    display: flex; align-items: center; gap: 6px;
   }
 
-  .matrix-overlay.active { display: block; }
-
-  .matrix-canvas {
-    width: 100%;
-    height: 120px;
-    opacity: 0.6;
+  .widget-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
   }
 
-  .matrix-status {
-    position: absolute;
-    bottom: 12px;
-    left: 16px;
-    right: 16px;
-    font-size: 13px;
-    color: var(--cyan);
-    font-weight: 500;
-    text-shadow: 0 0 8px rgba(34,211,238,0.4);
-    z-index: 2;
+  .widget-dot.blue { background: var(--accent); }
+  .widget-dot.amber { background: var(--warning); }
+  .widget-dot.green { background: var(--green); }
+
+  .widget-action {
+    font-size: 10px; color: var(--accent); cursor: pointer;
+    font-weight: 500; background: none; border: none; font-family: inherit;
   }
 
-  /* ===== RIGHT PANEL: PROJECTS & ACTIVITY ===== */
-  .panel-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
+  .widget-action:hover { text-decoration: underline; }
+
+  .widget-body { padding: 10px 14px; flex: 1; overflow-y: auto; min-height: 0; }
+  .widget-empty { font-size: 11px; color: var(--text-tertiary); text-align: center; padding: 12px 0; }
+
+  /* ===== ROUTINES WIDGET ===== */
+  .routine-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid var(--border-light);
   }
 
-  .panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px 10px;
+  .routine-item:last-child { border-bottom: none; }
+
+  .routine-item-info { flex: 1; }
+  .routine-item-name { font-size: 12px; font-weight: 600; margin-bottom: 1px; }
+  .routine-item-desc { font-size: 10px; color: var(--text-tertiary); }
+
+  .routine-btn {
+    padding: 4px 12px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    cursor: pointer; font-size: 10px; font-weight: 600;
+    font-family: inherit; color: var(--text-secondary);
+    transition: all 0.1s; flex-shrink: 0;
   }
 
-  .panel-title {
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text);
+  .routine-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.15); }
+
+  /* ===== SCRATCHPAD WIDGET ===== */
+  .scratchpad-textarea {
+    width: 100%; height: 100%; min-height: 120px;
+    padding: 10px 12px; background: rgba(79,110,247,0.03);
+    border: 1px solid rgba(79,110,247,0.12); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 12px; font-family: inherit;
+    resize: none; line-height: 1.7; transition: border-color 0.1s;
+    flex: 1;
   }
 
-  .panel-link {
-    font-size: 11px;
-    color: var(--accent);
-    cursor: pointer;
-    font-weight: 500;
-  }
+  .scratchpad-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .scratchpad-textarea::placeholder { color: var(--text-tertiary); }
 
-  .panel-link:hover { text-decoration: underline; }
-
-  /* Projects list in right panel */
-  .project-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    border-top: 1px solid var(--border);
-    transition: background 0.1s;
-    cursor: pointer;
-  }
-
-  .project-row:hover { background: rgba(255,255,255,0.02); }
-
-  .project-row-icon { font-size: 14px; }
-  .project-row-name { font-size: 13px; font-weight: 500; flex: 1; }
-  .project-row-badge {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-  }
-  .project-row-badge.active { background: var(--green-light); color: var(--green); }
-  .project-row-badge.review { background: rgba(245,158,11,0.1); color: var(--warning); }
-  .project-row-badge.paused { background: rgba(139,147,168,0.1); color: var(--text-secondary); }
-  .project-row-badge.done { background: var(--accent-light); color: var(--accent); }
-  .project-row-detail { font-size: 11px; color: var(--text-tertiary); }
-
-  /* Project editor on About Me page */
-  .projects-section { margin-top: 24px; }
-  .projects-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .projects-section-title { font-size: 16px; font-weight: 600; }
-  .project-edit-row {
-    display: flex; align-items: center; gap: 8px; padding: 10px 12px;
-    background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
-    margin-bottom: 8px;
-  }
-  .project-edit-row input {
-    background: transparent; border: none; color: var(--text); font-size: 13px;
-    font-family: inherit; outline: none;
-  }
-  .project-edit-row input::placeholder { color: var(--text-tertiary); }
-  .project-edit-row .proj-name { flex: 2; font-weight: 500; }
-  .project-edit-row .proj-desc { flex: 3; color: var(--text-secondary); }
-  .project-edit-row select {
-    background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
-    font-size: 11px; padding: 3px 6px; border-radius: 6px; font-family: inherit;
-  }
-  .project-edit-row .proj-remove {
-    background: none; border: none; color: var(--text-tertiary); cursor: pointer;
-    font-size: 16px; padding: 2px 6px; border-radius: 4px;
-  }
-  .project-edit-row .proj-remove:hover { color: var(--red); background: var(--red-light); }
-  .add-project-btn {
-    background: var(--accent-light); border: 1px dashed var(--border); color: var(--accent);
-    font-size: 13px; font-weight: 500; padding: 10px; border-radius: var(--radius-sm);
-    width: 100%; cursor: pointer; font-family: inherit; transition: all 0.15s;
-  }
-  .add-project-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
-
-  /* Activity in right panel */
-  .activity-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .activity-row-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
+  .scratchpad-meta {
+    display: flex; justify-content: space-between;
+    margin-top: 6px; font-size: 9px; color: var(--text-tertiary);
     flex-shrink: 0;
-    margin-top: 1px;
   }
 
-  .activity-row-icon.task { background: var(--accent-light); }
-  .activity-row-icon.routine { background: var(--green-light); }
-  .activity-row-icon.memory { background: rgba(168,85,247,0.08); }
-  .activity-row-icon.sync { background: rgba(245,158,11,0.08); }
-  .activity-row-icon.meeting { background: rgba(236,72,153,0.08); }
-
-  .activity-row-body { flex: 1; min-width: 0; }
-  .activity-row-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-  .activity-row-text strong { color: var(--text); font-weight: 600; }
-  .activity-row-meta { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
-
-  /* ===== GREETING ===== */
-  .greeting-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
+  /* ===== ACTION ITEMS WIDGET ===== */
+  .action-item {
+    display: flex; align-items: flex-start; gap: 7px;
+    padding: 5px 0; border-bottom: 1px solid var(--border-light);
   }
 
-  .greeting-text h1 {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.4px;
-    margin-bottom: 4px;
+  .action-item:last-child { border-bottom: none; }
+
+  .action-check {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: none;
+    cursor: pointer; flex-shrink: 0; margin-top: 1px;
+    transition: all 0.1s; display: flex; align-items: center;
+    justify-content: center; font-size: 8px; color: transparent;
   }
 
-  .greeting-text p {
-    font-size: 13px;
-    color: var(--text-tertiary);
-    line-height: 1.5;
+  .action-check:hover { border-color: var(--green); color: var(--green); }
+  .action-check.done { border-color: var(--green); background: var(--green); color: white; }
+
+  .action-text { font-size: 12px; color: var(--text-secondary); line-height: 1.3; flex: 1; }
+  .action-text.done { text-decoration: line-through; color: var(--text-tertiary); }
+
+  .action-remove {
+    background: none; border: none; color: var(--text-tertiary);
+    cursor: pointer; font-size: 13px; opacity: 0; transition: opacity 0.1s;
   }
 
-  /* ===== STATUS BAR ===== */
-  .status-bar {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding: 12px 18px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    font-size: 12px;
-    color: var(--text-tertiary);
-    transition: opacity 0.4s;
+  .action-item:hover .action-remove { opacity: 1; }
+  .action-remove:hover { color: var(--red); }
+
+  .action-add-row { display: flex; gap: 4px; margin-top: 6px; flex-shrink: 0; }
+
+  .action-add-input {
+    flex: 1; padding: 5px 8px; background: var(--bg-input);
+    border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 11px; font-family: inherit;
   }
 
-  .status-bar-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  .action-add-input:focus { outline: none; border-color: var(--accent); }
+  .action-add-input::placeholder { color: var(--text-tertiary); }
+
+  .action-add-btn {
+    padding: 5px 10px; background: var(--accent-light);
+    border: 1px solid rgba(79,110,247,0.12); border-radius: var(--radius-sm);
+    color: var(--accent); font-size: 10px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
   }
 
-  .status-bar-value { font-weight: 600; color: var(--text-secondary); }
-  .status-bar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+  .action-add-btn:hover { background: var(--accent); color: white; }
 
-  .content-disabled { opacity: 0.35; pointer-events: none; transition: all 0.5s; }
-  .content-enabled { opacity: 1; pointer-events: all; transition: all 0.5s; }
+  /* ===== VOICE MODE ===== */
+  .voice-area { display: none; flex-direction: column; align-items: center; padding: 8px 0; }
 
-  /* ===== SECTION LABEL ===== */
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 10px;
+  .mic-btn {
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--bg-card);
+    cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+    transition: all 0.12s; box-shadow: var(--shadow-sm);
   }
+
+  .mic-btn:hover { border-color: var(--accent); }
+  .mic-btn.recording { border-color: var(--red); background: var(--red-light); }
+
+  .mic-label { font-size: 10px; color: var(--text-tertiary); margin-top: 6px; }
+
+  .voice-waveform { display: flex; align-items: center; gap: 2px; height: 16px; margin-top: 6px; }
+  .wave-bar { width: 2px; background: var(--red); border-radius: 2px; animation: wave 0.8s ease-in-out infinite; }
+  @keyframes wave { 0%,100% { height: 4px; } 50% { height: 14px; } }
 
   /* ===== SUB PAGES ===== */
-  .page-inner { padding: 24px 32px; max-width: 700px; }
-  .page-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
-  .page-desc { font-size: 13px; color: var(--text-tertiary); margin-bottom: 24px; line-height: 1.6; }
+  .page-inner { padding: 24px 28px; max-width: 680px; overflow-y: auto; }
+  .page-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+  .page-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 18px; line-height: 1.5; }
 
-  /* Forms */
-  .form-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .form-group { margin-bottom: 18px; }
-
-  .form-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-bottom: 5px;
-    letter-spacing: 0.2px;
-  }
+  .form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+  .form-group { margin-bottom: 12px; }
+  .form-label { display: block; font-size: 10px; font-weight: 600; color: var(--text-secondary); margin-bottom: 3px; letter-spacing: 0.2px; }
 
   .form-input, .form-textarea {
-    width: 100%;
-    padding: 9px 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text);
-    font-size: 14px;
-    font-family: inherit;
-    transition: all 0.15s;
+    width: 100%; padding: 7px 10px; background: var(--bg-input);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-size: 12px; font-family: inherit;
   }
 
-  .form-input:focus, .form-textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-    background: var(--bg-card);
-  }
-
-  .form-textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-  .form-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 20px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-  }
+  .form-input:focus, .form-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+  .form-textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-actions { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-light); }
 
   .save-btn {
-    padding: 9px 22px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.15s;
+    padding: 7px 18px; background: var(--accent); color: white;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
+    font-size: 11px; font-weight: 600; font-family: inherit;
   }
 
   .save-btn:hover { background: var(--accent-hover); }
-  .save-indicator { font-size: 12px; color: var(--text-tertiary); }
+  .save-indicator { font-size: 10px; color: var(--text-tertiary); }
 
-  /* Routines page */
-  .routine-full-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px;
-    margin-bottom: 14px;
-    box-shadow: var(--shadow-sm);
+  .projects-section { margin-top: 18px; }
+  .projects-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .projects-section-title { font-size: 14px; font-weight: 600; }
+
+  .project-edit-row {
+    display: flex; align-items: center; gap: 6px; padding: 7px 10px;
+    background: var(--bg-input); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 5px;
   }
 
-  .routine-full-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .routine-full-title { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .routine-full-meta { font-size: 12px; color: var(--text-tertiary); }
-  .routine-steps-list { list-style: none; padding: 0; }
+  .project-edit-row input { background: transparent; border: none; color: var(--text); font-size: 11px; font-family: inherit; outline: none; }
+  .project-edit-row input::placeholder { color: var(--text-tertiary); }
+  .project-edit-row .proj-name { flex: 2; font-weight: 500; }
+  .project-edit-row .proj-desc { flex: 3; color: var(--text-secondary); }
+  .project-edit-row select { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); font-size: 10px; padding: 2px 4px; border-radius: 3px; font-family: inherit; }
+  .project-edit-row .proj-remove { background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 14px; }
+  .project-edit-row .proj-remove:hover { color: var(--red); }
 
-  .routine-step-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--text-secondary);
+  .add-project-btn {
+    background: var(--accent-light); border: 1px dashed var(--border); color: var(--accent);
+    font-size: 11px; font-weight: 500; padding: 7px; border-radius: var(--radius-sm);
+    width: 100%; cursor: pointer; font-family: inherit;
   }
 
+  .routine-full-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); }
+  .routine-full-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .routine-full-title { font-size: 14px; font-weight: 600; }
+  .routine-full-meta { font-size: 10px; color: var(--text-tertiary); }
+  .routine-steps-list { list-style: none; }
+  .routine-step-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; color: var(--text-secondary); }
   .routine-step-item:last-child { border-bottom: none; }
+  .step-num { width: 18px; height: 18px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; }
+  .routine-full-actions { display: flex; gap: 5px; margin-top: 10px; }
 
-  .step-num {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent-light); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; flex-shrink: 0;
-  }
+  .setup-step-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; }
+  .setup-step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .setup-step-body h3 { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .setup-step-body p { font-size: 11px; color: var(--text-secondary); line-height: 1.4; }
 
-  .routine-full-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .setup-command-box { background: #1a1d26; color: #22d3ee; border-radius: var(--radius-sm); padding: 10px 12px; font-family: 'SF Mono', monospace; font-size: 11px; line-height: 1.4; margin: 6px 0; position: relative; word-break: break-all; }
+  .copy-btn { position: absolute; top: 5px; right: 5px; padding: 2px 7px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 3px; color: rgba(255,255,255,0.4); font-size: 9px; cursor: pointer; font-family: inherit; }
 
-  /* Server page */
-  .server-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+  .setup-tip { display: flex; gap: 6px; padding: 10px 12px; background: var(--warning-light); border-radius: var(--radius-sm); margin-top: 14px; font-size: 10px; color: var(--text-secondary); line-height: 1.4; }
 
-  .server-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
+  .info-block { margin-bottom: 20px; }
+  .info-block h2 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .info-block p { font-size: 11px; color: var(--text-secondary); line-height: 1.6; max-width: 540px; }
+
+  .server-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; margin-bottom: 6px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .server-card:hover { border-color: var(--accent); }
   .server-card.selected { border-color: var(--green); background: var(--green-light); }
-  .server-card-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); border-radius: var(--radius-sm); }
-  .server-card-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-  .server-card-info p { font-size: 12px; color: var(--text-tertiary); }
+  .server-card-icon { font-size: 18px; }
+  .server-card-info h3 { font-size: 12px; font-weight: 600; }
+  .server-card-info p { font-size: 10px; color: var(--text-tertiary); }
 
-  .log-line { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 12px; color: var(--text-tertiary); border-bottom: 1px solid var(--border); }
-  .log-ts { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--text-tertiary); min-width: 55px; }
-  .log-d { width: 5px; height: 5px; border-radius: 50%; }
-  .log-d.g { background: var(--green); }
-  .log-d.r { background: var(--red); }
+  .project-row { display: flex; align-items: center; gap: 7px; padding: 5px 0; border-bottom: 1px solid var(--border-light); }
+  .project-row:last-child { border-bottom: none; }
+  .project-row-name { font-size: 11px; font-weight: 500; flex: 1; }
+  .project-row-badge { font-size: 8px; font-weight: 600; padding: 1px 5px; border-radius: 6px; text-transform: uppercase; }
+  .project-row-badge.active { background: var(--green-light); color: var(--green); }
+  .project-row-badge.review { background: var(--warning-light); color: var(--warning); }
+  .project-row-badge.paused { background: rgba(139,147,168,0.08); color: var(--text-tertiary); }
 
-  /* Info page */
-  .info-block { margin-bottom: 28px; }
-  .info-block h2 { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-  .info-block p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; max-width: 580px; }
+  .content-disabled { opacity: 0.35; pointer-events: none; }
 
-  /* Getting Started */
-  .setup-steps { counter-reset: setup-step; }
+  .footer { text-align: center; padding: 6px; font-size: 9px; color: var(--text-tertiary); border-top: 1px solid var(--border-light); flex-shrink: 0; }
 
-  .setup-step-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 22px;
-    margin-bottom: 12px;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-
-  .setup-step-num {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--accent-light);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .setup-step-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .setup-step-body p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
-
-  .setup-command-box {
-    background: #0f1117;
-    color: var(--cyan);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 14px 16px;
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 13px;
-    line-height: 1.6;
-    margin: 12px 0 6px;
-    position: relative;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-
-  .copy-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    padding: 4px 10px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--text-secondary);
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.15s;
-  }
-
-  .copy-btn:hover { background: rgba(255,255,255,0.1); }
-
-  .setup-tip {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 14px 16px;
-    background: rgba(245,158,11,0.06);
-    border: 1px solid rgba(245,158,11,0.15);
-    border-radius: var(--radius-sm);
-    margin-top: 20px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  .setup-tip-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-
-  /* Easter egg tooltip */
-  .easter-egg { position: relative; }
-  .easter-egg:hover .egg-tooltip { opacity: 1; transform: translateY(0); pointer-events: auto; }
-
-  .egg-tooltip {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: var(--text);
-    color: var(--bg);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: all 0.2s;
-    pointer-events: none;
-    z-index: 200;
-  }
-
-  .egg-tooltip::before {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-bottom: 4px solid var(--text);
-  }
-
-  /* ===== ATTACH BUTTON & FILE CHIPS ===== */
-  .attach-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: 18px;
-    color: var(--text-tertiary);
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-
-  .attach-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
-
-  .attached-files {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 20px 10px;
-  }
-
-  .attached-files:empty { display: none; }
-
-  .file-chip {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    background: var(--accent-light);
-    border: 1px solid rgba(124,110,247,0.2);
-    border-radius: 16px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--accent);
-  }
-
-  .file-chip-remove {
-    background: none;
-    border: none;
-    color: var(--accent);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0 2px;
-    line-height: 1;
-    opacity: 0.6;
-  }
-
-  .file-chip-remove:hover { opacity: 1; }
-
-  @media (max-width: 1100px) {
-    .home-grid { grid-template-columns: 1fr; }
-    .home-right { display: none; }
-  }
+  @media (max-width: 1000px) { .cc-widgets { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .cc-widgets { grid-template-columns: 1fr; } .sidebar { display: none; } }
 </style>
 </head>
 <body>
@@ -1049,263 +559,180 @@
 <!-- Header -->
 <header class="header">
   <div class="header-left">
-    <div class="header-flask easter-egg" title="The Man With Two Brains (1983)">
-      <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 12 3 L 12 9 L 6 22 Q 4 26 8 27 L 20 27 Q 24 26 22 22 L 16 9 L 16 3" fill="none" stroke="var(--text-tertiary)" stroke-width="1.2" stroke-linecap="round"/>
-        <rect x="11" y="2" width="6" height="2" rx="1" fill="var(--text-tertiary)" opacity="0.5"/>
-        <path id="headerFluid" d="M 12.5 11 L 7 21 Q 5 25 8 26 L 20 26 Q 23 25 21 21 L 15.5 11 Z" fill="rgba(239,68,68,0.2)"/>
-        <ellipse cx="14" cy="18" rx="5" ry="4" fill="rgba(232,160,191,0.5)" id="headerBrain"/>
+    <div class="header-logo">
+      <svg width="22" height="22" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 12 3 L 12 9 L 6 22 Q 4 26 8 27 L 20 27 Q 24 26 22 22 L 16 9 L 16 3" fill="none" stroke="#9098a9" stroke-width="1.2" stroke-linecap="round"/>
+        <rect x="11" y="2" width="6" height="2" rx="1" fill="#9098a9" opacity="0.5"/>
+        <path id="headerFluid" d="M 12.5 11 L 7 21 Q 5 25 8 26 L 20 26 Q 23 25 21 21 L 15.5 11 Z" fill="rgba(239,68,68,0.12)"/>
+        <ellipse cx="14" cy="18" rx="5" ry="4" fill="rgba(79,110,247,0.25)"/>
       </svg>
-      <span class="egg-tooltip">"The Man With Two Brains" — Carl Reiner, 1983</span>
+      <span class="egg-tooltip">"The Man With Two Brains" — 1983</span>
     </div>
     <span class="header-title">My Second Brain</span>
   </div>
+  <div class="header-center">
+    <button class="conn-pill disconnected" id="connPill" onclick="toggleConnection()">
+      <span class="conn-dot"></span>
+      <span id="connLabel">Connect Brain</span>
+    </button>
+  </div>
   <div class="header-right">
-    <div class="status-pill disconnected" id="statusPill">
-      <div class="status-dot"></div>
-      <span id="statusLabel">Disconnected</span>
-    </div>
-    <button class="header-btn">Settings</button>
+    <span class="header-stat" id="headerStat"></span>
   </div>
 </header>
 
 <div class="layout">
   <!-- Sidebar -->
   <nav class="sidebar">
-    <div class="nav-item active" onclick="showPage('home', this)"><span class="nav-icon">🏠</span> Home</div>
-    <div class="nav-item" onclick="showPage('about', this)"><span class="nav-icon">👤</span> About Me</div>
-    <div class="nav-item" onclick="showPage('routines', this)"><span class="nav-icon">⚡</span> My Routines</div>
+    <div class="nav-item active" onclick="showPage('home', this)"><span class="nav-icon">&#9632;</span> Command Center</div>
+    <div class="nav-item" onclick="showPage('about', this)"><span class="nav-icon">&#9679;</span> About Me</div>
+    <div class="nav-item" onclick="showPage('routines', this)"><span class="nav-icon">&#9889;</span> My Routines</div>
     <div class="nav-divider"></div>
-    <div class="nav-item" onclick="showPage('getstarted', this)"><span class="nav-icon">🚀</span> Get Started</div>
-    <div class="nav-item" onclick="showPage('server', this)"><span class="nav-icon">🔌</span> Server</div>
-    <div class="nav-item" onclick="showPage('howitworks', this)"><span class="nav-icon">📖</span> How It Works</div>
+    <div class="nav-item" onclick="showPage('getstarted', this)"><span class="nav-icon">&#8594;</span> Get Started</div>
+    <div class="nav-item" onclick="showPage('server', this)"><span class="nav-icon">&#8226;</span> Server</div>
+    <div class="nav-item" onclick="showPage('howitworks', this)"><span class="nav-icon">?</span> How It Works</div>
+    <div class="sidebar-spacer"></div>
+    <div class="nav-section-label">Quick Links</div>
+    <a class="nav-link" href="https://chat.google.com" target="_blank"><span class="nav-link-icon">&#128172;</span> GChat</a>
+    <a class="nav-link" href="https://www.internalfb.com/calendar" target="_blank"><span class="nav-link-icon">&#128197;</span> Calendar</a>
+    <a class="nav-link" href="https://work.workplace.com" target="_blank"><span class="nav-link-icon">&#127760;</span> Workplace</a>
+    <a class="nav-link" href="https://www.internalfb.com/tasks" target="_blank"><span class="nav-link-icon">&#9745;</span> Tasks</a>
+    <a class="nav-link" href="https://mail.google.com" target="_blank"><span class="nav-link-icon">&#9993;</span> Email</a>
+    <a class="nav-link" href="https://docs.google.com/document/create" target="_blank"><span class="nav-link-icon">&#128196;</span> New Doc</a>
+    <a class="nav-link" href="https://docs.google.com/spreadsheets/create" target="_blank"><span class="nav-link-icon">&#128202;</span> New Sheet</a>
+    <a class="nav-link" href="https://www.internalfb.com/intern/on_demand/" target="_blank"><span class="nav-link-icon">&#9729;</span> On Demand</a>
   </nav>
 
   <main class="main">
 
-    <!-- ==================== HOME ==================== -->
+    <!-- ==================== COMMAND CENTER ==================== -->
     <div class="page active" id="page-home">
-      <div class="home-content">
 
-        <!-- Greeting Bar -->
-        <div class="greeting-bar">
-          <div class="greeting-text">
-            <h1 id="greetingTitle">Good morning</h1>
-            <p id="greetingSubtext">Connect your brain to get started</p>
+      <!-- TOP: Greeting + Ask My Brain -->
+      <div class="cc-top">
+        <div class="cc-greeting">
+          <h1 id="greetingTitle">Good morning</h1>
+          <span class="cc-greeting-date" id="greetingDate"></span>
+        </div>
+
+        <!-- Ask My Brain bar -->
+        <div class="brain-bar content-disabled" id="brainBar">
+          <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach PDF, TXT, MD, CSV">&#128206;</button>
+          <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv" style="display:none" onchange="handleFileUpload(this)">
+          <textarea class="brain-bar-input" id="buildInput" placeholder="Ask your brain anything..." rows="1" oninput="autoResize(this)"></textarea>
+          <div class="brain-bar-controls">
+            <div class="mode-toggle">
+              <button class="mode-btn active" id="fastModeBtn" onclick="setDepth('fast')">Fast</button>
+              <button class="mode-btn" id="deepModeBtn" onclick="setDepth('deep')">Deep</button>
+            </div>
+            <div class="mode-toggle">
+              <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')">Type</button>
+              <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')">Voice</button>
+            </div>
+            <span class="convo-pill" id="conversationIndicator">Active</span>
+            <button id="newChatBtn" onclick="if(confirm('Start fresh?')) newConversation()" style="display:none;background:none;border:1px solid var(--border-light);color:var(--text-tertiary);padding:2px 6px;border-radius:3px;cursor:pointer;font-size:9px;font-weight:600;font-family:inherit;">New</button>
+          </div>
+          <button class="brain-bar-btn ask" id="buildBtn" onclick="sendBuild()">Ask</button>
+        </div>
+
+        <!-- Voice mode (hidden by default) -->
+        <div class="voice-area" id="talkMode">
+          <button class="mic-btn" id="micBtn" onclick="toggleMic()">&#127908;</button>
+          <div class="mic-label" id="micLabel">Click to start speaking</div>
+          <div class="voice-waveform" id="waveform" style="display:none;">
+            <div class="wave-bar" style="animation-delay:0s;"></div>
+            <div class="wave-bar" style="animation-delay:0.1s;"></div>
+            <div class="wave-bar" style="animation-delay:0.2s;"></div>
+            <div class="wave-bar" style="animation-delay:0.3s;"></div>
+            <div class="wave-bar" style="animation-delay:0.4s;"></div>
           </div>
         </div>
 
-        <!-- Connection Bar -->
-        <div class="connection-bar disconnected" id="connBar">
-          <div class="flask-indicator">
-            <svg viewBox="0 0 56 72" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="flRed" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:rgba(239,68,68,0.08)"/>
-                  <stop offset="100%" style="stop-color:rgba(239,68,68,0.25)"/>
-                </linearGradient>
-                <linearGradient id="flGreen" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" style="stop-color:rgba(16,185,129,0.08)"/>
-                  <stop offset="100%" style="stop-color:rgba(16,185,129,0.25)"/>
-                </linearGradient>
-                <radialGradient id="bGrad" cx="50%" cy="40%">
-                  <stop offset="0%" style="stop-color:#ebb5d0"/>
-                  <stop offset="100%" style="stop-color:#c47a9e"/>
-                </radialGradient>
-              </defs>
-              <path d="M 22 6 L 22 22 L 8 54 Q 5 62 14 65 L 42 65 Q 51 62 48 54 L 34 22 L 34 6"
-                    fill="none" stroke="var(--border)" stroke-width="1.5" stroke-linecap="round"/>
-              <rect x="20" y="4" width="16" height="4" rx="2" fill="var(--border)"/>
-              <path id="miniFluid"
-                    d="M 23 26 L 10 52 Q 7 60 14 63 L 42 63 Q 49 60 46 52 L 33 26 Z"
-                    fill="url(#flRed)"/>
-              <g id="miniBrain">
-                <ellipse cx="28" cy="44" rx="12" ry="10" fill="url(#bGrad)" opacity="0.8"/>
-                <path d="M 20 41 Q 24 38 28 41 Q 32 44 36 41" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
-                <path d="M 19 46 Q 24 43 28 46 Q 32 49 37 46" stroke="rgba(196,122,158,0.4)" stroke-width="0.8" fill="none"/>
-                <line x1="28" y1="35" x2="28" y2="53" stroke="rgba(196,122,158,0.25)" stroke-width="0.6"/>
-              </g>
-              <line x1="24" y1="1" x2="24" y2="5" stroke="rgba(180,160,60,0.4)" stroke-width="1"/>
-              <line x1="32" y1="1" x2="32" y2="5" stroke="rgba(180,160,60,0.4)" stroke-width="1"/>
-              <circle cx="24" cy="1" r="1.5" fill="rgba(180,160,60,0.5)"/>
-              <circle cx="32" cy="1" r="1.5" fill="rgba(180,160,60,0.5)"/>
-            </svg>
-          </div>
+        <!-- Quick suggestion chips -->
+        <div class="quick-chips content-disabled" id="quickChips">
+          <button class="quick-chip" onclick="setDepth('deep');setExample('What meetings do I have today?')">Today's meetings</button>
+          <button class="quick-chip" onclick="setDepth('deep');setExample('Summarize my open tasks')">My tasks</button>
+          <button class="quick-chip" onclick="setDepth('fast');setExample('Create a weekly recap')">Weekly recap</button>
+          <button class="quick-chip" onclick="setDepth('fast');setExample('Draft a status update for my manager')">Status update</button>
+        </div>
+      </div>
 
-          <div class="connection-info">
-            <div class="connection-title disconnected" id="connTitle">Your brain is dormant</div>
-            <div class="connection-detail" id="connDetail">Connect to a server to wake it up</div>
-          </div>
+      <!-- Extras: attached files, thinking bar, output -->
+      <div class="brain-extras">
+        <div class="attached-files" id="attachedFiles"></div>
+        <div class="thinking-overlay" id="thinkingOverlay">
+          <canvas class="thinking-canvas" id="thinkingCanvas"></canvas>
+          <div class="thinking-status">Thinking<span class="thinking-dots"></span></div>
+        </div>
+        <div class="brain-output" id="buildOutput"><div id="outputResult"></div></div>
+      </div>
 
-          <button class="connect-action-btn connect" id="connBtn" onclick="toggleConnection()">
-            Connect Brain
-          </button>
+      <!-- WIDGETS: 3-column grid -->
+      <div class="cc-widgets content-disabled" id="widgetGrid">
+
+        <!-- Routines + Projects -->
+        <div class="widget">
+          <div class="widget-header">
+            <div class="widget-title"><span class="widget-dot blue"></span> Routines</div>
+            <button class="widget-action" onclick="showPage('routines', document.querySelectorAll('.nav-item')[2])">Edit</button>
+          </div>
+          <div class="widget-body">
+            <div class="routine-item">
+              <div class="routine-item-info">
+                <div class="routine-item-name" style="color:var(--accent);">&#9728;&#65039; Morning Routine</div>
+                <div class="routine-item-desc">Calendar, tasks, priorities</div>
+              </div>
+              <button class="routine-btn" onclick="runRoutine(this, 'morning')">Run</button>
+            </div>
+            <div class="routine-item">
+              <div class="routine-item-info">
+                <div class="routine-item-name" style="color:#8b5cf6;">&#127769; EOD Debrief</div>
+                <div class="routine-item-desc">Accomplishments, follow-ups</div>
+              </div>
+              <button class="routine-btn" onclick="runRoutine(this, 'evening')">Run</button>
+            </div>
+            <div class="routine-item">
+              <div class="routine-item-info">
+                <div class="routine-item-name" style="color:#0ea5e9;">&#128240; DC Morning Brief</div>
+                <div class="routine-item-desc">Industry news & updates</div>
+              </div>
+              <a href="https://dcbrief-23i9znrd.manus.space" target="_blank" class="routine-btn" style="text-decoration:none;text-align:center;">Open</a>
+            </div>
+            <div style="border-top:1px solid var(--border-light);margin-top:8px;padding-top:8px;">
+              <div class="widget-title" style="margin-bottom:6px;">Projects</div>
+              <div id="home-projects"><div class="widget-empty">Loading...</div></div>
+            </div>
+          </div>
         </div>
 
-        <div class="home-grid">
-          <div class="home-left">
-
-            <!-- Routine Cards (NOW AT TOP) -->
-            <div class="section-label">Quick Routines</div>
-            <div class="routines-row content-disabled" id="routineCards">
-              <div class="routine-home-card">
-                <div class="routine-home-header">
-                  <div class="routine-home-title">🌅 Morning Routine</div>
-                  <div class="routine-home-meta">~3 min</div>
-                </div>
-                <div class="routine-home-steps">
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Review today's calendar</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Fetch & prioritize tasks</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Flag meetings needing prep</div>
-                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Daily priorities summary</div>
-                </div>
-                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-                  <button class="routine-run-btn" onclick="runRoutine(this, 'morning')">▶ Run Now</button>
-                  <button class="routine-run-btn" onclick="addStepPrompt('morning')" style="border-style:dashed;">+ Add step</button>
-                </div>
-              </div>
-              <div class="routine-home-card">
-                <div class="routine-home-header">
-                  <div class="routine-home-title">🌙 EOD Debrief</div>
-                  <div class="routine-home-meta">~2 min</div>
-                </div>
-                <div class="routine-home-steps">
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Summarize accomplishments</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Save learnings to memory</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Flag items for tomorrow</div>
-                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Update project statuses</div>
-                </div>
-                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-                  <button class="routine-run-btn" onclick="runRoutine(this, 'evening')">▶ Run Now</button>
-                  <button class="routine-run-btn" onclick="addStepPrompt('evening')" style="border-style:dashed;">+ Add step</button>
-                </div>
-              </div>
-              <div class="routine-home-card">
-                <div class="routine-home-header">
-                  <div class="routine-home-title">📰 DC Morning Brief</div>
-                  <div class="routine-home-meta">External</div>
-                </div>
-                <div class="routine-home-steps">
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">1</span> Latest DC project updates</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">2</span> Key metrics & milestones</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">3</span> Risks & escalations</div>
-                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);"><span style="width:16px;height:16px;border-radius:50%;background:var(--accent-light);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;flex-shrink:0;">4</span> Daily priorities overview</div>
-                </div>
-                <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-                  <a href="https://dcbrief-23i9znrd.manus.space" target="_blank" class="routine-run-btn" style="text-decoration:none;text-align:center;">🔗 Open Brief</a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Ask My Brain -->
-            <div class="build-section">
-              <div class="build-header">
-                <div class="build-title">🧠 Ask My Brain</div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span id="conversationIndicator" style="display:none;font-size:11px;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:12px;font-weight:500;cursor:default;" title="Your brain remembers everything in this session. Keep it going all day — your EOD debrief will have full context.">Conversation active</span>
-                  <button id="newChatBtn" onclick="if(confirm('This will clear your brain\'s memory of today\'s conversation. Your EOD debrief won\'t remember earlier chats.\n\nStart fresh?')) newConversation()" style="display:none;background:none;border:1px solid var(--border);color:var(--text-secondary);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;font-family:inherit;transition:all 0.15s;" title="Starts a completely new session — your brain will forget everything from this conversation" onmouseover="this.style.borderColor='var(--text-tertiary)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">+ New Chat</button>
-                  <div class="mode-toggle" id="depthToggle">
-                    <button class="mode-btn active" id="fastModeBtn" onclick="setDepth('fast')" title="Fast — quick answers, no tool use">Fast</button>
-                    <button class="mode-btn" id="deepModeBtn" onclick="setDepth('deep')" title="Deep — uses tools to read files, run commands, check calendar">Deep</button>
-                  </div>
-                  <div class="mode-toggle">
-                    <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')" title="Type your request">⌨️</button>
-                    <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')" title="Speak your request">🎙️</button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="build-body">
-                <!-- Write mode -->
-                <div class="write-mode" id="writeMode">
-                  <div class="build-input-row">
-                    <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Attach a document (PDF, TXT, MD, CSV)">📎</button>
-                    <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv" style="display:none" onchange="handleFileUpload(this)">
-                    <textarea class="build-textarea" id="buildInput" placeholder="Ask your brain anything..." rows="1" oninput="autoResize(this)"></textarea>
-                    <button class="build-send" id="buildBtn" onclick="sendBuild()">Ask</button>
-                  </div>
-                </div>
-
-                <!-- Talk mode -->
-                <div class="talk-mode" id="talkMode">
-                  <div class="voice-area">
-                    <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎙️</button>
-                    <div class="mic-label" id="micLabel">Click the mic to start speaking (Chrome/Edge required)</div>
-                    <div class="voice-waveform" id="waveform" style="display: none;">
-                      <div class="wave-bar" style="animation-delay: 0s; height: 8px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.1s; height: 12px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.2s; height: 6px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.3s; height: 16px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.4s; height: 10px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.15s; height: 14px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.25s; height: 8px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.35s; height: 18px;"></div>
-                      <div class="wave-bar" style="animation-delay: 0.05s; height: 6px;"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Quick chips -->
-              <div class="quick-actions">
-                <button class="quick-chip" onclick="setDepth('deep');setExample('What meetings do I have today?')">Today's meetings</button>
-                <button class="quick-chip" onclick="setDepth('deep');setExample('Summarize my open tasks and prioritize them')">Prioritize tasks</button>
-                <button class="quick-chip" onclick="setDepth('fast');setExample('Create a weekly recap of my work')">Weekly recap</button>
-                <button class="quick-chip" onclick="setDepth('fast');setExample('What did I work on yesterday?')">Yesterday's work</button>
-                <button class="quick-chip" onclick="setDepth('fast');setExample('Draft a status update for my manager')">Status update</button>
-              </div>
-
-              <!-- Attached files -->
-              <div class="attached-files" id="attachedFiles"></div>
-
-              <!-- Matrix loading animation -->
-              <div class="matrix-overlay" id="matrixOverlay">
-                <canvas class="matrix-canvas" id="matrixCanvas"></canvas>
-                <div class="matrix-status" id="matrixStatus">Thinking...</div>
-              </div>
-
-              <!-- Output area -->
-              <div class="build-output" id="buildOutput">
-                <div id="outputSteps"></div>
-              </div>
-            </div>
-
-            <!-- Status Bar -->
-            <div class="status-bar content-disabled" id="statusBar">
-              <div class="status-bar-item"><span class="status-bar-value">--</span> memories</div>
-              <div class="status-bar-item"><span class="status-bar-value">--</span> projects</div>
-              <div class="status-bar-item"><span class="status-bar-value">--</span> routines</div>
-              <div class="status-bar-item"><span class="status-bar-dot" style="background: var(--text-tertiary);"></span> CLAUDE.md</div>
-              <div class="status-bar-item" style="margin-left: auto; color: var(--text-tertiary);">Last sync: --</div>
-            </div>
-
+        <!-- Scratchpad -->
+        <div class="widget" style="display:flex;flex-direction:column;">
+          <div class="widget-header">
+            <div class="widget-title"><span class="widget-dot amber"></span> Scratchpad</div>
+            <span id="scratchpadSaved" style="font-size:9px;color:var(--text-tertiary);"></span>
           </div>
-
-          <!-- RIGHT PANEL -->
-          <div class="home-right content-disabled" id="rightPanel">
-
-            <!-- Projects -->
-            <div class="panel-card">
-              <div class="panel-header">
-                <div class="panel-title">📋 Active Projects</div>
-                <span class="panel-link" onclick="showPage('about', document.querySelector('.nav-item:nth-child(2)'))">Manage</span>
-              </div>
-              <div id="home-projects">
-                <div style="padding:16px;font-size:13px;color:var(--text-tertiary);">Loading projects...</div>
-              </div>
+          <div class="widget-body" style="display:flex;flex-direction:column;flex:1;">
+            <textarea class="scratchpad-textarea" id="scratchpadText" placeholder="Notes you jot here get saved to memory and feed into your EOD debrief.&#10;&#10;- Spoke to Juan about timeline&#10;- Follow up on Clonee permit&#10;- Key decision: went with option B"></textarea>
+            <div class="scratchpad-meta">
+              <span id="scratchpadDate"></span>
+              <span id="scratchpadCount">0 chars</span>
             </div>
+          </div>
+        </div>
 
-            <!-- Activity Feed -->
-            <div class="panel-card">
-              <div class="panel-header">
-                <div class="panel-title">⚡ Recent Activity</div>
-                <span class="panel-link" onclick="clearActivity()" style="cursor:pointer;">Clear</span>
-              </div>
-              <div id="activityFeed">
-                <div style="padding:16px;font-size:12px;color:var(--text-tertiary);text-align:center;">No activity yet this session. Ask your brain something to get started.</div>
-              </div>
+        <!-- Action Items -->
+        <div class="widget" style="display:flex;flex-direction:column;">
+          <div class="widget-header">
+            <div class="widget-title"><span class="widget-dot green"></span> Action Items</div>
+            <button class="widget-action" onclick="clearDoneActions()">Clear done</button>
+          </div>
+          <div class="widget-body" style="display:flex;flex-direction:column;flex:1;">
+            <div id="actionsEmpty" class="widget-empty">No action items yet</div>
+            <div id="actionsList" style="flex:1;overflow-y:auto;"></div>
+            <div class="action-add-row">
+              <input class="action-add-input" id="actionAddInput" placeholder="Add action item..." onkeydown="if(event.key==='Enter'){addActionItem();event.preventDefault();}">
+              <button class="action-add-btn" onclick="addActionItem()">Add</button>
             </div>
-
           </div>
         </div>
 
@@ -1316,7 +743,7 @@
     <div class="page" id="page-about">
       <div class="page-inner">
         <div class="page-title">About Me</div>
-        <div class="page-desc">Edit your profile. Changes auto-sync to your CLAUDE.md so your brain always knows who you are.</div>
+        <div class="page-desc">Edit your profile. Changes sync to CLAUDE.md.</div>
         <div class="form-card">
           <div class="form-row">
             <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" value=""></div>
@@ -1330,14 +757,13 @@
             <div class="form-group"><label class="form-label">Location</label><input class="form-input" value=""></div>
             <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" type="date" value=""></div>
           </div>
-          <div class="form-group"><label class="form-label">Background</label><textarea class="form-textarea" rows="4"></textarea></div>
-          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="3" placeholder="Paste anything you want your brain to know — your H1 goals, team priorities, org mission, whatever helps."></textarea></div>
+          <div class="form-group"><label class="form-label">Background</label><textarea class="form-textarea" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label">Preferences</label><textarea class="form-textarea" rows="2" placeholder="H1 goals, team priorities, org mission..."></textarea></div>
           <div class="form-actions">
             <button class="save-btn" onclick="saveAboutMe()">Save & Sync</button>
-            <span class="save-indicator">Not yet synced</span>
+            <span class="save-indicator">Not synced</span>
           </div>
         </div>
-
         <div class="projects-section">
           <div class="projects-section-header">
             <div class="projects-section-title">My Projects</div>
@@ -1345,7 +771,7 @@
           </div>
           <div id="projects-list"></div>
           <button class="add-project-btn" onclick="addProject()">+ Add project</button>
-          <div class="form-actions" style="margin-top:12px;">
+          <div class="form-actions" style="margin-top:8px;">
             <button class="save-btn" onclick="saveProjects()">Save Projects</button>
           </div>
         </div>
@@ -1356,104 +782,57 @@
     <div class="page" id="page-routines">
       <div class="page-inner">
         <div class="page-title">My Routines</div>
-        <div class="page-desc">Define what your brain does for you. Write steps in plain language — no coding needed.</div>
+        <div class="page-desc">Define what your brain does. Write steps in plain language.</div>
         <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">🌅 Morning Routine</div><div class="routine-full-meta">~3 min</div></div>
+          <div class="routine-full-header"><div class="routine-full-title">Morning Routine</div><div class="routine-full-meta">~3 min</div></div>
           <ol class="routine-steps-list">
-            <li class="routine-step-item"><span class="step-num">1</span> Review my calendar for today and flag meetings I need to prepare for</li>
-            <li class="routine-step-item"><span class="step-num">2</span> Fetch my open tasks and sort by priority</li>
-            <li class="routine-step-item"><span class="step-num">3</span> Check for any new Workplace posts from my team</li>
-            <li class="routine-step-item"><span class="step-num">4</span> Give me a summary of my top 3 priorities for the day</li>
+            <li class="routine-step-item"><span class="step-num">1</span> Review my calendar and flag meetings needing prep</li>
+            <li class="routine-step-item"><span class="step-num">2</span> Fetch open tasks, sort by priority</li>
+            <li class="routine-step-item"><span class="step-num">3</span> Check for new Workplace posts from my team</li>
+            <li class="routine-step-item"><span class="step-num">4</span> Summary of top 3 priorities for the day</li>
           </ol>
           <div class="routine-full-actions">
-            <button class="routine-run-btn" onclick="simulateRun(this)">▶ Run Now</button>
-            <button class="routine-run-btn">Edit Steps</button>
-            <button class="routine-run-btn">History</button>
+            <button class="routine-btn" onclick="runRoutine(this,'morning')">Run Now</button>
+            <button class="routine-btn" onclick="addStepPrompt('morning')">+ Add Step</button>
           </div>
         </div>
         <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">🌙 End of Day Debrief</div><div class="routine-full-meta">~2 min</div></div>
+          <div class="routine-full-header"><div class="routine-full-title">EOD Debrief</div><div class="routine-full-meta">~2 min</div></div>
           <ol class="routine-steps-list">
-            <li class="routine-step-item"><span class="step-num">1</span> Summarize everything I accomplished today</li>
-            <li class="routine-step-item"><span class="step-num">2</span> Save any important learnings or decisions to memory</li>
-            <li class="routine-step-item"><span class="step-num">3</span> Flag any items that need attention tomorrow</li>
-            <li class="routine-step-item"><span class="step-num">4</span> Update project statuses based on today's work</li>
+            <li class="routine-step-item"><span class="step-num">1</span> Summarize accomplishments</li>
+            <li class="routine-step-item"><span class="step-num">2</span> Save learnings to memory</li>
+            <li class="routine-step-item"><span class="step-num">3</span> Flag items for tomorrow</li>
+            <li class="routine-step-item"><span class="step-num">4</span> Update project statuses</li>
           </ol>
           <div class="routine-full-actions">
-            <button class="routine-run-btn" onclick="simulateRun(this)">▶ Run Now</button>
-            <button class="routine-run-btn">Edit Steps</button>
-            <button class="routine-run-btn">History</button>
+            <button class="routine-btn" onclick="runRoutine(this,'evening')">Run Now</button>
+            <button class="routine-btn" onclick="addStepPrompt('evening')">+ Add Step</button>
           </div>
         </div>
-        <button class="routine-run-btn" style="margin-top: 4px;">+ Add Routine</button>
       </div>
     </div>
 
     <!-- ==================== GET STARTED ==================== -->
     <div class="page" id="page-getstarted">
-      <div class="page-inner" style="max-width: 640px;">
+      <div class="page-inner" style="max-width:600px;">
         <div class="page-title">Get Started</div>
-        <div class="page-desc">Three steps to connect your Second Brain. Takes about 2 minutes.</div>
-
-        <div class="setup-steps">
-          <div class="setup-step-card">
-            <div class="setup-step-num">1</div>
-            <div class="setup-step-body">
-              <h3>Open your OD terminal</h3>
-              <p>Connect to your On-Demand server using <strong>dev connect</strong> from your laptop terminal.</p>
-            </div>
-          </div>
-
-          <div class="setup-step-card">
-            <div class="setup-step-num">2</div>
-            <div class="setup-step-body">
-              <h3>Paste the setup command</h3>
-              <p>Copy this command and paste it into your terminal. It installs everything and starts your brain.</p>
-              <div class="setup-command-box">git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh<button class="copy-btn" onclick="copySetupCommand(this)">Copy</button></div>
-            </div>
-          </div>
-
-          <div class="setup-step-card">
-            <div class="setup-step-num">3</div>
-            <div class="setup-step-body">
-              <h3>Click "Connect Brain" on the home page</h3>
-              <p>Once the server is running, come back here and click the green <strong>Connect Brain</strong> button on the Home page.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="info-block" style="margin-top: 28px;">
-          <h2>After setup</h2>
-          <p>Go to <strong>About Me</strong> and fill in your details — this teaches your brain who you are. Then try running your <strong>Morning Routine</strong>, or type anything into <strong>Ask My Brain</strong>.</p>
-        </div>
-
-        <div class="setup-tip">
-          <span class="setup-tip-icon">💡</span>
-          <div>
-            <strong>Troubleshooting:</strong> If "Connect Brain" fails, check that Claude Code is installed on your OD by running <code style="background:rgba(255,255,255,0.06);padding:2px 5px;border-radius:3px;">claude --version</code> in your terminal. Questions? Message Rob Goldsmith on GChat.
-          </div>
-        </div>
+        <div class="page-desc">Three steps to connect your Second Brain.</div>
+        <div class="setup-step-card"><div class="setup-step-num">1</div><div class="setup-step-body"><h3>Open your OD terminal</h3><p>Connect via <strong>dev connect</strong>.</p></div></div>
+        <div class="setup-step-card"><div class="setup-step-num">2</div><div class="setup-step-body"><h3>Paste the setup command</h3><p>Installs everything and starts your brain.</p><div class="setup-command-box">git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh<button class="copy-btn" onclick="copySetupCommand(this)">Copy</button></div></div></div>
+        <div class="setup-step-card"><div class="setup-step-num">3</div><div class="setup-step-body"><h3>Click "Connect Brain"</h3><p>Click the green button in the header.</p></div></div>
+        <div class="setup-tip"><span>&#128161;</span><div><strong>Trouble?</strong> Run <code style="background:rgba(0,0,0,0.04);padding:1px 4px;border-radius:2px;">claude --version</code> in terminal. Questions? Rob Goldsmith on GChat.</div></div>
       </div>
     </div>
 
     <!-- ==================== SERVER ==================== -->
     <div class="page" id="page-server">
       <div class="page-inner">
-        <div class="page-title">Server Connect</div>
-        <div class="page-desc">Choose where your brain runs. Select an environment and connect.</div>
-        <div class="server-card selected" onclick="selectServer(this)"><div class="server-card-icon">☁️</div><div class="server-card-info"><h3>On-Demand Server (OD)</h3><p>Recommended. Meta's cloud infrastructure, no local setup.</p></div></div>
-        <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">🖥️</div><div class="server-card-info"><h3>Dev Server</h3><p>Existing devserver. Persistent dev environment.</p></div></div>
-        <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">💻</div><div class="server-card-info"><h3>Local Machine (Mac)</h3><p>Run on your Mac. Requires Claude Code installed.</p></div></div>
-        <div style="margin-top: 20px;">
-          <div class="form-group" style="max-width: 360px;"><label class="form-label">Server ID</label><input class="form-input" value="" placeholder="e.g., OD-12345"></div>
-          <button class="save-btn" onclick="toggleConnection()">Connect</button>
-        </div>
-        <div style="margin-top: 28px;">
-          <div class="form-label" style="margin-bottom: 10px;">Connection Log</div>
-          <div class="log-line"><span class="log-ts">09:15</span><span class="log-d g"></span> Connected to OD</div>
-          <div class="log-line"><span class="log-ts">08:30</span><span class="log-d g"></span> Morning routine completed</div>
-          <div class="log-line"><span class="log-ts">08:28</span><span class="log-d g"></span> Claude Code session started</div>
-        </div>
+        <div class="page-title">Server</div>
+        <div class="page-desc">Choose where your brain runs.</div>
+        <div class="server-card selected" onclick="selectServer(this)"><div class="server-card-icon">&#9729;&#65039;</div><div class="server-card-info"><h3>On-Demand Server</h3><p>Recommended. Meta cloud.</p></div></div>
+        <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">&#128421;&#65039;</div><div class="server-card-info"><h3>Dev Server</h3><p>Persistent environment.</p></div></div>
+        <div class="server-card" onclick="selectServer(this)"><div class="server-card-icon">&#128187;</div><div class="server-card-info"><h3>Local Mac</h3><p>Requires Claude Code locally.</p></div></div>
+        <div style="margin-top:12px;"><button class="save-btn" onclick="toggleConnection()">Connect</button></div>
       </div>
     </div>
 
@@ -1461,809 +840,381 @@
     <div class="page" id="page-howitworks">
       <div class="page-inner">
         <div class="page-title">How It Works</div>
-        <div class="page-desc">Everything you need to know about your Second Brain.</div>
-        <div class="info-block"><h2>🧠 What is the Second Brain?</h2><p>An AI-powered personal assistant that remembers everything about you, your projects, and your work. It uses Claude Code with PARA (Projects, Areas, Resources, Archives) to organise your knowledge and automate routine tasks. Think of it as a chief of staff that never forgets.</p></div>
-        <div class="info-block"><h2>💬 What is Ask My Brain?</h2><p>Type or speak any task in plain language. Your brain translates it into actions and runs them. You see progress in real-time. No commands, no terminal, no code.</p></div>
-        <div class="info-block"><h2>🗄️ How does it remember?</h2><p>Your brain stores information in a file called CLAUDE.md. The About Me page and routines auto-sync to this file. Every new session reads it first so it knows who you are and what you're working on.</p></div>
-        <div class="info-block"><h2>⚡ What are Routines?</h2><p>Sets of instructions in plain language. Click "Run" and your brain executes each step. Morning Routine can review your calendar, check tasks, and prioritize your day — all in about 3 minutes.</p></div>
-        <div class="info-block"><h2>🔒 Is my data safe?</h2><p>Yes. Everything runs within Meta's infrastructure. Your data stays on your server and syncs via Google Drive. Nothing leaves Meta's network.</p></div>
+        <div class="page-desc">Everything about your Second Brain.</div>
+        <div class="info-block"><h2>What is it?</h2><p>An AI assistant that remembers you, your projects, and your work. Uses Claude Code with PARA to organise knowledge and automate tasks.</p></div>
+        <div class="info-block"><h2>Ask My Brain</h2><p>Type any task in plain language. Your brain runs it. No commands needed.</p></div>
+        <div class="info-block"><h2>How does it remember?</h2><p>Stores info in CLAUDE.md. About Me and routines auto-sync. Every session reads it first.</p></div>
+        <div class="info-block"><h2>Routines</h2><p>Plain language instruction sets. Click Run and it executes each step.</p></div>
+        <div class="info-block"><h2>Data safety</h2><p>Everything runs within Meta infrastructure. Nothing leaves the network.</p></div>
       </div>
     </div>
 
   </main>
 </div>
 
-<div style="text-align:center;padding:12px 0;font-size:11px;color:var(--text-tertiary);border-top:1px solid var(--border);">
-  Built by Rob Goldsmith
-</div>
+<div class="footer">Built by Rob Goldsmith</div>
 
 <script>
   let isConnected = false;
   let isRecording = false;
-  let matrixInterval = null;
   let conversationId = localStorage.getItem('msb_conversation_id') || null;
-  let depthMode = 'fast'; // 'fast' or 'deep'
+  let depthMode = 'fast';
+  let scratchpadTimer = null;
+  let actionItems = [];
 
-  const API_BASE = '';
-  async function api(path, opts = {}) {
-    const res = await fetch(API_BASE + path, {
-      headers: { 'Content-Type': 'application/json' },
-      ...opts,
-    });
-    return res.json();
-  }
+  let matrixInterval = null;
 
-  // ─── Matrix Rain ──────────────────────────────────────────────────────
-  function startMatrix() {
-    const canvas = document.getElementById('matrixCanvas');
-    const overlay = document.getElementById('matrixOverlay');
+  function startThinking() {
+    const overlay = document.getElementById('thinkingOverlay');
+    const canvas = document.getElementById('thinkingCanvas');
     overlay.classList.add('active');
-
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
-    const fontSize = 12;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>{}[]=/\\|';
+    const fontSize = 11;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = Array(columns).fill(1);
+    const colors = ['#4f6ef7','#6b85ff','#93a4ff','#b8c4ff','#d0d8ff'];
 
     function draw() {
-      ctx.fillStyle = 'rgba(15, 17, 23, 0.15)';
+      ctx.fillStyle = 'rgba(248,249,251,0.12)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#22d3ee';
       ctx.font = fontSize + 'px monospace';
-
       for (let i = 0; i < drops.length; i++) {
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        ctx.globalAlpha = Math.random() * 0.5 + 0.2;
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        const ch = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+        ctx.globalAlpha = Math.random() * 0.4 + 0.15;
+        ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
       }
       ctx.globalAlpha = 1;
     }
 
-    matrixInterval = setInterval(draw, 50);
+    matrixInterval = setInterval(draw, 55);
   }
 
-  function stopMatrix() {
-    if (matrixInterval) clearInterval(matrixInterval);
-    matrixInterval = null;
-    document.getElementById('matrixOverlay').classList.remove('active');
+  function stopThinking() {
+    if (matrixInterval) { clearInterval(matrixInterval); matrixInterval = null; }
+    document.getElementById('thinkingOverlay').classList.remove('active');
   }
 
-  function setMatrixStatus(text) {
-    document.getElementById('matrixStatus').textContent = text;
+  async function api(path, opts = {}) {
+    const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    return res.json();
   }
 
-  // ─── UI update helpers ──────────────────────────────────────────────────
+  // ─── Scratchpad ─────────────────────────────────────────────────
+  async function loadScratchpad() {
+    try {
+      const d = await api('/api/scratchpad');
+      if (d.success) {
+        document.getElementById('scratchpadText').value = d.notes || '';
+        document.getElementById('scratchpadDate').textContent = d.today || '';
+        updateScratchpadCount();
+      }
+    } catch(e) {}
+  }
 
+  function saveScratchpad() {
+    updateScratchpadCount();
+    clearTimeout(scratchpadTimer);
+    scratchpadTimer = setTimeout(async () => {
+      try {
+        await api('/api/scratchpad', { method: 'POST', body: JSON.stringify({ notes: document.getElementById('scratchpadText').value }) });
+        document.getElementById('scratchpadSaved').textContent = 'Saved';
+        setTimeout(() => { document.getElementById('scratchpadSaved').textContent = ''; }, 2000);
+      } catch(e) {}
+    }, 800);
+  }
+
+  function updateScratchpadCount() {
+    document.getElementById('scratchpadCount').textContent = document.getElementById('scratchpadText').value.length + ' chars';
+  }
+
+  // ─── Action Items ───────────────────────────────────────────────
+  async function loadActionItems() {
+    try {
+      const d = await api('/api/actionitems');
+      if (d.success) { actionItems = d.items || []; renderActionItems(); }
+    } catch(e) {}
+  }
+
+  function renderActionItems() {
+    const list = document.getElementById('actionsList');
+    const empty = document.getElementById('actionsEmpty');
+    if (actionItems.length === 0) { empty.style.display = 'block'; list.innerHTML = ''; return; }
+    empty.style.display = 'none';
+    list.innerHTML = actionItems.map((item, i) =>
+      '<div class="action-item">' +
+      '<button class="action-check ' + (item.done?'done':'') + '" onclick="toggleActionDone('+i+')">' + (item.done?'&#10003;':'') + '</button>' +
+      '<span class="action-text ' + (item.done?'done':'') + '">' + escapeHtml(item.text) + '</span>' +
+      '<button class="action-remove" onclick="removeActionItem('+i+')">&times;</button></div>'
+    ).join('');
+  }
+
+  function addActionItem() {
+    const inp = document.getElementById('actionAddInput');
+    const text = inp.value.trim();
+    if (!text) return;
+    actionItems.push({ text, done: false });
+    renderActionItems(); saveActionItems();
+    inp.value = '';
+  }
+
+  function toggleActionDone(i) { actionItems[i].done = !actionItems[i].done; renderActionItems(); saveActionItems(); }
+  function removeActionItem(i) { actionItems.splice(i,1); renderActionItems(); saveActionItems(); }
+  function clearDoneActions() { actionItems = actionItems.filter(a => !a.done); renderActionItems(); saveActionItems(); }
+  async function saveActionItems() { try { await api('/api/actionitems', { method: 'POST', body: JSON.stringify({ items: actionItems }) }); } catch(e) {} }
+
+  // ─── Connection ─────────────────────────────────────────────────
   function setConnectedUI(serverId, stats) {
-    const btn = document.getElementById('connBtn');
-    const bar = document.getElementById('connBar');
-    const pill = document.getElementById('statusPill');
-    const pillLabel = document.getElementById('statusLabel');
-    const title = document.getElementById('connTitle');
-    const detail = document.getElementById('connDetail');
-    const miniFluid = document.getElementById('miniFluid');
-    const headerFluid = document.getElementById('headerFluid');
-
     isConnected = true;
-    btn.className = 'connect-action-btn disconnect';
-    btn.textContent = 'Disconnect';
-    bar.className = 'connection-bar connected';
-    pill.className = 'status-pill connected';
-    pillLabel.textContent = serverId || 'Connected';
-    title.textContent = 'Your brain is active';
-    title.className = 'connection-title connected';
-    detail.textContent = 'Connected to ' + (serverId || 'server') + ' — Claude Code ready';
-    miniFluid.setAttribute('fill', 'url(#flGreen)');
-    headerFluid.setAttribute('fill', 'rgba(16,185,129,0.2)');
-
-    document.getElementById('routineCards').className = 'routines-row content-enabled';
-    document.getElementById('rightPanel').className = 'home-right content-enabled';
-    addActivity('🔗', 'sync', '<strong>Connected</strong> to ' + (serverId || 'server'));
-    loadProjects();
-    const statusBar = document.getElementById('statusBar');
-    statusBar.className = 'status-bar content-enabled';
-
-    if (stats) {
-      const vals = statusBar.querySelectorAll('.status-bar-value');
-      vals[0].textContent = stats.memories || '--';
-      vals[1].textContent = stats.projects || '--';
-      vals[2].textContent = stats.routines || '--';
-      statusBar.querySelector('.status-bar-dot').style.background = 'var(--green)';
-      statusBar.lastElementChild.textContent = 'Last sync: just now';
-    }
+    const pill = document.getElementById('connPill');
+    pill.className = 'conn-pill connected';
+    document.getElementById('connLabel').textContent = serverId || 'Connected';
+    document.getElementById('headerFluid').setAttribute('fill', 'rgba(16,185,129,0.15)');
+    document.getElementById('brainBar').classList.remove('content-disabled');
+    document.getElementById('quickChips').classList.remove('content-disabled');
+    document.getElementById('widgetGrid').classList.remove('content-disabled');
+    if (stats) document.getElementById('headerStat').textContent = (stats.memories||0) + ' memories · ' + (stats.projects||0) + ' projects';
+    loadScratchpad(); loadActionItems(); loadProjects();
   }
 
   function setDisconnectedUI() {
-    const btn = document.getElementById('connBtn');
-    const bar = document.getElementById('connBar');
-    const pill = document.getElementById('statusPill');
-    const pillLabel = document.getElementById('statusLabel');
-    const title = document.getElementById('connTitle');
-    const detail = document.getElementById('connDetail');
-    const miniFluid = document.getElementById('miniFluid');
-    const headerFluid = document.getElementById('headerFluid');
-
     isConnected = false;
-    btn.className = 'connect-action-btn connect';
-    btn.textContent = 'Connect Brain';
-    bar.className = 'connection-bar disconnected';
-    pill.className = 'status-pill disconnected';
-    pillLabel.textContent = 'Disconnected';
-    title.textContent = 'Your brain is dormant';
-    title.className = 'connection-title disconnected';
-    detail.textContent = 'Connect to a server to wake it up';
-    miniFluid.setAttribute('fill', 'url(#flRed)');
-    headerFluid.setAttribute('fill', 'rgba(239,68,68,0.2)');
-
-    document.getElementById('routineCards').className = 'routines-row content-disabled';
-    document.getElementById('rightPanel').className = 'home-right content-disabled';
-    const statusBar = document.getElementById('statusBar');
-    statusBar.className = 'status-bar content-disabled';
-    const vals = statusBar.querySelectorAll('.status-bar-value');
-    vals[0].textContent = '--'; vals[1].textContent = '--'; vals[2].textContent = '--';
-    statusBar.querySelector('.status-bar-dot').style.background = 'var(--text-tertiary)';
-    statusBar.lastElementChild.textContent = 'Last sync: --';
+    document.getElementById('connPill').className = 'conn-pill disconnected';
+    document.getElementById('connLabel').textContent = 'Connect Brain';
+    document.getElementById('headerFluid').setAttribute('fill', 'rgba(239,68,68,0.12)');
+    document.getElementById('brainBar').classList.add('content-disabled');
+    document.getElementById('quickChips').classList.add('content-disabled');
+    document.getElementById('widgetGrid').classList.add('content-disabled');
+    document.getElementById('headerStat').textContent = '';
   }
 
-  // ─── Connection ─────────────────────────────────────────────────────────
-
   async function toggleConnection() {
-    const btn = document.getElementById('connBtn');
-    const title = document.getElementById('connTitle');
-
     if (!isConnected) {
-      btn.className = 'connect-action-btn connecting';
-      btn.textContent = 'Connecting...';
-      title.textContent = 'Connecting to Claude Code...';
-      title.className = 'connection-title disconnected';
-
+      document.getElementById('connPill').className = 'conn-pill connecting';
+      document.getElementById('connLabel').textContent = 'Connecting...';
       try {
-        const data = await api('/api/connect', { method: 'POST' });
-        if (data.success) {
-          setConnectedUI(data.server_id, data.stats);
-        } else {
-          title.textContent = 'Connection failed: ' + (data.error || 'Unknown error');
-          btn.className = 'connect-action-btn connect';
-          btn.textContent = 'Retry';
-        }
-      } catch (e) {
-        console.log('Backend not available, using simulated mode');
-        setTimeout(() => setConnectedUI('Local (demo mode)', { memories: 47, projects: 12, routines: 3 }), 1500);
-      }
+        const d = await api('/api/connect', { method: 'POST' });
+        if (d.success) setConnectedUI(d.server_id, d.stats);
+        else { document.getElementById('connPill').className = 'conn-pill disconnected'; document.getElementById('connLabel').textContent = 'Retry'; }
+      } catch(e) { setTimeout(() => setConnectedUI('Local (demo)', { memories: 47, projects: 12 }), 1000); }
     } else {
-      try {
-        await api('/api/disconnect', { method: 'POST' });
-      } catch (e) { /* ok */ }
+      try { await api('/api/disconnect', { method: 'POST' }); } catch(e) {}
       setDisconnectedUI();
     }
   }
 
-  // ─── Navigation ─────────────────────────────────────────────────────────
-
-  function showPage(pageId, navItem) {
+  // ─── Navigation ─────────────────────────────────────────────────
+  function showPage(id, nav) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById('page-' + pageId).classList.add('active');
-    navItem.classList.add('active');
-    if (pageId === 'about') { loadAboutMe(); loadProjects(); }
+    document.getElementById('page-' + id).classList.add('active');
+    nav.classList.add('active');
+    if (id === 'about') { loadAboutMe(); loadProjects(); }
   }
 
-  // ─── About Me ───────────────────────────────────────────────────────────
-
+  // ─── About Me ───────────────────────────────────────────────────
   async function loadAboutMe() {
     try {
-      const data = await api('/api/about');
-      if (data.success && data.about) {
-        const a = data.about;
-        const inputs = document.querySelectorAll('#page-about .form-input');
-        const textareas = document.querySelectorAll('#page-about .form-textarea');
-        if (a.name) inputs[0].value = a.name;
-        if (a.role) inputs[1].value = a.role;
-        if (a.team) inputs[2].value = a.team;
-        if (a.manager) inputs[3].value = a.manager;
-        if (a.location) inputs[4].value = a.location;
-        if (a.started) inputs[5].value = a.started;
-        if (a.background) textareas[0].value = a.background;
+      const d = await api('/api/about');
+      if (d.success && d.about) {
+        const a = d.about, inp = document.querySelectorAll('#page-about .form-input'), ta = document.querySelectorAll('#page-about .form-textarea');
+        if (a.name) inp[0].value = a.name; if (a.role) inp[1].value = a.role;
+        if (a.team) inp[2].value = a.team; if (a.manager) inp[3].value = a.manager;
+        if (a.location) inp[4].value = a.location; if (a.started) inp[5].value = a.started;
+        if (a.background) ta[0].value = a.background;
       }
-    } catch (e) { /* backend not running */ }
+    } catch(e) {}
   }
 
   async function saveAboutMe() {
-    const inputs = document.querySelectorAll('#page-about .form-input');
-    const textareas = document.querySelectorAll('#page-about .form-textarea');
-    const indicator = document.querySelector('.save-indicator');
-    const payload = {
-      name: inputs[0].value, role: inputs[1].value, team: inputs[2].value,
-      manager: inputs[3].value, location: inputs[4].value, started: inputs[5].value,
-      background: textareas[0].value, preferences: textareas[1].value,
-    };
-    indicator.textContent = 'Saving...';
+    const inp = document.querySelectorAll('#page-about .form-input'), ta = document.querySelectorAll('#page-about .form-textarea');
+    const ind = document.querySelector('.save-indicator');
+    ind.textContent = 'Saving...';
     try {
-      const data = await api('/api/about', { method: 'POST', body: JSON.stringify(payload) });
-      if (data.success) {
-        indicator.textContent = 'Saved and synced to CLAUDE.md just now';
-        indicator.style.color = 'var(--green)';
-        setTimeout(() => { indicator.style.color = ''; }, 3000);
-      } else {
-        indicator.textContent = 'Error: ' + (data.error || 'Save failed');
-        indicator.style.color = 'var(--red)';
-      }
-    } catch (e) {
-      indicator.textContent = 'Backend not running — changes not saved';
-      indicator.style.color = 'var(--warning)';
-    }
+      const d = await api('/api/about', { method: 'POST', body: JSON.stringify({ name:inp[0].value, role:inp[1].value, team:inp[2].value, manager:inp[3].value, location:inp[4].value, started:inp[5].value, background:ta[0].value, preferences:ta[1].value }) });
+      if (d.success) { ind.textContent = 'Saved'; ind.style.color = 'var(--green)'; setTimeout(() => { ind.style.color = ''; }, 3000); }
+      else { ind.textContent = 'Error'; ind.style.color = 'var(--red)'; }
+    } catch(e) { ind.textContent = 'Backend not running'; ind.style.color = 'var(--warning)'; }
   }
 
-  // ─── Projects ───────────────────────────────────────────────────────────
-
+  // ─── Projects ───────────────────────────────────────────────────
   let projectsList = [];
 
   async function loadProjects() {
     try {
-      const data = await api('/api/projects');
-      if (data.success && data.projects) {
-        projectsList = data.projects;
-        renderProjects();
-        renderHomeProjects();
-      }
-    } catch (e) { /* backend not running */ }
+      const d = await api('/api/projects');
+      if (d.success) { projectsList = d.projects || []; renderProjects(); renderHomeProjects(); }
+    } catch(e) {}
   }
 
   function renderProjects() {
-    const container = document.getElementById('projects-list');
-    container.innerHTML = projectsList.map((p, i) => `
-      <div class="project-edit-row">
-        <input class="proj-name" placeholder="Project name" value="${p.name || ''}" onchange="projectsList[${i}].name=this.value">
-        <input class="proj-desc" placeholder="Short description" value="${p.description || ''}" onchange="projectsList[${i}].description=this.value">
-        <select onchange="projectsList[${i}].status=this.value">
-          <option value="active" ${p.status === 'active' ? 'selected' : ''}>Active</option>
-          <option value="review" ${p.status === 'review' ? 'selected' : ''}>Review</option>
-          <option value="paused" ${p.status === 'paused' ? 'selected' : ''}>Paused</option>
-          <option value="done" ${p.status === 'done' ? 'selected' : ''}>Done</option>
-        </select>
-        <button class="proj-remove" onclick="removeProject(${i})">&times;</button>
-      </div>
-    `).join('');
-  }
-
-  function renderHomeProjects() {
-    const panel = document.getElementById('home-projects');
-    if (!panel) return;
-    const icons = ['🏗️', '📋', '🔌', '🤖', '📊', '🎯', '🔬', '📦', '🚀', '💡'];
-    if (projectsList.length === 0) {
-      panel.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--text-tertiary);">No projects yet. Add them in About Me.</div>';
-      return;
-    }
-    panel.innerHTML = projectsList.filter(p => p.status !== 'done').map((p, i) => `
-      <div class="project-row">
-        <span class="project-row-icon">${icons[i % icons.length]}</span>
-        <span class="project-row-name">${p.name || 'Untitled'}</span>
-        <span class="project-row-badge ${p.status || 'active'}">${(p.status || 'active').charAt(0).toUpperCase() + (p.status || 'active').slice(1)}</span>
-      </div>
-    `).join('');
-    // Update status bar count
-    const projCount = document.querySelectorAll('.status-bar-value');
-    if (projCount[1]) projCount[1].textContent = projectsList.length;
-  }
-
-  function addProject() {
-    projectsList.push({ name: '', description: '', status: 'active' });
-    renderProjects();
-    // Focus the new name input
-    const inputs = document.querySelectorAll('#projects-list .proj-name');
-    if (inputs.length) inputs[inputs.length - 1].focus();
-  }
-
-  function removeProject(i) {
-    projectsList.splice(i, 1);
-    renderProjects();
-  }
-
-  async function saveProjects() {
-    const indicator = document.getElementById('projects-save-indicator');
-    indicator.textContent = 'Saving...';
-    indicator.style.color = '';
-    try {
-      const data = await api('/api/projects', { method: 'POST', body: JSON.stringify({ projects: projectsList }) });
-      if (data.success) {
-        indicator.textContent = 'Saved';
-        indicator.style.color = 'var(--green)';
-        renderHomeProjects();
-        setTimeout(() => { indicator.textContent = ''; indicator.style.color = ''; }, 3000);
-      }
-    } catch (e) {
-      indicator.textContent = 'Error saving';
-      indicator.style.color = 'var(--red)';
-    }
-  }
-
-  // ─── Conversation management ─────────────────────────────────────────
-
-  function newConversation() {
-    conversationId = null;
-    localStorage.removeItem('msb_conversation_id');
-    updateConversationIndicator();
-    const output = document.getElementById('buildOutput');
-    const steps = document.getElementById('outputSteps');
-    output.classList.remove('visible');
-    steps.innerHTML = '';
-  }
-
-  function saveConversationId(id) {
-    conversationId = id;
-    localStorage.setItem('msb_conversation_id', id);
-  }
-
-  function updateConversationIndicator() {
-    const indicator = document.getElementById('conversationIndicator');
-    const newChatBtn = document.getElementById('newChatBtn');
-    if (conversationId) {
-      indicator.style.display = 'inline';
-      newChatBtn.style.display = 'inline';
-    } else {
-      indicator.style.display = 'none';
-      newChatBtn.style.display = 'none';
-    }
-  }
-
-  // ─── Ask My Brain ─────────────────────────────────────────────────────
-
-  function setMode(mode) {
-    const writeBtn = document.getElementById('writeModeBtn');
-    const talkBtn = document.getElementById('talkModeBtn');
-    const writeMode = document.getElementById('writeMode');
-    const talkMode = document.getElementById('talkMode');
-    if (mode === 'write') {
-      writeBtn.classList.add('active'); talkBtn.classList.remove('active');
-      writeMode.style.display = 'block'; talkMode.style.display = 'none';
-    } else {
-      talkBtn.classList.add('active'); writeBtn.classList.remove('active');
-      talkMode.style.display = 'flex'; writeMode.style.display = 'none';
-    }
-  }
-
-  function setDepth(mode) {
-    depthMode = mode;
-    const fastBtn = document.getElementById('fastModeBtn');
-    const deepBtn = document.getElementById('deepModeBtn');
-    const input = document.getElementById('buildInput');
-    if (mode === 'fast') {
-      fastBtn.classList.add('active'); deepBtn.classList.remove('active');
-      input.placeholder = 'Ask your brain anything...';
-    } else {
-      deepBtn.classList.add('active'); fastBtn.classList.remove('active');
-      input.placeholder = 'Ask something that needs tools (files, calendar, tasks)...';
-    }
-  }
-
-  function setExample(text) {
-    document.getElementById('buildInput').value = text;
-    document.getElementById('buildInput').focus();
-    setMode('write');
-  }
-
-  // ─── Activity Feed (real, session-based) ────────────────────────────────
-
-  function addActivity(icon, iconClass, text) {
-    const feed = document.getElementById('activityFeed');
-    if (!feed) return;
-    // Remove the empty state message if present
-    const empty = feed.querySelector('[style*="text-align:center"]');
-    if (empty) empty.remove();
-
-    const now = new Date();
-    const timeStr = 'Today at ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const row = document.createElement('div');
-    row.className = 'activity-row';
-    row.innerHTML = '<div class="activity-row-icon ' + iconClass + '">' + icon + '</div>'
-      + '<div class="activity-row-body">'
-      + '<div class="activity-row-text">' + text + '</div>'
-      + '<div class="activity-row-meta">' + timeStr + '</div>'
-      + '</div>';
-    feed.insertBefore(row, feed.firstChild);
-
-    // Keep max 10 entries
-    while (feed.children.length > 10) feed.removeChild(feed.lastChild);
-  }
-
-  function clearActivity() {
-    const feed = document.getElementById('activityFeed');
-    if (feed) feed.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--text-tertiary);text-align:center;">No activity yet this session. Ask your brain something to get started.</div>';
-  }
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  async function sendBuild() {
-    const input = document.getElementById('buildInput');
-    const prompt = input.value.trim();
-    if (!prompt) return;
-
-    const output = document.getElementById('buildOutput');
-    const steps = document.getElementById('outputSteps');
-    const btn = document.getElementById('buildBtn');
-
-    btn.disabled = true;
-    btn.textContent = 'Thinking...';
-    steps.innerHTML = '';
-    output.classList.remove('visible');
-
-    // Start matrix animation
-    startMatrix();
-    setMatrixStatus('Understanding your request...');
-
-    const shortPrompt = prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt;
-    input.value = '';
-    input.style.height = 'auto';
-
-    try {
-      const data = await api('/api/build', {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt,
-          conversation_id: conversationId,
-          mode: depthMode,
-          file_ids: attachedFileIds.map(f => f.id),
-        }),
-      });
-
-      stopMatrix();
-      output.classList.add('visible');
-      addOutputStep(steps, 'Request understood', 'done');
-
-      // Track conversation for continuity
-      if (data.conversation_id) {
-        saveConversationId(data.conversation_id);
-        updateConversationIndicator();
-      }
-
-      if (data.success) {
-        addOutputStep(steps, 'Complete', 'done');
-        const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
-        resultDiv.textContent = data.output || '(No output returned)';
-        steps.appendChild(resultDiv);
-        addActivity('🧠', 'task', '<strong>Asked:</strong> ' + escapeHtml(shortPrompt));
-        attachedFileIds = [];
-        renderAttachedFiles();
-      } else {
-        addOutputStep(steps, 'Error: ' + (data.error || 'Unknown error'), 'running');
-      }
-    } catch (e) {
-      stopMatrix();
-      output.classList.add('visible');
-      addOutputStep(steps, 'Error: ' + (e.message || 'Request failed'), 'running');
-    }
-
-    btn.disabled = false;
-    btn.textContent = 'Ask';
-  }
-
-  function addOutputStep(container, text, state) {
-    const div = document.createElement('div');
-    div.className = 'output-step';
-    const icon = state === 'done' ? '✓' : '⋯';
-    div.innerHTML = '<div class="output-step-icon ' + state + '">' + icon + '</div><span>' + escapeHtml(text) + '</span>';
-    container.appendChild(div);
-  }
-
-  function markLastStepDone(container) {
-    const prev = container.querySelector('.output-step:last-child .output-step-icon');
-    if (prev && prev.classList.contains('running')) {
-      prev.className = 'output-step-icon done';
-      prev.textContent = '✓';
-    }
-  }
-
-  function escapeHtml(text) {
-    const d = document.createElement('div');
-    d.textContent = text;
-    return d.innerHTML;
-  }
-
-  // ─── Voice / Talk mode ──────────────────────────────────────────────────
-
-  let recognition = null;
-  let micRestartCount = 0;
-  const MAX_MIC_RESTARTS = 3;
-
-  function resetMicUI(label, message) {
-    const mic = document.getElementById('micBtn');
-    const wave = document.getElementById('waveform');
-    isRecording = false;
-    mic.classList.remove('recording');
-    mic.textContent = '🎙️';
-    wave.style.display = 'none';
-    label.textContent = message || 'Click to start speaking';
-    recognition = null;
-    micRestartCount = 0;
-  }
-
-  async function toggleMic() {
-    const mic = document.getElementById('micBtn');
-    const label = document.getElementById('micLabel');
-    const wave = document.getElementById('waveform');
-
-    // Check browser support
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      label.textContent = 'Voice input requires Chrome or Edge browser';
-      label.style.color = 'var(--red)';
-      setTimeout(() => { label.style.color = ''; }, 4000);
-      return;
-    }
-
-    // Check secure context (needed for microphone access)
-    if (!window.isSecureContext) {
-      label.textContent = 'Voice requires HTTPS or localhost';
-      label.style.color = 'var(--red)';
-      setTimeout(() => { label.style.color = ''; }, 4000);
-      return;
-    }
-
-    if (!isRecording) {
-      // Request microphone permission first
-      try {
-        label.textContent = 'Requesting microphone access...';
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Got permission — stop the stream (SpeechRecognition handles its own)
-        stream.getTracks().forEach(track => track.stop());
-      } catch (err) {
-        console.error('Microphone permission error:', err);
-        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-          label.textContent = 'Microphone blocked — check browser permissions';
-        } else if (err.name === 'NotFoundError') {
-          label.textContent = 'No microphone found on this device';
-        } else {
-          label.textContent = 'Microphone error: ' + err.message;
-        }
-        label.style.color = 'var(--red)';
-        setTimeout(() => { label.style.color = ''; }, 5000);
-        return;
-      }
-
-      // Start recording
-      isRecording = true;
-      micRestartCount = 0;
-      mic.classList.add('recording');
-      mic.textContent = '⏹️';
-      label.textContent = 'Listening... speak now';
-      wave.style.display = 'flex';
-
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      let finalTranscript = '';
-
-      recognition.onresult = (event) => {
-        let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interim += event.results[i][0].transcript;
-          }
-        }
-        document.getElementById('buildInput').value = finalTranscript + interim;
-        label.textContent = 'Listening... (click stop when done)';
-      };
-
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        if (event.error === 'not-allowed') {
-          resetMicUI(label, 'Microphone blocked — check browser permissions');
-        } else if (event.error === 'no-speech') {
-          label.textContent = 'No speech detected — try again';
-        } else if (event.error === 'network') {
-          resetMicUI(label, 'Network error — speech recognition needs internet');
-        } else if (event.error === 'aborted') {
-          // User or system aborted — handled by onend
-        } else {
-          resetMicUI(label, 'Error: ' + event.error);
-        }
-      };
-
-      recognition.onend = () => {
-        if (isRecording) {
-          micRestartCount++;
-          if (micRestartCount < MAX_MIC_RESTARTS) {
-            // Browser stopped on its own — restart to keep listening
-            try { recognition.start(); } catch(e) { resetMicUI(label, 'Microphone stopped unexpectedly'); }
-          } else {
-            // Too many restarts — stop gracefully
-            const transcript = document.getElementById('buildInput').value.trim();
-            resetMicUI(label, transcript ? 'Done — your text is in the input box' : 'Microphone timed out — try again');
-            if (transcript) document.getElementById('writeModeBtn').click();
-          }
-        } else {
-          // User clicked stop
-          const transcript = document.getElementById('buildInput').value.trim();
-          resetMicUI(label, transcript ? 'Done — your text is in the input box' : 'Click to start speaking');
-          if (transcript) document.getElementById('writeModeBtn').click();
-        }
-      };
-
-      try {
-        recognition.start();
-      } catch(e) {
-        console.error('Failed to start speech recognition:', e);
-        resetMicUI(label, 'Could not start voice input — try Chrome browser');
-      }
-    } else {
-      isRecording = false;
-      if (recognition) {
-        try { recognition.stop(); } catch(e) { resetMicUI(label); }
-      }
-    }
-  }
-
-  // ─── Routines ───────────────────────────────────────────────────────────
-
-  async function runRoutine(btn, routineId) {
-    const orig = btn.textContent;
-    btn.textContent = '⏳ Running...';
-    btn.style.background = 'rgba(245,158,11,0.08)'; btn.style.color = '#f59e0b'; btn.style.borderColor = 'rgba(245,158,11,0.2)';
-    try {
-      const data = await api('/api/routines/' + routineId + '/run', {
-        method: 'POST',
-        body: JSON.stringify({ conversation_id: conversationId }),
-      });
-      // Track conversation so follow-up messages continue this session
-      if (data.conversation_id) {
-        conversationId = data.conversation_id;
-        updateConversationIndicator();
-      }
-      btn.textContent = '✓ Complete';
-      btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
-      addActivity('✓', 'routine', '<strong>' + routineId.charAt(0).toUpperCase() + routineId.slice(1) + ' Routine</strong> completed');
-      if (data.success && data.output) {
-        const output = document.getElementById('buildOutput');
-        const steps = document.getElementById('outputSteps');
-        output.classList.add('visible');
-        steps.innerHTML = '';
-        addOutputStep(steps, routineId + ' routine completed', 'done');
-        const resultDiv = document.createElement('div');
-        resultDiv.style.cssText = 'margin-top:12px;padding:14px;background:var(--bg-input);border-radius:var(--radius-sm);font-size:13px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;border:1px solid var(--border);';
-        resultDiv.textContent = data.output;
-        steps.appendChild(resultDiv);
-      }
-    } catch (e) {
-      btn.textContent = '✓ Complete';
-      btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
-    }
-    setTimeout(() => { btn.textContent = orig; btn.style = ''; }, 3000);
-  }
-
-  function simulateRun(btn) {
-    const orig = btn.textContent;
-    btn.textContent = '⏳ Running...';
-    btn.style.background = 'rgba(245,158,11,0.08)'; btn.style.color = '#f59e0b'; btn.style.borderColor = 'rgba(245,158,11,0.2)';
-    setTimeout(() => {
-      btn.textContent = '✓ Complete';
-      btn.style.background = 'var(--green-light)'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'rgba(16,185,129,0.2)';
-      setTimeout(() => { btn.textContent = orig; btn.style = ''; }, 2000);
-    }, 2500);
-  }
-
-  async function addStepPrompt(routine) {
-    const label = routine === 'morning' ? 'morning' : 'evening';
-    const step = prompt('Add a step to your ' + label + ' routine.\n\nWrite it in plain language, e.g.:\n"Check if any contractors sent updates overnight"');
-    if (!step || !step.trim()) return;
-    try {
-      const data = await api('/api/routines/' + routine + '/add-step', {
-        method: 'POST', body: JSON.stringify({ step: step.trim() }),
-      });
-      if (data.success) alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '"');
-    } catch (e) {
-      alert('Added to your ' + label + ' routine:\n\n"' + step.trim() + '" (demo mode)');
-    }
-  }
-
-  // ─── File Upload ────────────────────────────────────────────────────────
-
-  let attachedFileIds = []; // [{id, filename}]
-
-  async function handleFileUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    input.value = ''; // reset so same file can be re-selected
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const attachBtn = document.querySelector('.attach-btn');
-    attachBtn.textContent = '...';
-    attachBtn.style.pointerEvents = 'none';
-
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.success) {
-        attachedFileIds.push({ id: data.file_id, filename: data.filename });
-        renderAttachedFiles();
-        addActivity('📎', 'task', '<strong>Attached:</strong> ' + escapeHtml(data.filename) + (data.truncated ? ' (truncated)' : ''));
-      } else {
-        alert(data.error || 'Upload failed');
-      }
-    } catch (e) {
-      alert('Upload failed — server not reachable');
-    }
-
-    attachBtn.textContent = '📎';
-    attachBtn.style.pointerEvents = '';
-  }
-
-  function renderAttachedFiles() {
-    const container = document.getElementById('attachedFiles');
-    container.innerHTML = attachedFileIds.map((f, i) =>
-      '<div class="file-chip">' +
-        '<span>📄 ' + escapeHtml(f.filename) + '</span>' +
-        '<button class="file-chip-remove" onclick="removeAttachedFile(' + i + ')" title="Remove">&times;</button>' +
-      '</div>'
+    const c = document.getElementById('projects-list');
+    if (!c) return;
+    c.innerHTML = projectsList.map((p,i) =>
+      '<div class="project-edit-row">' +
+      '<input class="proj-name" placeholder="Name" value="'+escapeHtml(p.name||'')+'" onchange="projectsList['+i+'].name=this.value">' +
+      '<input class="proj-desc" placeholder="Description" value="'+escapeHtml(p.description||'')+'" onchange="projectsList['+i+'].description=this.value">' +
+      '<select onchange="projectsList['+i+'].status=this.value">' +
+      '<option value="active"'+(p.status==='active'?' selected':'')+'>Active</option>' +
+      '<option value="review"'+(p.status==='review'?' selected':'')+'>Review</option>' +
+      '<option value="paused"'+(p.status==='paused'?' selected':'')+'>Paused</option>' +
+      '<option value="done"'+(p.status==='done'?' selected':'')+'>Done</option></select>' +
+      '<button class="proj-remove" onclick="removeProject('+i+')">&times;</button></div>'
     ).join('');
   }
 
-  async function removeAttachedFile(index) {
-    const file = attachedFileIds[index];
-    attachedFileIds.splice(index, 1);
-    renderAttachedFiles();
-    try { await fetch('/api/upload/' + file.id, { method: 'DELETE' }); } catch (e) { /* ok */ }
+  function renderHomeProjects() {
+    const p = document.getElementById('home-projects');
+    if (!p) return;
+    if (projectsList.length === 0) { p.innerHTML = '<div class="widget-empty">No projects. Add in About Me.</div>'; return; }
+    p.innerHTML = projectsList.filter(x => x.status !== 'done').map(x =>
+      '<div class="project-row"><span class="project-row-name">'+escapeHtml(x.name||'Untitled')+'</span>' +
+      '<span class="project-row-badge '+(x.status||'active')+'">'+((x.status||'active').charAt(0).toUpperCase()+(x.status||'active').slice(1))+'</span></div>'
+    ).join('');
   }
 
-  // ─── Server page ────────────────────────────────────────────────────────
+  function addProject() { projectsList.push({name:'',description:'',status:'active'}); renderProjects(); }
+  function removeProject(i) { projectsList.splice(i,1); renderProjects(); }
 
-  function selectServer(el) {
-    document.querySelectorAll('.server-card').forEach(s => s.classList.remove('selected'));
-    el.classList.add('selected');
+  async function saveProjects() {
+    const ind = document.getElementById('projects-save-indicator');
+    ind.textContent = 'Saving...';
+    try {
+      const d = await api('/api/projects', { method:'POST', body:JSON.stringify({projects:projectsList}) });
+      if (d.success) { ind.textContent='Saved'; ind.style.color='var(--green)'; renderHomeProjects(); setTimeout(()=>{ind.textContent='';ind.style.color='';},3000); }
+    } catch(e) { ind.textContent='Error'; ind.style.color='var(--red)'; }
   }
 
-  // ─── Getting Started ─────────────────────────────────────────────────────
+  // ─── Conversation ───────────────────────────────────────────────
+  function newConversation() { conversationId = null; localStorage.removeItem('msb_conversation_id'); updateConversationIndicator(); document.getElementById('buildOutput').classList.remove('visible'); }
+  function saveConversationId(id) { conversationId = id; localStorage.setItem('msb_conversation_id', id); }
+  function updateConversationIndicator() {
+    const i = document.getElementById('conversationIndicator'), b = document.getElementById('newChatBtn');
+    if (conversationId) { i.style.display='inline'; b.style.display='inline'; }
+    else { i.style.display='none'; b.style.display='none'; }
+  }
+
+  // ─── Ask My Brain ──────────────────────────────────────────────
+  function setMode(m) {
+    const wB=document.getElementById('writeModeBtn'), tB=document.getElementById('talkModeBtn');
+    const wM=document.getElementById('buildInput').parentElement, tM=document.getElementById('talkMode');
+    if (m==='write') { wB.classList.add('active'); tB.classList.remove('active'); wM.style.display=''; tM.style.display='none'; }
+    else { tB.classList.add('active'); wB.classList.remove('active'); tM.style.display='flex'; wM.style.display='none'; }
+  }
+
+  function setDepth(m) {
+    depthMode = m;
+    document.getElementById('fastModeBtn').classList.toggle('active', m==='fast');
+    document.getElementById('deepModeBtn').classList.toggle('active', m==='deep');
+  }
+
+  function setExample(t) { document.getElementById('buildInput').value = t; document.getElementById('buildInput').focus(); setMode('write'); }
+
+  function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
+
+  async function sendBuild() {
+    const inp = document.getElementById('buildInput'), prompt = inp.value.trim();
+    if (!prompt) return;
+    const btn = document.getElementById('buildBtn');
+    const output = document.getElementById('buildOutput'), result = document.getElementById('outputResult');
+    btn.disabled = true; btn.textContent = '...';
+    output.classList.remove('visible'); startThinking();
+    inp.value = ''; inp.style.height = 'auto';
+    try {
+      const d = await api('/api/build', { method:'POST', body:JSON.stringify({ prompt, conversation_id:conversationId, mode:depthMode, file_ids:attachedFileIds.map(f=>f.id) }) });
+      stopThinking();
+      if (d.conversation_id) { saveConversationId(d.conversation_id); updateConversationIndicator(); }
+      result.textContent = d.success ? (d.output||'(No output)') : 'Error: '+(d.error||'Unknown');
+      output.classList.add('visible');
+      if (d.success) { attachedFileIds = []; renderAttachedFiles(); }
+    } catch(e) { stopThinking(); result.textContent = 'Error: '+e.message; output.classList.add('visible'); }
+    btn.disabled = false; btn.textContent = 'Ask';
+  }
+
+  function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+  // ─── Voice ──────────────────────────────────────────────────────
+  let recognition = null, micRestartCount = 0;
+  function resetMicUI(label, msg) { isRecording=false; document.getElementById('micBtn').classList.remove('recording'); document.getElementById('micBtn').textContent='\u{1F3A4}'; document.getElementById('waveform').style.display='none'; label.textContent=msg||'Click to speak'; recognition=null; micRestartCount=0; }
+
+  async function toggleMic() {
+    const mic=document.getElementById('micBtn'), label=document.getElementById('micLabel'), wave=document.getElementById('waveform');
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { label.textContent='Needs Chrome/Edge'; return; }
+    if (!isRecording) {
+      try { const s = await navigator.mediaDevices.getUserMedia({audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { label.textContent='Mic blocked'; return; }
+      isRecording=true; micRestartCount=0; mic.classList.add('recording'); mic.textContent='\u23F9\uFE0F'; label.textContent='Listening...'; wave.style.display='flex';
+      recognition = new SR(); recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-US'; let ft='';
+      recognition.onresult = e => { let im=''; for(let i=e.resultIndex;i<e.results.length;i++) { if(e.results[i].isFinal) ft+=e.results[i][0].transcript; else im+=e.results[i][0].transcript; } document.getElementById('buildInput').value=ft+im; };
+      recognition.onerror = e => { if(e.error==='not-allowed') resetMicUI(label,'Mic blocked'); else if(e.error!=='aborted'&&e.error!=='no-speech') resetMicUI(label,'Error: '+e.error); };
+      recognition.onend = () => { if(isRecording&&++micRestartCount<3) { try{recognition.start();}catch(e){resetMicUI(label,'Stopped');} } else { resetMicUI(label, document.getElementById('buildInput').value.trim()?'Done':'Click to speak'); if(document.getElementById('buildInput').value.trim()) document.getElementById('writeModeBtn').click(); } };
+      try { recognition.start(); } catch(e) { resetMicUI(label,'Could not start'); }
+    } else { isRecording=false; if(recognition) try{recognition.stop();}catch(e){resetMicUI(label);} }
+  }
+
+  // ─── Routines ───────────────────────────────────────────────────
+  async function runRoutine(btn, id) {
+    const orig = btn.textContent; btn.textContent='...'; btn.style.background='var(--warning-light)'; btn.style.color='var(--warning)';
+    try {
+      const d = await api('/api/routines/'+id+'/run', { method:'POST', body:JSON.stringify({conversation_id:conversationId}) });
+      if (d.conversation_id) { saveConversationId(d.conversation_id); updateConversationIndicator(); }
+      btn.textContent='Done'; btn.style.background='var(--green-light)'; btn.style.color='var(--green)';
+      if (d.success && d.output) { document.getElementById('outputResult').textContent=d.output; document.getElementById('buildOutput').classList.add('visible'); }
+    } catch(e) { btn.textContent='Done'; btn.style.background='var(--green-light)'; btn.style.color='var(--green)'; }
+    setTimeout(() => { btn.textContent=orig; btn.style=''; }, 3000);
+  }
+
+  async function addStepPrompt(r) {
+    const s = prompt('Add step to '+r+' routine (plain language):');
+    if (!s||!s.trim()) return;
+    try { await api('/api/routines/'+r+'/add-step', { method:'POST', body:JSON.stringify({step:s.trim()}) }); alert('Added: "'+s.trim()+'"'); }
+    catch(e) { alert('Added (demo): "'+s.trim()+'"'); }
+  }
+
+  // ─── File Upload ────────────────────────────────────────────────
+  let attachedFileIds = [];
+  async function handleFileUpload(input) {
+    const file = input.files[0]; if (!file) return; input.value='';
+    const fd = new FormData(); fd.append('file', file);
+    const btn = document.querySelector('.attach-btn'); btn.textContent='...';
+    try {
+      const r = await fetch('/api/upload', { method:'POST', body:fd }), d = await r.json();
+      if (d.success) { attachedFileIds.push({id:d.file_id,filename:d.filename}); renderAttachedFiles(); } else alert(d.error);
+    } catch(e) { alert('Upload failed'); }
+    btn.textContent='\u{1F4CE}';
+  }
+
+  function renderAttachedFiles() {
+    document.getElementById('attachedFiles').innerHTML = attachedFileIds.map((f,i) =>
+      '<div class="file-chip"><span>'+escapeHtml(f.filename)+'</span><button class="file-chip-remove" onclick="removeAttachedFile('+i+')">&times;</button></div>'
+    ).join('');
+  }
+
+  async function removeAttachedFile(i) { const f=attachedFileIds[i]; attachedFileIds.splice(i,1); renderAttachedFiles(); try{await fetch('/api/upload/'+f.id,{method:'DELETE'});}catch(e){} }
+
+  function selectServer(el) { document.querySelectorAll('.server-card').forEach(s=>s.classList.remove('selected')); el.classList.add('selected'); }
 
   function copySetupCommand(btn) {
-    const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
-    navigator.clipboard.writeText(cmd).then(() => {
-      btn.textContent = 'Copied!';
-      btn.style.background = 'rgba(16,185,129,0.2)'; btn.style.borderColor = 'rgba(16,185,129,0.3)';
-      setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; btn.style.borderColor = ''; }, 2000);
-    }).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = cmd; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
-    });
+    navigator.clipboard.writeText('git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh').then(() => { btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy', 2000); });
   }
 
-  // ─── Keyboard shortcut: Enter to send ─────────────────────────────────
-
-  function updateGreeting() {
-    const h = new Date().getHours();
-    let greeting;
-    if (h < 12) greeting = 'Good morning';
-    else if (h < 17) greeting = 'Good afternoon';
-    else greeting = 'Good evening';
-    const el = document.getElementById('greetingTitle');
-    if (el) el.textContent = greeting;
-  }
-
+  // ─── Init ───────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('buildInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuild(); }
-    });
-    updateGreeting();
+    document.getElementById('buildInput').addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendBuild();} });
+    document.getElementById('scratchpadText').addEventListener('input', saveScratchpad);
+    // Greeting
+    const h = new Date().getHours();
+    document.getElementById('greetingTitle').textContent = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+    document.getElementById('greetingDate').textContent = new Date().toLocaleDateString('en-IE', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
     loadProjects();
     updateConversationIndicator();
   });
 </script>
-
 </body>
 </html>

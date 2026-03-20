@@ -4,4 +4,7 @@ __pycache__/
 *.pyo
 routines.json
 projects.json
+scratchpad.json
+actionitems.json
+quicklinks.json
 .DS_Store

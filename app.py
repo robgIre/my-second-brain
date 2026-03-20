@@ -311,6 +311,108 @@ def api_routines_run(routine_id):
     return jsonify(result)
 
 
+# ─── API: Scratchpad (Daily Log) ──────────────────────────────────────────────
+
+SCRATCHPAD_FILE = os.path.join(os.path.dirname(__file__), "scratchpad.json")
+
+
+def load_scratchpad():
+    if os.path.exists(SCRATCHPAD_FILE):
+        with open(SCRATCHPAD_FILE, "r") as f:
+            data = json.load(f)
+        # Return today's notes only; keep history
+        today = time.strftime("%Y-%m-%d")
+        return {"today": today, "notes": data.get(today, ""), "history": data}
+    return {"today": time.strftime("%Y-%m-%d"), "notes": "", "history": {}}
+
+
+def save_scratchpad_notes(notes):
+    today = time.strftime("%Y-%m-%d")
+    data = {}
+    if os.path.exists(SCRATCHPAD_FILE):
+        with open(SCRATCHPAD_FILE, "r") as f:
+            data = json.load(f)
+    data[today] = notes
+    with open(SCRATCHPAD_FILE, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+@app.route("/api/scratchpad", methods=["GET"])
+def api_scratchpad_get():
+    return jsonify({"success": True, **load_scratchpad()})
+
+
+@app.route("/api/scratchpad", methods=["POST"])
+def api_scratchpad_save():
+    data = request.get_json()
+    if data is None or "notes" not in data:
+        return jsonify({"success": False, "error": "No notes provided"}), 400
+    save_scratchpad_notes(data["notes"])
+    return jsonify({"success": True})
+
+
+# ─── API: Action Items ───────────────────────────────────────────────────────
+
+ACTIONS_FILE = os.path.join(os.path.dirname(__file__), "actionitems.json")
+
+
+def load_action_items():
+    if os.path.exists(ACTIONS_FILE):
+        with open(ACTIONS_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+
+def save_action_items(items):
+    with open(ACTIONS_FILE, "w") as f:
+        json.dump(items, f, indent=2)
+
+
+@app.route("/api/actionitems", methods=["GET"])
+def api_actionitems_get():
+    return jsonify({"success": True, "items": load_action_items()})
+
+
+@app.route("/api/actionitems", methods=["POST"])
+def api_actionitems_save():
+    data = request.get_json()
+    if data is None or "items" not in data:
+        return jsonify({"success": False, "error": "No items provided"}), 400
+    save_action_items(data["items"])
+    return jsonify({"success": True})
+
+
+# ─── API: Quick Links ────────────────────────────────────────────────────────
+
+QUICKLINKS_FILE = os.path.join(os.path.dirname(__file__), "quicklinks.json")
+
+
+def load_quicklinks():
+    if os.path.exists(QUICKLINKS_FILE):
+        with open(QUICKLINKS_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+
+def save_quicklinks(links):
+    with open(QUICKLINKS_FILE, "w") as f:
+        json.dump(links, f, indent=2)
+
+
+@app.route("/api/quicklinks", methods=["GET"])
+def api_quicklinks_get():
+    return jsonify({"success": True, "links": load_quicklinks()})
+
+
+@app.route("/api/quicklinks", methods=["POST"])
+def api_quicklinks_save():
+    data = request.get_json()
+    if data is None or "links" not in data:
+        return jsonify({"success": False, "error": "No links provided"}), 400
+    save_quicklinks(data["links"])
+    return jsonify({"success": True})
+
+
 # ─── API: File Upload ─────────────────────────────────────────────────────────
 
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
