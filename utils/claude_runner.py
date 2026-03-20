@@ -27,7 +27,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
     try:
         cmd = ["claude", "-p", "-", "--output-format", "json"]
         if allow_tools:
-            for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
+            for tool in ["Bash(*)", "Read", "Write", "Edit", "Skill", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])
         if conversation_id:
             cmd.extend(["-c", conversation_id])
@@ -84,7 +84,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         if model:
             cmd.extend(["--model", model])
         if allow_tools:
-            for tool in ["Bash(*)", "Read", "Write", "Edit", "mcp__*"]:
+            for tool in ["Bash(*)", "Read", "Write", "Edit", "Skill", "mcp__*"]:
                 cmd.extend(["--allowedTools", tool])
         if conversation_id:
             cmd.extend(["-c", conversation_id])
