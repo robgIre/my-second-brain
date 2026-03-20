@@ -40,7 +40,7 @@ git --version
 - Restart your terminal after installing
 
 **Meta OD:**
-- Git should already be installed. If not, run: `sudo apt-get install git`
+- Git is pre-installed on ODs.
 
 ---
 
@@ -85,7 +85,13 @@ The app will still run without it — you can browse the interface, see how it l
 
 ## Step 3: Install My Second Brain
 
-Copy and paste this entire block into your terminal and hit Enter:
+**On a Meta OD:** Set the proxy first so your OD can reach GitHub:
+```
+export https_proxy=http://fwdproxy:8080
+export http_proxy=http://fwdproxy:8080
+```
+
+Then copy and paste this into your terminal and hit Enter:
 
 ```
 git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
@@ -132,6 +138,23 @@ You'll see output like this:
 4. Click **"Save & Sync"**
 
 This teaches your brain who you are. Every time you use it, it already knows your context.
+
+---
+
+## Step 6: Install plugins (calendar, tasks, GChat)
+
+Without plugins, your brain can't access your calendar, tasks, or other internal tools. Run these in a **regular terminal** (not from the dashboard — you'll get a "nested session" error):
+
+```
+claude plugin install meta@Meta
+claude plugin install llm-rules@Meta
+claude plugin install meta_knowledge@Meta
+claude plugin install meta_codesearch@Meta
+```
+
+Then restart the server: `cd ~/my-second-brain && bash setup.sh`
+
+**Note:** Plugins installed on your Mac don't carry over to your OD. You need to install them separately on each machine. You only need to do this once per OD.
 
 ---
 

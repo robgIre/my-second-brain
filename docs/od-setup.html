@@ -550,6 +550,31 @@
     </div>
   </div>
 
+  <div class="arrow">&#8595;</div>
+
+  <!-- Step 9 -->
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <h3>Install plugins (calendar, tasks, etc.)</h3>
+      <p>Without plugins, your brain can't access your calendar, tasks, GChat, or Workplace. You need to install them <strong>on the OD itself</strong> — plugins installed on your Mac don't carry over.</p>
+      <p><strong>Important:</strong> Run these commands in a <strong>regular terminal</strong>, not from inside the My Second Brain dashboard or a Claude Code session (you'll get a "nested session" error).</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyPlugins(this)">Copy</button>
+        claude plugin install meta@Meta<br>
+        claude plugin install llm-rules@Meta<br>
+        claude plugin install meta_knowledge@Meta<br>
+        claude plugin install meta_codesearch@Meta
+      </div>
+      <p>After installing, <strong>restart the server</strong> for the plugins to take effect:</p>
+      <div class="code-block">
+        <button class="copy-btn" onclick="copyRestart(this)">Copy</button>
+        cd ~/my-second-brain && bash setup.sh
+      </div>
+      <p style="font-size:12px;color:var(--text-tertiary);">You only need to do this once per OD. If you release your OD and get a new one, you'll need to install plugins again.</p>
+    </div>
+  </div>
+
 </section>
 
 <section class="try-section">
@@ -618,6 +643,17 @@
   </div>
 
   <div class="trouble-item">
+    <h4>"Calendar not working" / "I don't have access to your calendar"</h4>
+    <p>This means plugins aren't installed on your OD. Open a <strong>regular terminal</strong> (not the dashboard) and run:<br>
+    <code>claude plugin install meta@Meta</code><br>
+    <code>claude plugin install llm-rules@Meta</code><br>
+    <code>claude plugin install meta_knowledge@Meta</code><br>
+    <code>claude plugin install meta_codesearch@Meta</code><br><br>
+    Then restart the server: <code>cd ~/my-second-brain && bash setup.sh</code><br><br>
+    <strong>Note:</strong> Do NOT run <code>claude plugin install</code> from inside a Claude Code session or the dashboard — you'll get a "nested session" error. Use a plain terminal.</p>
+  </div>
+
+  <div class="trouble-item">
     <h4>"This site can't be reached" / "localhost refused to connect"</h4>
     <p>This is the most common issue. It means port 5151 isn't being forwarded from the OD to your laptop.<br><br>
     <strong>Fix:</strong> Close your terminal and reconnect using SSH with port forwarding:<br>
@@ -666,6 +702,13 @@ function copyProxy(btn) {
 function copyCmd(btn) {
   const cmd = 'git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh';
   navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+  });
+}
+
+function copyPlugins(btn) {
+  navigator.clipboard.writeText('claude plugin install meta@Meta\nclaude plugin install llm-rules@Meta\nclaude plugin install meta_knowledge@Meta\nclaude plugin install meta_codesearch@Meta').then(() => {
     btn.textContent = 'Copied!';
     setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
   });
