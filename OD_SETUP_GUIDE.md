@@ -10,10 +10,10 @@ It covers:
 3. Connecting to your OD (`dev connect`)
 4. Checking Python and Claude Code are installed
 5. Authenticating internal tools (`jf authenticate`)
-6. Installing and starting My Second Brain
-7. Opening the dashboard (`localhost:5151`)
-8. Setting up your profile
-9. Installing plugins (calendar, tasks, GChat, Workplace)
+6. Installing plugins (calendar, tasks, GChat, Workplace)
+7. Installing and starting My Second Brain
+8. Opening the dashboard (`localhost:5151`)
+9. Setting up your profile
 
 ## Quick Reference
 
@@ -24,14 +24,13 @@ export http_proxy=http://fwdproxy:8080
 git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
 ```
 
-**Install plugins (open a new terminal tab with Cmd+T, SSH into your OD, then run):**
+**Install plugins (run on your OD before starting the server):**
 ```bash
 claude plugin install meta@Meta
 claude plugin install llm-rules@Meta
 claude plugin install meta_knowledge@Meta
 claude plugin install meta_codesearch@Meta
 ```
-Then disconnect from the OD, reconnect, and restart the server.
 
 **Restart:**
 ```bash

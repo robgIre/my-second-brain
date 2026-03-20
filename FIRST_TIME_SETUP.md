@@ -83,15 +83,30 @@ The app will still run without it — you can browse the interface, see how it l
 
 ---
 
-## Step 3: Install My Second Brain
+## Step 3: Install plugins (calendar, tasks, GChat)
 
-**On a Meta OD:** Set the proxy first so your OD can reach GitHub:
+Still in the same terminal window — without plugins, your brain can't access your calendar, tasks, or other internal tools. Paste these commands:
+
+```
+claude plugin install meta@Meta
+claude plugin install llm-rules@Meta
+claude plugin install meta_knowledge@Meta
+claude plugin install meta_codesearch@Meta
+```
+
+You only need to do this once per OD. If you release your OD and get a new one, you'll need to install plugins again.
+
+---
+
+## Step 4: Install and start My Second Brain
+
+Still in the same terminal window. **On a Meta OD:** Set the proxy first so your OD can reach GitHub:
 ```
 export https_proxy=http://fwdproxy:8080
 export http_proxy=http://fwdproxy:8080
 ```
 
-Then copy and paste this into your terminal and hit Enter:
+Then paste this to download and start the app:
 
 ```
 git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
@@ -117,58 +132,30 @@ You'll see output like this:
     http://localhost:5151
 ```
 
-**Keep this terminal window open** — it's running the server. If you close it, the app stops.
+**Don't close this terminal window** — it's running the server. If you close it, the app stops.
 
 ---
 
-## Step 4: Open the app
+## Step 5: Open the app
 
-1. Open your web browser (Chrome, Safari, Firefox — any will work)
-2. Go to: **http://localhost:5151**
-3. Click the green **"Connect Brain"** button
-4. You should see "Your brain is active" — you're done!
+You're done with the terminal! Open your web browser (Chrome, Safari, Firefox — any will work):
+
+1. Go to: **http://localhost:5151**
+2. Click the green **"Connect Brain"** button
+3. You should see "Your brain is active" — you're all set!
+
+**Page won't load?** See the OD Setup Guide for the port forwarding fix.
 
 ---
 
-## Step 5: Set up your profile
+## Step 6: Set up your profile
 
 1. Click **"About Me"** in the sidebar
 2. Fill in your name, role, team, manager, location
 3. Write a short background about what you do
 4. Click **"Save & Sync"**
 
-This teaches your brain who you are. Every time you use it, it already knows your context.
-
----
-
-## Step 6: Install plugins (calendar, tasks, GChat)
-
-Without plugins, your brain can't access your calendar, tasks, or other internal tools. You need to install them **on the OD itself** — plugins installed on your Mac don't carry over.
-
-**Where to run these:** Open a **new terminal tab** on your laptop (**Cmd+T** on Mac, or open a new Command Prompt on Windows). Then SSH into your OD from that new tab:
-
-```
-ssh yourusername@YOUR-OD-NUMBER.od.fbinfra.net
-```
-
-Once connected, paste these commands:
-
-```
-claude plugin install meta@Meta
-claude plugin install llm-rules@Meta
-claude plugin install meta_knowledge@Meta
-claude plugin install meta_codesearch@Meta
-```
-
-**Do NOT** run these from inside the My Second Brain dashboard or a Claude Code session — you'll get a "nested session" error. It must be a fresh terminal connected to your OD.
-
-**After installing, restart everything:**
-1. Go to the terminal tab where the server is running and press **Ctrl+C** to stop it
-2. Type **exit** and hit Enter to disconnect from the OD
-3. Reconnect to your OD (`dev connect` or `ssh -L 5151:localhost:5151 ...`)
-4. Start the server again: `cd ~/my-second-brain && bash setup.sh`
-
-You only need to do this once per OD. If you release your OD and get a new one, you'll need to install plugins again.
+This teaches your brain who you are. Every time you use it, it already knows your context. From now on, everything happens in your browser.
 
 ---
 
