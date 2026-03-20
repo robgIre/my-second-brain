@@ -24,6 +24,9 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 # In-memory state
 connection_state = {"connected": False, "server_id": None, "last_check": None}
 
+# Day view cache — meetings + brief, reset daily
+day_cache = {"date": None, "meetings": None, "brief": None, "meetings_loading": False, "brief_loading": False}
+
 
 # ─── Pages ───────────────────────────────────────────────────────────────────
 
@@ -309,6 +312,112 @@ def api_routines_run(routine_id):
     conversation_id = data.get("conversation_id")
     result = run_prompt(prompt, timeout=300, conversation_id=conversation_id, allow_tools=True)
     return jsonify(result)
+
+
+# ─── API: Day View (Meetings + Morning Brief) ───────────────────────────────
+
+def reset_day_cache_if_needed():
+    today = time.strftime("%Y-%m-%d")
+    if day_cache["date"] != today:
+        day_cache["date"] = today
+        day_cache["meetings"] = None
+        day_cache["brief"] = None
+        day_cache["meetings_loading"] = False
+        day_cache["brief_loading"] = False
+
+
+def fetch_meetings_background():
+    """Background thread to fetch today's meetings."""
+    day_cache["meetings_loading"] = True
+    try:
+        prompt = (
+            "List my meetings for today in chronological order. "
+            "For each meeting give the title, start time, end time, and key attendees. "
+            "Format each meeting on its own line like: HH:MM - HH:MM | Meeting Title | Attendees\n"
+            "Example: 10:00 - 10:30 | Team Sync | Alice, Bob\n"
+            "If you cannot access my calendar, say 'Calendar not available'."
+        )
+        result = run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=True)
+        day_cache["meetings"] = result.get("output", "No meetings found")
+    except Exception as e:
+        day_cache["meetings"] = f"Could not fetch meetings: {str(e)}"
+    day_cache["meetings_loading"] = False
+
+
+def fetch_brief_background():
+    """Background thread to generate the morning brief."""
+    day_cache["brief_loading"] = True
+    try:
+        # Include scratchpad from yesterday if available
+        yesterday_notes = ""
+        if os.path.exists(os.path.join(os.path.dirname(__file__), "scratchpad.json")):
+            with open(os.path.join(os.path.dirname(__file__), "scratchpad.json"), "r") as f:
+                pad_data = json.load(f)
+            # Find yesterday's notes
+            from datetime import datetime, timedelta
+            yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+            if yesterday in pad_data and pad_data[yesterday].strip():
+                yesterday_notes = f"\n\nYesterday's notes from my scratchpad:\n{pad_data[yesterday]}\n"
+
+        prompt = (
+            "Give me a concise morning brief for today. Include:\n"
+            "1. My meetings for today (list them with times)\n"
+            "2. Any open tasks or follow-ups that need attention\n"
+            "3. Carry-over items from yesterday that I should remember\n"
+            f"{yesterday_notes}"
+            "\nKeep it short and actionable — bullet points, not paragraphs."
+        )
+        result = run_prompt(prompt, timeout=180, conversation_id=None, allow_tools=True)
+        day_cache["brief"] = result.get("output", "Could not generate brief")
+    except Exception as e:
+        day_cache["brief"] = f"Could not generate brief: {str(e)}"
+    day_cache["brief_loading"] = False
+
+
+@app.route("/api/dayview/meetings", methods=["GET"])
+def api_dayview_meetings():
+    """Return cached meetings or trigger a fetch."""
+    reset_day_cache_if_needed()
+    return jsonify({
+        "success": True,
+        "meetings": day_cache["meetings"],
+        "loading": day_cache["meetings_loading"],
+    })
+
+
+@app.route("/api/dayview/meetings", methods=["POST"])
+def api_dayview_meetings_fetch():
+    """Trigger a meetings fetch if not already loading."""
+    if not connection_state["connected"]:
+        return jsonify({"success": False, "error": "Not connected"}), 400
+    reset_day_cache_if_needed()
+    if not day_cache["meetings_loading"]:
+        day_cache["meetings"] = None
+        threading.Thread(target=fetch_meetings_background, daemon=True).start()
+    return jsonify({"success": True, "status": "fetching"})
+
+
+@app.route("/api/dayview/brief", methods=["GET"])
+def api_dayview_brief():
+    """Return cached morning brief or trigger a fetch."""
+    reset_day_cache_if_needed()
+    return jsonify({
+        "success": True,
+        "brief": day_cache["brief"],
+        "loading": day_cache["brief_loading"],
+    })
+
+
+@app.route("/api/dayview/brief", methods=["POST"])
+def api_dayview_brief_fetch():
+    """Trigger a brief generation if not already loading."""
+    if not connection_state["connected"]:
+        return jsonify({"success": False, "error": "Not connected"}), 400
+    reset_day_cache_if_needed()
+    if not day_cache["brief_loading"]:
+        day_cache["brief"] = None
+        threading.Thread(target=fetch_brief_background, daemon=True).start()
+    return jsonify({"success": True, "status": "fetching"})
 
 
 # ─── API: Scheduled Routines ─────────────────────────────────────────────────

@@ -296,6 +296,79 @@
 
   .quick-chip:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.15); }
 
+  /* ===== DAY VIEW — Meeting Runway + Brief ===== */
+  .dayview-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; padding: 0 24px 12px;
+    flex-shrink: 0;
+  }
+
+  .dayview-widget {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+
+  .dayview-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--border-light);
+  }
+
+  .dayview-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.4px; display: flex; align-items: center; gap: 6px;
+  }
+
+  .dayview-body {
+    padding: 10px 14px; font-size: 12px; color: var(--text-secondary);
+    line-height: 1.6; max-height: 180px; overflow-y: auto; flex: 1;
+    white-space: pre-wrap;
+  }
+
+  .dayview-loading {
+    display: flex; align-items: center; gap: 8px;
+    padding: 16px; font-size: 11px; color: var(--text-tertiary);
+  }
+
+  .loading-spinner {
+    width: 14px; height: 14px; border: 2px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .meeting-line {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid var(--border-light);
+  }
+
+  .meeting-line:last-child { border-bottom: none; }
+
+  .meeting-time {
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    white-space: nowrap; min-width: 48px;
+  }
+
+  .meeting-info { flex: 1; }
+  .meeting-name { font-size: 12px; font-weight: 500; color: var(--text); }
+  .meeting-attendees { font-size: 10px; color: var(--text-tertiary); margin-top: 1px; }
+
+  .meeting-prep-btn {
+    padding: 2px 8px; background: none; border: 1px solid var(--border-light);
+    border-radius: 3px; font-size: 9px; font-weight: 600; color: var(--text-tertiary);
+    cursor: pointer; font-family: inherit; transition: all 0.1s;
+    flex-shrink: 0; align-self: center;
+  }
+
+  .meeting-prep-btn:hover { background: var(--accent-light); color: var(--accent); border-color: rgba(79,110,247,0.15); }
+
+  .meeting-countdown {
+    font-size: 9px; font-weight: 600; color: var(--warning);
+    background: var(--warning-light); padding: 1px 6px;
+    border-radius: 8px; white-space: nowrap;
+  }
+
   /* ===== DASHBOARD WIDGETS — 3 column ===== */
   .cc-widgets {
     display: grid;
@@ -679,6 +752,34 @@
         <div class="brain-output" id="buildOutput"><div id="outputResult"></div></div>
       </div>
 
+      <!-- DAY VIEW: Meetings + Brief -->
+      <div class="dayview-row content-disabled" id="dayviewRow">
+        <div class="dayview-widget">
+          <div class="dayview-header">
+            <div class="dayview-title"><span class="widget-dot" style="background:#0ea5e9;"></span> Today's Meetings</div>
+            <button class="widget-action" onclick="refreshMeetings()">Refresh</button>
+          </div>
+          <div class="dayview-body" id="meetingsBody">
+            <div class="dayview-loading" id="meetingsLoading">
+              <div class="loading-spinner"></div> Fetching your calendar...
+            </div>
+            <div id="meetingsContent" style="display:none;"></div>
+          </div>
+        </div>
+        <div class="dayview-widget">
+          <div class="dayview-header">
+            <div class="dayview-title"><span class="widget-dot" style="background:#8b5cf6;"></span> Morning Brief</div>
+            <button class="widget-action" onclick="refreshBrief()">Refresh</button>
+          </div>
+          <div class="dayview-body" id="briefBody">
+            <div class="dayview-loading" id="briefLoading">
+              <div class="loading-spinner"></div> Generating your brief...
+            </div>
+            <div id="briefContent" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- WIDGETS: 3-column grid -->
       <div class="cc-widgets content-disabled" id="widgetGrid">
 
@@ -987,6 +1088,125 @@
   function clearDoneActions() { actionItems = actionItems.filter(a => !a.done); renderActionItems(); saveActionItems(); }
   async function saveActionItems() { try { await api('/api/actionitems', { method: 'POST', body: JSON.stringify({ items: actionItems }) }); } catch(e) {} }
 
+  // ─── Day View (Meetings + Brief) ────────────────────────────────
+  let meetingsPolling = null;
+  let briefPolling = null;
+
+  function startDayView() {
+    // Trigger both fetches on connect
+    api('/api/dayview/meetings', { method: 'POST' });
+    api('/api/dayview/brief', { method: 'POST' });
+    // Poll for results
+    meetingsPolling = setInterval(pollMeetings, 3000);
+    briefPolling = setInterval(pollBrief, 3000);
+    // Also check immediately
+    pollMeetings();
+    pollBrief();
+  }
+
+  async function pollMeetings() {
+    try {
+      const d = await api('/api/dayview/meetings');
+      if (d.meetings) {
+        clearInterval(meetingsPolling);
+        document.getElementById('meetingsLoading').style.display = 'none';
+        const content = document.getElementById('meetingsContent');
+        content.style.display = 'block';
+        renderMeetings(d.meetings);
+      }
+    } catch(e) {}
+  }
+
+  async function pollBrief() {
+    try {
+      const d = await api('/api/dayview/brief');
+      if (d.brief) {
+        clearInterval(briefPolling);
+        document.getElementById('briefLoading').style.display = 'none';
+        const content = document.getElementById('briefContent');
+        content.style.display = 'block';
+        content.textContent = d.brief;
+      }
+    } catch(e) {}
+  }
+
+  function renderMeetings(text) {
+    const content = document.getElementById('meetingsContent');
+    // Try to parse structured lines: HH:MM - HH:MM | Title | Attendees
+    const lines = text.split('\n').filter(l => l.trim());
+    const meetingPattern = /(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*\|\s*(.+?)\s*\|\s*(.+)/;
+    let parsed = [];
+
+    for (const line of lines) {
+      const m = line.match(meetingPattern);
+      if (m) {
+        parsed.push({ start: m[1], end: m[2], title: m[3].trim(), attendees: m[4].trim() });
+      }
+    }
+
+    if (parsed.length > 0) {
+      content.innerHTML = parsed.map(mtg => {
+        const countdown = getCountdown(mtg.start);
+        return '<div class="meeting-line">' +
+          '<div class="meeting-time">' + mtg.start + '</div>' +
+          '<div class="meeting-info">' +
+            '<div class="meeting-name">' + escapeHtml(mtg.title) + '</div>' +
+            '<div class="meeting-attendees">' + escapeHtml(mtg.attendees) + '</div>' +
+          '</div>' +
+          (countdown ? '<span class="meeting-countdown">' + countdown + '</span>' : '') +
+          '<button class="meeting-prep-btn" onclick="prepMeeting(\'' + escapeHtml(mtg.title).replace(/'/g, "\\'") + '\')">Prep</button>' +
+        '</div>';
+      }).join('');
+      // Update countdowns every minute
+      setInterval(updateCountdowns, 60000);
+    } else {
+      // Fallback: display as plain text
+      content.textContent = text;
+    }
+  }
+
+  function getCountdown(timeStr) {
+    const now = new Date();
+    const [h, m] = timeStr.split(':').map(Number);
+    const meeting = new Date();
+    meeting.setHours(h, m, 0, 0);
+    const diff = meeting - now;
+    if (diff < 0) return null; // already passed
+    if (diff > 4 * 60 * 60 * 1000) return null; // more than 4 hours away
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return 'in ' + mins + 'min';
+    const hrs = Math.floor(mins / 60);
+    const remainMins = mins % 60;
+    return 'in ' + hrs + 'h ' + remainMins + 'm';
+  }
+
+  function updateCountdowns() {
+    const countdowns = document.querySelectorAll('.meeting-countdown');
+    // Re-render meetings to update countdowns
+    pollMeetings();
+  }
+
+  function prepMeeting(title) {
+    setDepth('deep');
+    document.getElementById('buildInput').value = 'Prepare me for my meeting: "' + title + '". Check the invite, any relevant docs, and give me talking points.';
+    sendBuild();
+  }
+
+  async function refreshMeetings() {
+    document.getElementById('meetingsLoading').style.display = 'flex';
+    document.getElementById('meetingsContent').style.display = 'none';
+    // Clear cache by forcing a re-fetch
+    await api('/api/dayview/meetings', { method: 'POST' });
+    meetingsPolling = setInterval(pollMeetings, 3000);
+  }
+
+  async function refreshBrief() {
+    document.getElementById('briefLoading').style.display = 'flex';
+    document.getElementById('briefContent').style.display = 'none';
+    await api('/api/dayview/brief', { method: 'POST' });
+    briefPolling = setInterval(pollBrief, 3000);
+  }
+
   // ─── Schedules ──────────────────────────────────────────────────
   async function loadSchedules() {
     try {
@@ -1052,7 +1272,9 @@
     document.getElementById('quickChips').classList.remove('content-disabled');
     document.getElementById('widgetGrid').classList.remove('content-disabled');
     if (stats) document.getElementById('headerStat').textContent = (stats.memories||0) + ' memories · ' + (stats.projects||0) + ' projects';
+    document.getElementById('dayviewRow').classList.remove('content-disabled');
     loadScratchpad(); loadActionItems(); loadProjects(); loadSchedules();
+    startDayView();
   }
 
   function setDisconnectedUI() {
@@ -1062,6 +1284,7 @@
     document.getElementById('headerFluid').setAttribute('fill', 'rgba(239,68,68,0.12)');
     document.getElementById('brainBar').classList.add('content-disabled');
     document.getElementById('quickChips').classList.add('content-disabled');
+    document.getElementById('dayviewRow').classList.add('content-disabled');
     document.getElementById('widgetGrid').classList.add('content-disabled');
     document.getElementById('headerStat').textContent = '';
   }
