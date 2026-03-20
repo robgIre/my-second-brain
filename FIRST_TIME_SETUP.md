@@ -143,7 +143,15 @@ This teaches your brain who you are. Every time you use it, it already knows you
 
 ## Step 6: Install plugins (calendar, tasks, GChat)
 
-Without plugins, your brain can't access your calendar, tasks, or other internal tools. Run these in a **regular terminal** (not from the dashboard — you'll get a "nested session" error):
+Without plugins, your brain can't access your calendar, tasks, or other internal tools. You need to install them **on the OD itself** — plugins installed on your Mac don't carry over.
+
+**Where to run these:** Open a **new terminal tab** on your laptop (**Cmd+T** on Mac, or open a new Command Prompt on Windows). Then SSH into your OD from that new tab:
+
+```
+ssh yourusername@YOUR-OD-NUMBER.od.fbinfra.net
+```
+
+Once connected, paste these commands:
 
 ```
 claude plugin install meta@Meta
@@ -152,9 +160,15 @@ claude plugin install meta_knowledge@Meta
 claude plugin install meta_codesearch@Meta
 ```
 
-Then restart the server: `cd ~/my-second-brain && bash setup.sh`
+**Do NOT** run these from inside the My Second Brain dashboard or a Claude Code session — you'll get a "nested session" error. It must be a fresh terminal connected to your OD.
 
-**Note:** Plugins installed on your Mac don't carry over to your OD. You need to install them separately on each machine. You only need to do this once per OD.
+**After installing, restart everything:**
+1. Go to the terminal tab where the server is running and press **Ctrl+C** to stop it
+2. Type **exit** and hit Enter to disconnect from the OD
+3. Reconnect to your OD (`dev connect` or `ssh -L 5151:localhost:5151 ...`)
+4. Start the server again: `cd ~/my-second-brain && bash setup.sh`
+
+You only need to do this once per OD. If you release your OD and get a new one, you'll need to install plugins again.
 
 ---
 

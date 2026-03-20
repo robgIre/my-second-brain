@@ -24,13 +24,14 @@ export http_proxy=http://fwdproxy:8080
 git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
 ```
 
-**Install plugins (run in a regular terminal, not from the dashboard):**
+**Install plugins (open a new terminal tab with Cmd+T, SSH into your OD, then run):**
 ```bash
 claude plugin install meta@Meta
 claude plugin install llm-rules@Meta
 claude plugin install meta_knowledge@Meta
 claude plugin install meta_codesearch@Meta
 ```
+Then disconnect from the OD, reconnect, and restart the server.
 
 **Restart:**
 ```bash

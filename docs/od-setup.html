@@ -426,7 +426,7 @@
     <div class="step-num">3</div>
     <div class="step-body">
       <h3>Connect to your OD server</h3>
-      <p>In the terminal, type these two commands (or click Copy and paste them in):</p>
+      <p>In your terminal from Step 2, type these two commands (or click Copy and paste them in):</p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyDevConnect(this)">Copy</button>
         cd<br>
@@ -440,11 +440,14 @@
       <div class="code-block" style="color:var(--text-secondary);">
         [yourusername@12345.od ~]
       </div>
-      <p style="font-size:12px;color:var(--text-tertiary);">This means you're now on a remote server, not your laptop. Everything you type from here runs on the OD.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);">This means you're now on a remote server, not your laptop. Everything you type from here runs on the OD. <strong>Leave this terminal tab open</strong> — you'll come back to it.</p>
       <p style="margin-top:12px;padding:14px 18px;background:rgba(79,110,247,0.06);border:1px solid rgba(79,110,247,0.2);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
-        <strong style="color:var(--accent);">Heads up:</strong> <code>dev connect</code> doesn't always forward port 5151 to your browser. If <code>localhost:5151</code> doesn't load later (Step 7), you'll need to open a <strong>second terminal tab</strong> and connect with port forwarding:
+        <strong style="color:var(--accent);">Heads up:</strong> <code>dev connect</code> doesn't always forward port 5151 to your browser. If <code>localhost:5151</code> doesn't load later (Step 7), you'll need to open a <strong>second terminal tab</strong> (<strong>Cmd+T</strong> on Mac) and connect with port forwarding instead:
         <span style="display:block;margin-top:8px;">
           <code>ssh -L 5151:localhost:5151 yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code>
+        </span>
+        <span style="display:block;margin-top:6px;font-size:12px;color:var(--text-tertiary);">
+          You can find your OD number in your terminal prompt — e.g. <code>yourusername@987654.od</code> means your hostname is <code>987654.od.fbinfra.net</code>.
         </span>
       </p>
     </div>
@@ -469,7 +472,7 @@
       <div class="code-block">
         curl -fsSL https://cli.anthropic.com/install.sh | sh
       </div>
-      <p style="font-size:12px;color:var(--text-tertiary);">Close and reopen your terminal after installing Claude Code.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);">After installing, type <code>source ~/.bashrc</code> and hit Enter, then try <code>claude --version</code> again.</p>
     </div>
   </div>
 
@@ -512,7 +515,7 @@
         <button class="copy-btn" onclick="copyCmd(this)">Copy</button>
         git clone https://github.com/robgIre/my-second-brain.git && cd my-second-brain && bash setup.sh
       </div>
-      <p style="font-size:12px;color:var(--text-tertiary);">You'll see a green URL when it's ready. Keep this terminal window open — it runs the server.</p>
+      <p style="font-size:12px;color:var(--text-tertiary);">You'll see a green URL when it's ready. <strong>Don't close this terminal tab</strong> — it's running the server. If you close it, the app stops. You'll need it running for the next steps.</p>
     </div>
   </div>
 
@@ -529,12 +532,17 @@
       </div>
       <p>Click the green <strong>"Connect Brain"</strong> button. When it says <strong>"Your brain is active"</strong> — you're all set.</p>
       <p style="margin-top:12px;padding:14px 18px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
-        <strong style="color:var(--yellow);">Page won't load?</strong> This is the most common issue. It means port 5151 isn't being forwarded from the OD to your laptop. Close your terminal, open a new one, and reconnect using SSH with port forwarding:
+        <strong style="color:var(--yellow);">Page won't load? ("This site can't be reached")</strong> This is the most common issue. It means port 5151 isn't being forwarded from the OD to your laptop. Here's how to fix it:
+        <span style="display:block;margin-top:10px;">1. <strong>Don't close the terminal tab</strong> where the server is running (Step 6)</span>
+        <span style="display:block;margin-top:4px;">2. Open a <strong>new terminal tab</strong> on your laptop — press <strong>Cmd+T</strong> (Mac) or open a new Command Prompt (Windows)</span>
+        <span style="display:block;margin-top:4px;">3. In the new tab, paste this command (replacing the hostname with yours):</span>
         <span style="display:block;margin-top:8px;">
           <code>ssh -L 5151:localhost:5151 yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code>
         </span>
-        <span style="display:block;margin-top:6px;font-size:12px;color:var(--text-tertiary);">
-          Replace the hostname with yours — you can find it in your terminal prompt (e.g. <code>yourusername@987654.od</code> means <code>yourusername@987654.od.fbinfra.net</code>). Once connected, run <code>cd ~/my-second-brain && bash setup.sh</code> and try the URL again.
+        <span style="display:block;margin-top:4px;">4. Approve the Duo push or tap your YubiKey</span>
+        <span style="display:block;margin-top:4px;">5. Try <code>http://localhost:5151</code> in your browser again</span>
+        <span style="display:block;margin-top:8px;font-size:12px;color:var(--text-tertiary);">
+          Your OD number is in your terminal prompt from Step 3 — e.g. <code>yourusername@987654.od</code> means your hostname is <code>987654.od.fbinfra.net</code>.
         </span>
       </p>
     </div>
@@ -560,7 +568,14 @@
     <div class="step-body">
       <h3>Install plugins (calendar, tasks, etc.)</h3>
       <p>Without plugins, your brain can't access your calendar, tasks, GChat, or Workplace. You need to install them <strong>on the OD itself</strong> — plugins installed on your Mac don't carry over.</p>
-      <p><strong>Important:</strong> Run these commands in a <strong>regular terminal</strong>, not from inside the My Second Brain dashboard or a Claude Code session (you'll get a "nested session" error).</p>
+      <p style="margin-top:12px;padding:14px 18px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        <strong style="color:var(--yellow);">Where to run these:</strong> You need a terminal that is connected to your OD but is <strong>not</strong> running the server or Claude Code. Here's how:
+        <span style="display:block;margin-top:10px;">1. Open a <strong>new terminal tab</strong> on your laptop — press <strong>Cmd+T</strong> (Mac) or open a new Command Prompt (Windows)</span>
+        <span style="display:block;margin-top:4px;">2. Connect to your OD from this new tab:</span>
+        <span style="display:block;margin-top:4px;margin-left:16px;"><code>ssh yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code></span>
+        <span style="display:block;margin-top:4px;">3. Approve the Duo push or tap your YubiKey</span>
+        <span style="display:block;margin-top:4px;">4. You should see <code>[yourusername@12345.od ~]$</code> — now paste the commands below</span>
+      </p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyPlugins(this)">Copy</button>
         claude plugin install meta@Meta<br>
@@ -568,7 +583,13 @@
         claude plugin install meta_knowledge@Meta<br>
         claude plugin install meta_codesearch@Meta
       </div>
-      <p>After installing, <strong>restart the server</strong> for the plugins to take effect:</p>
+      <p>After installing, you need to <strong>restart everything</strong> for the plugins to take effect:</p>
+      <p style="margin-top:8px;font-size:14px;color:var(--text-secondary);line-height:1.9;">
+        1. Go to the terminal tab where the <strong>server is running</strong> (Step 6) and press <strong>Ctrl+C</strong> to stop it<br>
+        2. Type <strong>exit</strong> and hit Enter to disconnect from the OD<br>
+        3. Reconnect to your OD (run <code>dev connect</code> again, or use <code>ssh -L 5151:localhost:5151 ...</code> if you needed port forwarding in Step 7)<br>
+        4. Start the server again:
+      </p>
       <div class="code-block">
         <button class="copy-btn" onclick="copyRestart(this)">Copy</button>
         cd ~/my-second-brain && bash setup.sh
@@ -646,13 +667,9 @@
 
   <div class="trouble-item">
     <h4>"Calendar not working" / "I don't have access to your calendar"</h4>
-    <p>This means plugins aren't installed on your OD. Open a <strong>regular terminal</strong> (not the dashboard) and run:<br>
-    <code>claude plugin install meta@Meta</code><br>
-    <code>claude plugin install llm-rules@Meta</code><br>
-    <code>claude plugin install meta_knowledge@Meta</code><br>
-    <code>claude plugin install meta_codesearch@Meta</code><br><br>
-    Then restart the server: <code>cd ~/my-second-brain && bash setup.sh</code><br><br>
-    <strong>Note:</strong> Do NOT run <code>claude plugin install</code> from inside a Claude Code session or the dashboard — you'll get a "nested session" error. Use a plain terminal.</p>
+    <p>This means plugins aren't installed on your OD. Open a <strong>new terminal tab</strong> (<strong>Cmd+T</strong> on Mac), SSH into your OD, and run the plugin install commands — see Step 9 above for the full walkthrough.<br><br>
+    <strong>Important:</strong> Do NOT run <code>claude plugin install</code> from inside the My Second Brain dashboard or a Claude Code session — you'll get a "nested session" error. It must be a fresh terminal connected to your OD.<br><br>
+    After installing, disconnect from your OD, reconnect, and restart the server.</p>
   </div>
 
   <div class="trouble-item">
