@@ -173,13 +173,13 @@ This teaches your brain who you are. Every time you use it, it already knows you
 → Git isn't installed. See Step 1 above.
 
 **"claude: command not found"**
-→ Claude Code isn't installed. See Step 2 above. The app will still run in demo mode.
+→ In the terminal tab where you're connected to your OD, run: `curl -fsSL https://cli.anthropic.com/install.sh | sh`, then type `source ~/.bashrc` and try `claude --version` again.
 
 **"Connect Brain" fails**
-→ Claude Code may not be responding. Try running `claude --version` in a separate terminal to check.
+→ Open a new terminal tab (**Cmd+T** on Mac), connect to your OD (`ssh yourusername@YOUR-OD-NUMBER.od.fbinfra.net`), and run `claude --version` to check if Claude Code is installed.
 
-**"Address already in use"**
-→ The app is already running in another terminal. Either find and close that terminal, or start on a different port: `MSB_PORT=5152 python3 app.py`
+**"Port already in use"**
+→ Check your other terminal tabs for a server already running — press **Ctrl+C** in that tab to stop it. If you can't find it, start on a different port in the terminal tab connected to your OD: `cd ~/my-second-brain && MSB_PORT=5152 bash setup.sh`, then open `http://localhost:5152` in your browser (note: **5152** not 5151).
 
 **Page won't load in browser**
 → Make sure the terminal is still running (you should see the server output). Don't close the terminal window.
