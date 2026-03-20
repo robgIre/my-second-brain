@@ -1186,7 +1186,15 @@
     const btn = document.querySelector('.attach-btn'); btn.textContent='...';
     try {
       const r = await fetch('/api/upload', { method:'POST', body:fd }), d = await r.json();
-      if (d.success) { attachedFileIds.push({id:d.file_id,filename:d.filename}); renderAttachedFiles(); } else alert(d.error);
+      if (d.success) {
+        let label = d.filename;
+        if (d.pages_truncated) {
+          label += ' (first ' + d.pages_extracted + ' of ' + d.total_pages + ' pages)';
+          alert('Heads up: This PDF has ' + d.total_pages + ' pages. Only the first ' + d.pages_extracted + ' pages have been extracted — the rest will not be included when you ask your brain about it.');
+        }
+        attachedFileIds.push({id:d.file_id, filename:label});
+        renderAttachedFiles();
+      } else alert(d.error);
     } catch(e) { alert('Upload failed'); }
     btn.textContent='\u{1F4CE}';
   }

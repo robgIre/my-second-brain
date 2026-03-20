@@ -452,8 +452,10 @@ def api_upload():
             reader = PdfReader(io.BytesIO(file_bytes))
             pages_to_read = reader.pages[:MAX_PDF_PAGES]
             text = "\n\n".join(page.extract_text() or "" for page in pages_to_read)
-            if len(reader.pages) > MAX_PDF_PAGES:
-                text += f"\n\n[Note: PDF has {len(reader.pages)} pages. Extracted first {MAX_PDF_PAGES} pages.]"
+            pages_truncated = len(reader.pages) > MAX_PDF_PAGES
+            total_pages = len(reader.pages)
+            if pages_truncated:
+                text += f"\n\n[Note: PDF has {total_pages} pages. Extracted first {MAX_PDF_PAGES} pages.]"
             if not text.strip():
                 return jsonify({"success": False, "error": "Could not extract text from PDF (may be scanned/image-based)"}), 400
         else:
@@ -476,13 +478,21 @@ def api_upload():
         "truncated": truncated,
     }
 
-    return jsonify({
+    response = {
         "success": True,
         "file_id": file_id,
         "filename": file.filename,
         "char_count": len(text),
         "truncated": truncated,
-    })
+    }
+
+    # Add PDF page info if applicable
+    if ext == "pdf":
+        response["total_pages"] = total_pages
+        response["pages_extracted"] = min(total_pages, MAX_PDF_PAGES)
+        response["pages_truncated"] = pages_truncated
+
+    return jsonify(response)
 
 
 @app.route("/api/upload/<file_id>", methods=["DELETE"])
