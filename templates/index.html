@@ -375,15 +375,14 @@
     grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
     padding: 12px 24px 16px;
-    flex: 1;
-    min-height: 0;
+    flex-shrink: 0;
   }
 
   .widget {
     background: var(--bg-card); border: 1px solid var(--border);
     border-radius: var(--radius); box-shadow: var(--shadow-sm);
     display: flex; flex-direction: column;
-    overflow: hidden; min-height: 0;
+    overflow: hidden; min-height: 200px;
   }
 
   .widget-header {
@@ -598,6 +597,12 @@
   .routine-steps-list { list-style: none; }
   .routine-step-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--border-light); font-size: 11px; color: var(--text-secondary); }
   .routine-step-item:last-child { border-bottom: none; }
+  .routine-step-text { flex: 1; }
+  .routine-step-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+  .routine-step-item:hover .routine-step-actions { opacity: 1; }
+  .routine-step-btn { background: none; border: none; cursor: pointer; font-size: 11px; color: var(--text-tertiary); padding: 2px 4px; border-radius: 3px; }
+  .routine-step-btn:hover { background: var(--bg-hover); color: var(--text); }
+  .routine-step-btn.delete:hover { color: var(--red); }
   .step-num { width: 18px; height: 18px; border-radius: 50%; background: var(--accent-light); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; }
   .routine-full-actions { display: flex; gap: 5px; margin-top: 10px; }
 
@@ -902,32 +907,7 @@
       <div class="page-inner">
         <div class="page-title">My Routines</div>
         <div class="page-desc">Define what your brain does. Write steps in plain language.</div>
-        <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">Morning Routine</div><div class="routine-full-meta">~3 min</div></div>
-          <ol class="routine-steps-list">
-            <li class="routine-step-item"><span class="step-num">1</span> Review my calendar and flag meetings needing prep</li>
-            <li class="routine-step-item"><span class="step-num">2</span> Fetch open tasks, sort by priority</li>
-            <li class="routine-step-item"><span class="step-num">3</span> Check for new Workplace posts from my team</li>
-            <li class="routine-step-item"><span class="step-num">4</span> Summary of top 3 priorities for the day</li>
-          </ol>
-          <div class="routine-full-actions">
-            <button class="routine-btn" onclick="runRoutine(this,'morning')">Run Now</button>
-            <button class="routine-btn" onclick="addStepPrompt('morning')">+ Add Step</button>
-          </div>
-        </div>
-        <div class="routine-full-card">
-          <div class="routine-full-header"><div class="routine-full-title">EOD Debrief</div><div class="routine-full-meta">~2 min</div></div>
-          <ol class="routine-steps-list">
-            <li class="routine-step-item"><span class="step-num">1</span> Summarize accomplishments</li>
-            <li class="routine-step-item"><span class="step-num">2</span> Save learnings to memory</li>
-            <li class="routine-step-item"><span class="step-num">3</span> Flag items for tomorrow</li>
-            <li class="routine-step-item"><span class="step-num">4</span> Update project statuses</li>
-          </ol>
-          <div class="routine-full-actions">
-            <button class="routine-btn" onclick="runRoutine(this,'evening')">Run Now</button>
-            <button class="routine-btn" onclick="addStepPrompt('evening')">+ Add Step</button>
-          </div>
-        </div>
+        <div id="routinesContainer"></div>
       </div>
     </div>
 
@@ -1273,7 +1253,7 @@
     document.getElementById('widgetGrid').classList.remove('content-disabled');
     if (stats) document.getElementById('headerStat').textContent = (stats.memories||0) + ' memories · ' + (stats.projects||0) + ' projects';
     document.getElementById('dayviewRow').classList.remove('content-disabled');
-    loadScratchpad(); loadActionItems(); loadProjects(); loadSchedules();
+    loadScratchpad(); loadActionItems(); loadProjects(); loadSchedules(); loadRoutines();
     startDayView();
   }
 
@@ -1311,6 +1291,7 @@
     document.getElementById('page-' + id).classList.add('active');
     nav.classList.add('active');
     if (id === 'about') { loadAboutMe(); loadProjects(); }
+    if (id === 'routines') { loadRoutines(); }
   }
 
   // ─── About Me ───────────────────────────────────────────────────
@@ -1419,16 +1400,43 @@
     const btn = document.getElementById('buildBtn');
     const output = document.getElementById('buildOutput'), result = document.getElementById('outputResult');
     btn.disabled = true; btn.textContent = '...';
-    output.classList.remove('visible'); startThinking();
+    result.textContent = ''; output.classList.add('visible');
+    startThinking();
     inp.value = ''; inp.style.height = 'auto';
     try {
-      const d = await api('/api/build', { method:'POST', body:JSON.stringify({ prompt, conversation_id:conversationId, mode:depthMode, file_ids:attachedFileIds.map(f=>f.id) }) });
+      const res = await fetch('/api/build/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Request failed');
+      }
       stopThinking();
-      if (d.conversation_id) { saveConversationId(d.conversation_id); updateConversationIndicator(); }
-      result.textContent = d.success ? (d.output||'(No output)') : 'Error: '+(d.error||'Unknown');
-      output.classList.add('visible');
-      if (d.success) { attachedFileIds = []; renderAttachedFiles(); }
-    } catch(e) { stopThinking(); result.textContent = 'Error: '+e.message; output.classList.add('visible'); }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const evt = JSON.parse(line.slice(6));
+            if (evt.type === 'text') { result.textContent += evt.text; stopThinking(); }
+            else if (evt.type === 'session' && evt.session_id) { saveConversationId(evt.session_id); updateConversationIndicator(); }
+            else if (evt.type === 'error') { result.textContent += '\nError: ' + evt.text; stopThinking(); }
+            else if (evt.type === 'done') { /* stream finished */ }
+          } catch(pe) {}
+        }
+      }
+      if (!result.textContent.trim()) result.textContent = '(No output)';
+      attachedFileIds = []; renderAttachedFiles();
+    } catch(e) { stopThinking(); result.textContent = 'Error: ' + e.message; }
     btn.disabled = false; btn.textContent = 'Ask';
   }
 
@@ -1454,6 +1462,78 @@
   }
 
   // ─── Routines ───────────────────────────────────────────────────
+  let routinesData = {};
+
+  async function loadRoutines() {
+    try {
+      const d = await api('/api/routines');
+      if (d.success) { routinesData = d.routines; renderRoutines(); }
+    } catch(e) {}
+  }
+
+  function renderRoutines() {
+    const container = document.getElementById('routinesContainer');
+    if (!container) return;
+    const icons = { morning: '\u2600\uFE0F', evening: '\uD83C\uDF19' };
+    const names = { morning: 'Morning Routine', evening: 'EOD Debrief' };
+    let html = '';
+    for (const [id, routine] of Object.entries(routinesData)) {
+      const name = routine.name || names[id] || id;
+      const icon = routine.icon === 'moon' ? '\uD83C\uDF19' : (routine.icon === 'sunrise' ? '\u2600\uFE0F' : (icons[id] || '\u26A1'));
+      html += `<div class="routine-full-card" data-routine-id="${id}">
+        <div class="routine-full-header">
+          <div class="routine-full-title">${icon} ${escapeHtml(name)}</div>
+          <div class="routine-full-meta">${routine.steps.length} steps</div>
+        </div>
+        <ol class="routine-steps-list" id="steps-${id}">`;
+      routine.steps.forEach((step, i) => {
+        html += `<li class="routine-step-item">
+          <span class="step-num">${i + 1}</span>
+          <span class="routine-step-text">${escapeHtml(step)}</span>
+          <span class="routine-step-actions">
+            <button class="routine-step-btn" onclick="editStep('${id}',${i})" title="Edit">&#9998;</button>
+            <button class="routine-step-btn delete" onclick="deleteStep('${id}',${i})" title="Delete">&times;</button>
+          </span>
+        </li>`;
+      });
+      html += `</ol>
+        <div class="routine-full-actions">
+          <button class="routine-btn" onclick="runRoutine(this,'${id}')">Run Now</button>
+          <button class="routine-btn" onclick="addStep('${id}')">+ Add Step</button>
+        </div>
+      </div>`;
+    }
+    container.innerHTML = html;
+  }
+
+  function addStep(routineId) {
+    const s = prompt('Add step (plain language):');
+    if (!s || !s.trim()) return;
+    routinesData[routineId].steps.push(s.trim());
+    saveRoutines();
+  }
+
+  function editStep(routineId, idx) {
+    const current = routinesData[routineId].steps[idx];
+    const s = prompt('Edit step:', current);
+    if (s === null) return;
+    if (!s.trim()) { deleteStep(routineId, idx); return; }
+    routinesData[routineId].steps[idx] = s.trim();
+    saveRoutines();
+  }
+
+  function deleteStep(routineId, idx) {
+    if (!confirm('Delete this step?')) return;
+    routinesData[routineId].steps.splice(idx, 1);
+    saveRoutines();
+  }
+
+  async function saveRoutines() {
+    renderRoutines();
+    try { await api('/api/routines', { method: 'POST', body: JSON.stringify({ routines: routinesData }) }); }
+    catch(e) {}
+  }
+
   async function runRoutine(btn, id) {
     const orig = btn.textContent; btn.textContent='...'; btn.style.background='var(--warning-light)'; btn.style.color='var(--warning)';
     try {
@@ -1463,13 +1543,6 @@
       if (d.success && d.output) { document.getElementById('outputResult').textContent=d.output; document.getElementById('buildOutput').classList.add('visible'); }
     } catch(e) { btn.textContent='Done'; btn.style.background='var(--green-light)'; btn.style.color='var(--green)'; }
     setTimeout(() => { btn.textContent=orig; btn.style=''; }, 3000);
-  }
-
-  async function addStepPrompt(r) {
-    const s = prompt('Add step to '+r+' routine (plain language):');
-    if (!s||!s.trim()) return;
-    try { await api('/api/routines/'+r+'/add-step', { method:'POST', body:JSON.stringify({step:s.trim()}) }); alert('Added: "'+s.trim()+'"'); }
-    catch(e) { alert('Added (demo): "'+s.trim()+'"'); }
   }
 
   // ─── File Upload ────────────────────────────────────────────────

@@ -68,8 +68,9 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
 def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None, allow_tools=False, model=None):
     """Send a prompt to Claude Code and stream output line-by-line into a queue.
 
+    Uses --output-format stream-json to get real-time streaming events.
     Call from a thread. Puts dicts into output_queue as they arrive.
-    Puts None when done. Sends conversation_id via a final 'done' message.
+    Puts None when done.
     """
     if not is_claude_installed():
         output_queue.put({"type": "error", "text": "Claude Code CLI not found."})
@@ -77,10 +78,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         return
 
     try:
-        # Use JSON output to get session_id, but also capture text via a
-        # two-pass approach: run with --output-format json and stream stdout
-        # line by line (the CLI outputs text progressively before the final JSON).
-        cmd = ["claude", "-p", "--output-format", "json"]
+        cmd = ["claude", "-p", "--output-format", "stream-json", "--include-partial-messages"]
         if model:
             cmd.extend(["--model", model])
         if allow_tools:
@@ -101,27 +99,42 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         proc.stdin.write(prompt)
         proc.stdin.close()
 
-        # Read all stdout — with json output format, it's one JSON blob at the end
-        stdout_text = proc.stdout.read()
-        proc.wait(timeout=timeout)
-
         session_id = None
+        sent_chars = 0  # Track how much text we've already sent
 
-        # Try to parse as JSON (the expected format)
-        try:
-            parsed = json.loads(stdout_text.strip())
-            result_text = parsed.get("result", "")
-            session_id = parsed.get("session_id")
-            is_error = parsed.get("is_error", False)
+        # Read stream-json events line by line as they arrive
+        for line in proc.stdout:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except (json.JSONDecodeError, ValueError):
+                continue
 
-            if is_error:
-                output_queue.put({"type": "error", "text": result_text or "Unknown error"})
-            elif result_text:
-                output_queue.put({"type": "result", "text": result_text})
-        except (json.JSONDecodeError, ValueError):
-            # Not JSON — treat as plain text
-            if stdout_text.strip():
-                output_queue.put({"type": "result", "text": stdout_text.strip()})
+            msg_type = event.get("type", "")
+
+            if msg_type == "result":
+                session_id = event.get("session_id")
+                # Final result — send anything we haven't sent yet
+                result_text = event.get("result", "")
+                if result_text and len(result_text) > sent_chars:
+                    output_queue.put({"type": "text", "text": result_text[sent_chars:]})
+                    sent_chars = len(result_text)
+            elif msg_type == "assistant":
+                # Each partial message contains the FULL text so far
+                # Only send the new portion (delta)
+                message = event.get("message", {})
+                content_blocks = message.get("content", [])
+                full_text = ""
+                for block in content_blocks:
+                    if block.get("type") == "text":
+                        full_text += block.get("text", "")
+                if full_text and len(full_text) > sent_chars:
+                    output_queue.put({"type": "text", "text": full_text[sent_chars:]})
+                    sent_chars = len(full_text)
+
+        proc.wait(timeout=30)
 
         if proc.returncode != 0:
             stderr = proc.stderr.read().strip()

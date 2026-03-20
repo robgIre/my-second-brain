@@ -277,6 +277,16 @@ def api_routines_get():
     return jsonify({"success": True, "routines": load_routines()})
 
 
+@app.route("/api/routines", methods=["POST"])
+def api_routines_save():
+    """Save all routines (full replace)."""
+    data = request.get_json()
+    if not data or "routines" not in data:
+        return jsonify({"success": False, "error": "No routines provided"}), 400
+    save_routines(data["routines"])
+    return jsonify({"success": True, "routines": data["routines"]})
+
+
 @app.route("/api/routines/<routine_id>/add-step", methods=["POST"])
 def api_routines_add_step(routine_id):
     """Add a step to a routine."""
