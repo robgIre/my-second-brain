@@ -441,12 +441,17 @@
         [yourusername@12345.od ~]
       </div>
       <p style="font-size:12px;color:var(--text-tertiary);">This means you're now on a remote server, not your laptop. Everything you type from here runs on the OD.</p>
+      <p style="margin-top:12px;padding:14px 18px;background:rgba(79,110,247,0.06);border:1px solid rgba(79,110,247,0.2);border-radius:10px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        <strong style="color:var(--accent);">Heads up:</strong> <code>dev connect</code> doesn't always forward port 5151 to your browser. If <code>localhost:5151</code> doesn't load later (Step 7), you'll need to open a <strong>second terminal tab</strong> and connect with port forwarding:
+        <span style="display:block;margin-top:8px;">
+          <code>ssh -L 5151:localhost:5151 yourusername@YOUR-OD-NUMBER.od.fbinfra.net</code>
+        </span>
+      </p>
     </div>
   </div>
 
   <div class="arrow">&#8595;</div>
 
-  <!-- Step 3 -->
   <div class="step">
     <div class="step-num">4</div>
     <div class="step-body">
@@ -458,10 +463,7 @@
         claude --version
       </div>
       <p>If <strong>Python 3</strong> shows a version number (e.g. <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--green);">Python 3.10.12</code>) — you're good.</p>
-      <p>If not, install it:</p>
-      <div class="code-block">
-        sudo apt-get update && sudo apt-get install -y python3 python3-pip
-      </div>
+      <p>If not, Python is usually pre-installed on ODs. Try <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--green);">python3.10 --version</code> or <code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-family:'SF Mono',monospace;font-size:12px;color:var(--green);">python3.9 --version</code> — the command name may differ. If none work, message Rob.</p>
       <p>If <strong>Claude Code</strong> shows a version number — you're good.</p>
       <p>If not, install it:</p>
       <div class="code-block">
