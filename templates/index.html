@@ -1105,42 +1105,90 @@
         document.getElementById('briefLoading').style.display = 'none';
         const content = document.getElementById('briefContent');
         content.style.display = 'block';
-        content.textContent = d.brief;
+        content.innerHTML = formatBrief(d.brief);
       }
     } catch(e) {}
   }
 
+  function formatBrief(text) {
+    // Clean up markdown artifacts and format into readable HTML
+    const lines = text.split('\n');
+    let html = '';
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) { html += '<div style="height:6px;"></div>'; continue; }
+      // Section headings (MEETINGS, TASKS, etc. or lines ending with :)
+      const headingMatch = trimmed.match(/^(?:#{1,3}\s*)?([A-Z][A-Z\s/\-&]+):?\s*$/);
+      if (headingMatch) {
+        html += '<div style="font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px;">' + escapeHtml(headingMatch[1].trim()) + '</div>';
+        continue;
+      }
+      // Bullet points (-, *, •)
+      const bulletMatch = trimmed.match(/^[-*•]\s+(.+)/);
+      if (bulletMatch) {
+        // Strip markdown bold ** **
+        let content = bulletMatch[1].replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html += '<div style="padding-left:10px;margin-bottom:3px;">• ' + content + '</div>';
+        continue;
+      }
+      // Numbered items
+      const numMatch = trimmed.match(/^\d+[.)]\s+(.+)/);
+      if (numMatch) {
+        let content = numMatch[1].replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html += '<div style="padding-left:10px;margin-bottom:3px;">• ' + content + '</div>';
+        continue;
+      }
+      // Strip table pipe formatting
+      if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+        const cells = trimmed.split('|').filter(c => c.trim() && !c.match(/^[\s-]+$/));
+        if (cells.length >= 2) {
+          let content = cells.map(c => c.trim().replace(/\*\*(.+?)\*\*/g, '$1')).join(' — ');
+          html += '<div style="padding-left:10px;margin-bottom:3px;">• ' + escapeHtml(content) + '</div>';
+          continue;
+        }
+      }
+      // Regular text
+      let content = trimmed.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html += '<div style="margin-bottom:3px;">' + content + '</div>';
+    }
+    return html;
+  }
+
   function renderMeetings(text) {
     const content = document.getElementById('meetingsContent');
-    // Try to parse structured lines: HH:MM - HH:MM | Title | Attendees
     const lines = text.split('\n').filter(l => l.trim());
-    const meetingPattern = /(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*\|\s*(.+?)\s*\|\s*(.+)/;
+    const timedPattern = /(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})\s*\|\s*(.+?)(?:\s*\|\s*(.+))?$/;
+    const allDayPattern = /All\s*day\s*\|\s*(.+?)(?:\s*\|\s*(.*))?$/i;
     let parsed = [];
 
     for (const line of lines) {
-      const m = line.match(meetingPattern);
-      if (m) {
-        parsed.push({ start: m[1], end: m[2], title: m[3].trim(), attendees: m[4].trim() });
+      const mt = line.match(timedPattern);
+      if (mt) {
+        parsed.push({ start: mt[1], end: mt[2], title: mt[3].trim(), attendees: (mt[4] || '').trim(), allDay: false });
+        continue;
+      }
+      const ma = line.match(allDayPattern);
+      if (ma) {
+        parsed.push({ start: null, end: null, title: ma[1].trim(), attendees: (ma[2] || '').trim(), allDay: true });
       }
     }
 
     if (parsed.length > 0) {
       content.innerHTML = parsed.map(mtg => {
-        const countdown = getCountdown(mtg.start);
+        const timeLabel = mtg.allDay ? 'All day' : mtg.start;
+        const countdown = mtg.allDay ? null : getCountdown(mtg.start);
         return '<div class="meeting-line">' +
-          '<div class="meeting-time">' + mtg.start + '</div>' +
+          '<div class="meeting-time"' + (mtg.allDay ? ' style="color:var(--text-tertiary);font-size:10px;"' : '') + '>' + timeLabel + '</div>' +
           '<div class="meeting-info">' +
             '<div class="meeting-name">' + escapeHtml(mtg.title) + '</div>' +
-            '<div class="meeting-attendees">' + escapeHtml(mtg.attendees) + '</div>' +
+            (mtg.attendees ? '<div class="meeting-attendees">' + escapeHtml(mtg.attendees) + '</div>' : '') +
           '</div>' +
           (countdown ? '<span class="meeting-countdown">' + countdown + '</span>' : '') +
           '<button class="meeting-prep-btn" onclick="prepMeeting(\'' + escapeHtml(mtg.title).replace(/'/g, "\\'") + '\')">Prep</button>' +
         '</div>';
       }).join('');
-      // Update countdowns every minute
       setInterval(updateCountdowns, 60000);
     } else {
-      // Fallback: display as plain text
       content.textContent = text;
     }
   }

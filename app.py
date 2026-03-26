@@ -341,11 +341,17 @@ def fetch_meetings_background():
     day_cache["meetings_loading"] = True
     try:
         prompt = (
-            "List my meetings for today in chronological order. "
-            "For each meeting give the title, start time, end time, and key attendees. "
-            "Format each meeting on its own line like: HH:MM - HH:MM | Meeting Title | Attendees\n"
-            "Example: 10:00 - 10:30 | Team Sync | Alice, Bob\n"
-            "If you cannot access my calendar, say 'Calendar not available'."
+            "Use the /calendar skill to list my meetings for today. "
+            "Return ONLY the meetings in chronological order, one per line, in this exact format:\n"
+            "HH:MM - HH:MM | Meeting Title | Attendees\n\n"
+            "Example:\n"
+            "10:00 - 10:30 | Team Sync | Alice, Bob\n"
+            "14:00 - 15:00 | Project Review | Carol, Dave\n\n"
+            "Rules:\n"
+            "- Use 24-hour time format\n"
+            "- For all-day events, use: All day | Event Title | (no attendees needed)\n"
+            "- Do NOT include any other text, headers, or explanation — just the lines\n"
+            "- If there are no meetings, just say: No meetings today"
         )
         result = run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=True)
         day_cache["meetings"] = result.get("output", "No meetings found")
@@ -370,12 +376,16 @@ def fetch_brief_background():
                 yesterday_notes = f"\n\nYesterday's notes from my scratchpad:\n{pad_data[yesterday]}\n"
 
         prompt = (
-            "Give me a concise morning brief for today. Include:\n"
-            "1. My meetings for today (list them with times)\n"
+            "Give me a concise morning brief for today. Use the /calendar skill for meetings. Include:\n"
+            "1. My meetings for today (list with times)\n"
             "2. Any open tasks or follow-ups that need attention\n"
             "3. Carry-over items from yesterday that I should remember\n"
-            f"{yesterday_notes}"
-            "\nKeep it short and actionable — bullet points, not paragraphs."
+            f"{yesterday_notes}\n"
+            "Format rules:\n"
+            "- Use short bullet points, not paragraphs\n"
+            "- Use plain text only — no markdown tables, no ** bold **, no | pipes\n"
+            "- Group under simple headings like MEETINGS, TASKS, CARRY-OVER\n"
+            "- Keep each bullet to one line"
         )
         result = run_prompt(prompt, timeout=180, conversation_id=None, allow_tools=True)
         day_cache["brief"] = result.get("output", "Could not generate brief")
