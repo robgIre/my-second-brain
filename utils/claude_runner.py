@@ -79,7 +79,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
 
     proc = None
     try:
-        cmd = ["claude", "-p", "--output-format", "stream-json", "--include-partial-messages"]
+        cmd = ["claude", "-p", "--output-format", "stream-json", "--verbose", "--include-partial-messages"]
         if model:
             cmd.extend(["--model", model])
         if allow_tools:

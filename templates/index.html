@@ -730,39 +730,18 @@
           <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv" style="display:none" onchange="handleFileUpload(this)">
           <textarea class="brain-bar-input" id="buildInput" placeholder="Ask your brain anything..." rows="1" oninput="autoResize(this)"></textarea>
           <div class="brain-bar-controls">
-            <div class="mode-toggle">
-              <button class="mode-btn active" id="fastModeBtn" onclick="setDepth('fast')">Fast</button>
-              <button class="mode-btn" id="deepModeBtn" onclick="setDepth('deep')">Deep</button>
-            </div>
-            <div class="mode-toggle">
-              <button class="mode-btn active" id="writeModeBtn" onclick="setMode('write')">Type</button>
-              <button class="mode-btn" id="talkModeBtn" onclick="setMode('talk')">Voice</button>
-            </div>
             <span class="convo-pill" id="conversationIndicator">Active</span>
             <button id="newChatBtn" onclick="if(confirm('Start fresh?')) newConversation()" style="display:none;background:none;border:1px solid var(--border-light);color:var(--text-tertiary);padding:2px 6px;border-radius:3px;cursor:pointer;font-size:9px;font-weight:600;font-family:inherit;">New</button>
           </div>
           <button class="brain-bar-btn ask" id="buildBtn" onclick="sendBuild()">Ask</button>
         </div>
 
-        <!-- Voice mode (hidden by default) -->
-        <div class="voice-area" id="talkMode">
-          <button class="mic-btn" id="micBtn" onclick="toggleMic()">&#127908;</button>
-          <div class="mic-label" id="micLabel">Click to start speaking</div>
-          <div class="voice-waveform" id="waveform" style="display:none;">
-            <div class="wave-bar" style="animation-delay:0s;"></div>
-            <div class="wave-bar" style="animation-delay:0.1s;"></div>
-            <div class="wave-bar" style="animation-delay:0.2s;"></div>
-            <div class="wave-bar" style="animation-delay:0.3s;"></div>
-            <div class="wave-bar" style="animation-delay:0.4s;"></div>
-          </div>
-        </div>
-
         <!-- Quick suggestion chips -->
         <div class="quick-chips content-disabled" id="quickChips">
-          <button class="quick-chip" onclick="setDepth('deep');setExample('What meetings do I have today?')">Today's meetings</button>
-          <button class="quick-chip" onclick="setDepth('deep');setExample('Summarize my open tasks')">My tasks</button>
-          <button class="quick-chip" onclick="setDepth('fast');setExample('Create a weekly recap')">Weekly recap</button>
-          <button class="quick-chip" onclick="setDepth('fast');setExample('Draft a status update for my manager')">Status update</button>
+          <button class="quick-chip" onclick="setExample('What meetings do I have today?')">Today's meetings</button>
+          <button class="quick-chip" onclick="setExample('Summarize my open tasks')">My tasks</button>
+          <button class="quick-chip" onclick="setExample('Create a weekly recap')">Weekly recap</button>
+          <button class="quick-chip" onclick="setExample('Draft a status update for my manager')">Status update</button>
         </div>
       </div>
 
@@ -977,9 +956,8 @@
 
 <script>
   let isConnected = false;
-  let isRecording = false;
   let conversationId = localStorage.getItem('msb_conversation_id') || null;
-  let depthMode = 'fast';
+  let depthMode = 'deep';
   let scratchpadTimer = null;
   let actionItems = [];
 
@@ -1237,7 +1215,6 @@
   }
 
   function prepMeeting(title) {
-    setDepth('deep');
     document.getElementById('buildInput').value = 'Prepare me for my meeting: "' + title + '". Check the invite, any relevant docs, and give me talking points.';
     sendBuild();
   }
@@ -1449,20 +1426,7 @@
   }
 
   // ─── Ask My Brain ──────────────────────────────────────────────
-  function setMode(m) {
-    const wB=document.getElementById('writeModeBtn'), tB=document.getElementById('talkModeBtn');
-    const wM=document.getElementById('buildInput').parentElement, tM=document.getElementById('talkMode');
-    if (m==='write') { wB.classList.add('active'); tB.classList.remove('active'); wM.style.display=''; tM.style.display='none'; }
-    else { tB.classList.add('active'); wB.classList.remove('active'); tM.style.display='flex'; wM.style.display='none'; }
-  }
-
-  function setDepth(m) {
-    depthMode = m;
-    document.getElementById('fastModeBtn').classList.toggle('active', m==='fast');
-    document.getElementById('deepModeBtn').classList.toggle('active', m==='deep');
-  }
-
-  function setExample(t) { document.getElementById('buildInput').value = t; document.getElementById('buildInput').focus(); setMode('write'); }
+  function setExample(t) { document.getElementById('buildInput').value = t; document.getElementById('buildInput').focus(); }
 
   function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 
@@ -1634,25 +1598,6 @@
   }
 
   function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-  // ─── Voice ──────────────────────────────────────────────────────
-  let recognition = null, micRestartCount = 0;
-  function resetMicUI(label, msg) { isRecording=false; document.getElementById('micBtn').classList.remove('recording'); document.getElementById('micBtn').textContent='\u{1F3A4}'; document.getElementById('waveform').style.display='none'; label.textContent=msg||'Click to speak'; recognition=null; micRestartCount=0; }
-
-  async function toggleMic() {
-    const mic=document.getElementById('micBtn'), label=document.getElementById('micLabel'), wave=document.getElementById('waveform');
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { label.textContent='Needs Chrome/Edge'; return; }
-    if (!isRecording) {
-      try { const s = await navigator.mediaDevices.getUserMedia({audio:true}); s.getTracks().forEach(t=>t.stop()); } catch(e) { label.textContent='Mic blocked'; return; }
-      isRecording=true; micRestartCount=0; mic.classList.add('recording'); mic.textContent='\u23F9\uFE0F'; label.textContent='Listening...'; wave.style.display='flex';
-      recognition = new SR(); recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-US'; let ft='';
-      recognition.onresult = e => { let im=''; for(let i=e.resultIndex;i<e.results.length;i++) { if(e.results[i].isFinal) ft+=e.results[i][0].transcript; else im+=e.results[i][0].transcript; } document.getElementById('buildInput').value=ft+im; };
-      recognition.onerror = e => { if(e.error==='not-allowed') resetMicUI(label,'Mic blocked'); else if(e.error!=='aborted'&&e.error!=='no-speech') resetMicUI(label,'Error: '+e.error); };
-      recognition.onend = () => { if(isRecording&&++micRestartCount<3) { try{recognition.start();}catch(e){resetMicUI(label,'Stopped');} } else { resetMicUI(label, document.getElementById('buildInput').value.trim()?'Done':'Click to speak'); if(document.getElementById('buildInput').value.trim()) document.getElementById('writeModeBtn').click(); } };
-      try { recognition.start(); } catch(e) { resetMicUI(label,'Could not start'); }
-    } else { isRecording=false; if(recognition) try{recognition.stop();}catch(e){resetMicUI(label);} }
-  }
 
   // ─── Routines ───────────────────────────────────────────────────
   let routinesData = {};
