@@ -6,6 +6,24 @@ import json
 import threading
 import queue
 
+# Pre-approved tools for non-interactive (-p) mode.
+# The mcp__* wildcard doesn't reliably match, so we list MCP servers explicitly.
+ALLOWED_TOOLS = [
+    "Bash(*)",
+    "Read",
+    "Write",
+    "Edit",
+    "Skill",
+    "mcp__calendar-tools__*",
+    "mcp__plugin_meta_mux__*",
+    "mcp__plugin_analytics-agent_wiki__*",
+    "mcp__plugin_data_data__*",
+    "mcp__plugin_datamate_datamate__*",
+    "mcp__plugin_bento-vscode_notebook__*",
+    "mcp__plugin_browser_browser_tools__*",
+    "mcp__plugin_cdm-dw_cdm-dw__*",
+]
+
 
 def is_claude_installed():
     """Check if claude CLI is available."""
@@ -27,7 +45,7 @@ def run_prompt(prompt, timeout=120, conversation_id=None, allow_tools=False):
     try:
         cmd = ["claude", "-p", "-", "--output-format", "json"]
         if allow_tools:
-            for tool in ["Bash(*)", "Read", "Write", "Edit", "Skill", "mcp__*"]:
+            for tool in ALLOWED_TOOLS:
                 cmd.extend(["--allowedTools", tool])
         if conversation_id:
             cmd.extend(["-c", conversation_id])
@@ -83,7 +101,7 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
         if model:
             cmd.extend(["--model", model])
         if allow_tools:
-            for tool in ["Bash(*)", "Read", "Write", "Edit", "Skill", "mcp__*"]:
+            for tool in ALLOWED_TOOLS:
                 cmd.extend(["--allowedTools", tool])
         if conversation_id:
             cmd.extend(["-c", conversation_id])
