@@ -7,21 +7,37 @@ import threading
 import queue
 
 # Pre-approved tools for non-interactive (-p) mode.
-# The mcp__* wildcard doesn't reliably match, so we list MCP servers explicitly.
+# Wildcards (mcp__*) don't work — every MCP tool must be listed by exact name.
 ALLOWED_TOOLS = [
-    "Bash(*)",
-    "Read",
-    "Write",
-    "Edit",
-    "Skill",
-    "mcp__calendar-tools__*",
-    "mcp__plugin_meta_mux__*",
-    "mcp__plugin_analytics-agent_wiki__*",
-    "mcp__plugin_data_data__*",
-    "mcp__plugin_datamate_datamate__*",
-    "mcp__plugin_bento-vscode_notebook__*",
-    "mcp__plugin_browser_browser_tools__*",
-    "mcp__plugin_cdm-dw_cdm-dw__*",
+    # Core tools
+    "Bash(*)", "Read", "Write", "Edit", "Skill",
+    # Calendar MCP tools
+    "mcp__calendar-tools__calendar_accept",
+    "mcp__calendar-tools__calendar_book_beta",
+    "mcp__calendar-tools__calendar_cancel_or_decline",
+    "mcp__calendar-tools__calendar_employee_search",
+    "mcp__calendar-tools__calendar_list_beta",
+    "mcp__calendar-tools__calendar_list_invitees_with_response",
+    "mcp__calendar-tools__calendar_renew_series",
+    "mcp__calendar-tools__calendar_resolve_conflicts",
+    "mcp__calendar-tools__calendar_rooms_search",
+    "mcp__calendar-tools__calendar_scheduling_ai",
+    "mcp__calendar-tools__calendar_scheduling_ai_for_rescheduling_beta",
+    "mcp__calendar-tools__calendar_upcoming_multi_status_period",
+    "mcp__calendar-tools__calendar_update_or_reschedule_meetings",
+    "mcp__calendar-tools__employee_reports",
+    # Knowledge & search
+    "mcp__plugin_meta_mux__knowledge_filtered_search",
+    "mcp__plugin_meta_mux__knowledge_load",
+    "mcp__plugin_meta_mux__search_files",
+    "mcp__plugin_meta_mux__get_phabricator_diff_details",
+    "mcp__plugin_meta_mux__three_pai_external_web_search",
+    # Wiki
+    "mcp__plugin_analytics-agent_wiki__wiki_read",
+    "mcp__plugin_analytics-agent_wiki__wiki_search",
+    "mcp__plugin_analytics-agent_wiki__wiki_upsert",
+    "mcp__plugin_analytics-agent_wiki__wiki_list_children",
+    "mcp__plugin_analytics-agent_wiki__wiki_delete",
 ]
 
 
