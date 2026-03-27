@@ -73,12 +73,13 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
     Puts None when done.
     """
     if not is_claude_installed():
-        output_queue.put({"type": "error", "text": "Claude Code CLI not found."})
+        output_queue.put({"type": "error", "text": "Claude Code CLI not found. Is it installed on this server?"})
         output_queue.put(None)
         return
 
+    proc = None
     try:
-        cmd = ["claude", "-p", "--output-format", "stream-json", "--verbose", "--include-partial-messages"]
+        cmd = ["claude", "-p", "--output-format", "stream-json", "--include-partial-messages"]
         if model:
             cmd.extend(["--model", model])
         if allow_tools:
@@ -93,17 +94,35 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            bufsize=1,  # Line-buffered — critical for low-latency streaming
         )
 
-        # Send prompt via stdin
-        proc.stdin.write(prompt)
-        proc.stdin.close()
+        # Send prompt via stdin — handle broken pipe gracefully
+        try:
+            proc.stdin.write(prompt)
+            proc.stdin.close()
+        except (BrokenPipeError, OSError) as e:
+            output_queue.put({"type": "error", "text": f"Claude CLI rejected input: {e}"})
+            _cleanup_proc(proc)
+            return
 
         session_id = None
         sent_chars = 0  # Track how much text we've already sent
+        import time as _time
 
-        # Read stream-json events line by line as they arrive
-        for line in proc.stdout:
+        deadline = _time.time() + timeout
+
+        # Read stream-json events using readline() for immediate delivery
+        # (iterating proc.stdout directly uses an 8KB buffer that causes huge latency)
+        while True:
+            line = proc.stdout.readline()
+            if not line:
+                break  # EOF — process finished
+            if _time.time() > deadline:
+                output_queue.put({"type": "error", "text": f"Claude CLI timed out after {timeout}s"})
+                _cleanup_proc(proc)
+                return
+
             line = line.strip()
             if not line:
                 continue
@@ -116,14 +135,11 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
 
             if msg_type == "result":
                 session_id = event.get("session_id")
-                # Final result — send anything we haven't sent yet
                 result_text = event.get("result", "")
                 if result_text and len(result_text) > sent_chars:
                     output_queue.put({"type": "text", "text": result_text[sent_chars:]})
                     sent_chars = len(result_text)
             elif msg_type == "assistant":
-                # Each partial message contains the FULL text so far
-                # Only send the new portion (delta)
                 message = event.get("message", {})
                 content_blocks = message.get("content", [])
                 full_text = ""
@@ -138,19 +154,38 @@ def run_prompt_streaming(prompt, output_queue, timeout=600, conversation_id=None
 
         if proc.returncode != 0:
             stderr = proc.stderr.read().strip()
-            if stderr:
-                output_queue.put({"type": "error", "text": stderr})
+            error_msg = stderr or f"Claude CLI exited with code {proc.returncode}"
+            # Only report if we haven't sent any text (otherwise it may just be a warning)
+            if sent_chars == 0:
+                output_queue.put({"type": "error", "text": error_msg})
+            else:
+                # Log it but don't overwrite the output
+                output_queue.put({"type": "error", "text": f"\n[CLI warning: {error_msg}]"})
 
-        # Send session_id so frontend can continue the conversation
         output_queue.put({"type": "session", "session_id": session_id})
 
     except subprocess.TimeoutExpired:
-        proc.kill()
+        _cleanup_proc(proc)
         output_queue.put({"type": "error", "text": f"Timed out after {timeout}s"})
     except Exception as e:
-        output_queue.put({"type": "error", "text": str(e)})
+        _cleanup_proc(proc)
+        output_queue.put({"type": "error", "text": f"Unexpected error: {e}"})
     finally:
         output_queue.put(None)
+
+
+def _cleanup_proc(proc):
+    """Safely terminate a subprocess."""
+    if proc is None:
+        return
+    try:
+        proc.terminate()
+        proc.wait(timeout=5)
+    except Exception:
+        try:
+            proc.kill()
+        except Exception:
+            pass
 
 
 def check_connection():

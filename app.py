@@ -220,14 +220,30 @@ def api_build_stream():
     thread.start()
 
     def generate():
+        heartbeat_interval = 15  # seconds
+        last_data = time.time()
         while True:
-            item = output_queue.get()
+            try:
+                item = output_queue.get(timeout=heartbeat_interval)
+            except queue.Empty:
+                # Send keepalive comment to prevent connection timeout
+                yield f": keepalive\n\n"
+                # If no data for 10 minutes, give up
+                if time.time() - last_data > 600:
+                    yield f"data: {json.dumps({'type': 'error', 'text': 'Request timed out after 10 minutes'})}\n\n"
+                    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                    break
+                continue
+            last_data = time.time()
             if item is None:
                 yield f"data: {json.dumps({'type': 'done'})}\n\n"
                 break
             yield f"data: {json.dumps(item)}\n\n"
 
-    return Response(generate(), mimetype="text/event-stream")
+    resp = Response(generate(), mimetype="text/event-stream")
+    resp.headers["Cache-Control"] = "no-cache"
+    resp.headers["X-Accel-Buffering"] = "no"
+    return resp
 
 
 # ─── API: Routines ───────────────────────────────────────────────────────────
@@ -737,6 +753,20 @@ def api_claudemd_path():
     return jsonify({
         "found": path is not None,
         "path": str(path) if path else None,
+    })
+
+
+# ─── API: Health Check ────────────────────────────────────────────────────────
+
+
+@app.route("/api/health")
+def api_health():
+    """Lightweight health check — confirms Flask is alive and Claude CLI is available."""
+    return jsonify({
+        "healthy": True,
+        "connected": connection_state["connected"],
+        "server_id": connection_state["server_id"],
+        "claude_installed": is_claude_installed(),
     })
 
 

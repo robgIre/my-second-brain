@@ -637,6 +637,25 @@
 
   .content-disabled { opacity: 0.35; pointer-events: none; }
 
+  /* Chat history in brain output */
+  .chat-msg { padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+  .chat-msg:last-child { border-bottom: none; }
+  .chat-msg-you { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 4px; }
+  .chat-msg-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; padding: 1px 5px; border-radius: 4px; flex-shrink: 0; margin-top: 1px; }
+  .chat-msg-label.you { background: var(--accent-light); color: var(--accent); }
+  .chat-msg-label.brain { background: var(--green-light); color: var(--green); }
+  .chat-msg-prompt { font-size: 12px; color: var(--text); font-weight: 500; }
+  .chat-msg-response { font-size: 13px; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap; margin-top: 4px; padding-left: 2px; }
+  .chat-msg-error { color: var(--red); font-size: 12px; margin-top: 4px; }
+  .chat-msg-time { font-size: 9px; color: var(--text-tertiary); margin-top: 4px; }
+
+  .conn-status-bar {
+    display: none; padding: 4px 12px; font-size: 10px; font-weight: 600;
+    text-align: center; flex-shrink: 0;
+  }
+  .conn-status-bar.warning { display: block; background: var(--warning-light); color: var(--warning); }
+  .conn-status-bar.error { display: block; background: var(--red-light); color: var(--red); }
+
   .footer { text-align: center; padding: 6px; font-size: 9px; color: var(--text-tertiary); border-top: 1px solid var(--border-light); flex-shrink: 0; }
 
   @media (max-width: 1000px) { .cc-widgets { grid-template-columns: 1fr 1fr; } }
@@ -747,6 +766,9 @@
         </div>
       </div>
 
+      <!-- Connection status bar -->
+      <div class="conn-status-bar" id="connStatusBar"></div>
+
       <!-- Extras: attached files, thinking bar, output -->
       <div class="brain-extras">
         <div class="attached-files" id="attachedFiles"></div>
@@ -754,7 +776,7 @@
           <canvas class="thinking-canvas" id="thinkingCanvas"></canvas>
           <div class="thinking-status">Thinking<span class="thinking-dots"></span></div>
         </div>
-        <div class="brain-output" id="buildOutput"><div id="outputResult"></div></div>
+        <div class="brain-output" id="buildOutput" style="max-height:400px;"></div>
       </div>
 
       <!-- DAY VIEW: Meetings + Brief -->
@@ -1280,8 +1302,10 @@
       if (d.success && d.results) {
         for (const [id, result] of Object.entries(d.results)) {
           if (result.output && !result._shown) {
-            document.getElementById('outputResult').textContent = '[Auto-run ' + id + ' at ' + result.ran_at + ']\n\n' + result.output;
-            document.getElementById('buildOutput').classList.add('visible');
+            const msg = addChatMessage('[Auto-run: ' + id + ']');
+            msg.response = result.output;
+            msg.time = result.ran_at || msg.time;
+            renderChat();
             result._shown = true;
           }
         }
@@ -1416,7 +1440,7 @@
   }
 
   // ─── Conversation ───────────────────────────────────────────────
-  function newConversation() { conversationId = null; localStorage.removeItem('msb_conversation_id'); updateConversationIndicator(); document.getElementById('buildOutput').classList.remove('visible'); }
+  function newConversation() { conversationId = null; localStorage.removeItem('msb_conversation_id'); updateConversationIndicator(); chatMessages = []; document.getElementById('buildOutput').classList.remove('visible'); document.getElementById('buildOutput').innerHTML = ''; }
   function saveConversationId(id) { conversationId = id; localStorage.setItem('msb_conversation_id', id); }
   function updateConversationIndicator() {
     const i = document.getElementById('conversationIndicator'), b = document.getElementById('newChatBtn');
@@ -1442,29 +1466,139 @@
 
   function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 
+  // ─── Health Check ──────────────────────────────────────────────
+  let healthFailCount = 0;
+
+  async function checkHealth() {
+    const bar = document.getElementById('connStatusBar');
+    if (!isConnected) { bar.className = 'conn-status-bar'; return; }
+    try {
+      const res = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+      if (res.ok) {
+        healthFailCount = 0;
+        bar.className = 'conn-status-bar';
+      } else {
+        throw new Error('unhealthy');
+      }
+    } catch(e) {
+      healthFailCount++;
+      if (healthFailCount >= 3) {
+        bar.className = 'conn-status-bar error';
+        bar.textContent = 'Connection lost — server may have stopped. Try reconnecting.';
+        setDisconnectedUI();
+      } else {
+        bar.className = 'conn-status-bar warning';
+        bar.textContent = 'Connection unstable — retrying...';
+      }
+    }
+  }
+
+  setInterval(checkHealth, 30000);
+
+  // ─── Chat History ─────────────────────────────────────────────
+  let chatMessages = []; // { prompt, response, error, time }
+
+  function addChatMessage(prompt) {
+    const msg = { prompt, response: '', error: null, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) };
+    chatMessages.push(msg);
+    // Keep last 20 messages to avoid memory bloat
+    if (chatMessages.length > 20) chatMessages.shift();
+    renderChat();
+    return msg;
+  }
+
+  function renderChat() {
+    const output = document.getElementById('buildOutput');
+    output.classList.add('visible');
+    let html = '';
+    for (let i = 0; i < chatMessages.length; i++) {
+      const msg = chatMessages[i];
+      const isLast = (i === chatMessages.length - 1);
+      html += '<div class="chat-msg">';
+      html += '<div class="chat-msg-you"><span class="chat-msg-label you">You</span> <span class="chat-msg-prompt">' + escapeHtml(msg.prompt) + '</span></div>';
+      if (msg.response || isLast) {
+        html += '<div><span class="chat-msg-label brain">Brain</span></div>';
+        html += '<div class="chat-msg-response"' + (isLast ? ' id="chat-response-live"' : '') + '>' + escapeHtml(msg.response) + '</div>';
+      }
+      if (msg.error) {
+        html += '<div class="chat-msg-error">' + escapeHtml(msg.error) + '</div>';
+      }
+      html += '<div class="chat-msg-time">' + msg.time + '</div>';
+      html += '</div>';
+    }
+    output.innerHTML = html;
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function updateLastChatResponse(text) {
+    if (chatMessages.length === 0) return;
+    chatMessages[chatMessages.length - 1].response += text;
+    // Fast path: append to existing DOM element instead of re-rendering everything
+    const el = document.getElementById('chat-response-live');
+    if (el) {
+      el.textContent = chatMessages[chatMessages.length - 1].response;
+      document.getElementById('buildOutput').scrollTop = document.getElementById('buildOutput').scrollHeight;
+    } else {
+      renderChat();
+    }
+  }
+
+  function setLastChatError(err) {
+    if (chatMessages.length === 0) return;
+    chatMessages[chatMessages.length - 1].error = err;
+    renderChat();
+  }
+
+  // ─── Ask My Brain (robust) ───────────────────────────────────
   async function sendBuild() {
     const inp = document.getElementById('buildInput'), prompt = inp.value.trim();
     if (!prompt) return;
     const btn = document.getElementById('buildBtn');
-    const output = document.getElementById('buildOutput'), result = document.getElementById('outputResult');
+
+    // Pre-flight: verify server is reachable
+    try {
+      const hc = await fetch('/api/health', { signal: AbortSignal.timeout(5000) });
+      if (!hc.ok) throw new Error();
+      const hd = await hc.json();
+      if (!hd.connected) {
+        addChatMessage(prompt);
+        setLastChatError('Not connected — click "Connect Brain" first.');
+        return;
+      }
+    } catch(e) {
+      addChatMessage(prompt);
+      setLastChatError('Cannot reach server. Is it still running?');
+      return;
+    }
+
     btn.disabled = true; btn.textContent = '...';
-    result.textContent = ''; output.classList.add('visible');
+    const chatMsg = addChatMessage(prompt);
     startThinking();
     inp.value = ''; inp.style.height = 'auto';
+
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 660000); // 11 min total timeout
+
     try {
       const res = await fetch('/api/build/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) })
+        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) }),
+        signal: controller.signal,
       });
+
+      clearTimeout(fetchTimeout);
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Request failed');
+        throw new Error(err.error || 'Server returned ' + res.status);
       }
+
       stopThinking();
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -1475,16 +1609,27 @@
           if (!line.startsWith('data: ')) continue;
           try {
             const evt = JSON.parse(line.slice(6));
-            if (evt.type === 'text') { result.textContent += evt.text; stopThinking(); }
+            if (evt.type === 'text') { updateLastChatResponse(evt.text); stopThinking(); }
             else if (evt.type === 'session' && evt.session_id) { saveConversationId(evt.session_id); updateConversationIndicator(); }
-            else if (evt.type === 'error') { result.textContent += '\nError: ' + evt.text; stopThinking(); }
+            else if (evt.type === 'error') { setLastChatError(evt.text); stopThinking(); }
             else if (evt.type === 'done') { /* stream finished */ }
           } catch(pe) {}
         }
       }
-      if (!result.textContent.trim()) result.textContent = '(No output)';
+
+      if (!chatMsg.response.trim() && !chatMsg.error) {
+        setLastChatError('No output received from Claude.');
+      }
+
       attachedFileIds = []; renderAttachedFiles();
-    } catch(e) { stopThinking(); result.textContent = 'Error: ' + e.message; }
+    } catch(e) {
+      clearTimeout(fetchTimeout);
+      stopThinking();
+      let errorMsg = e.message;
+      if (e.name === 'AbortError') errorMsg = 'Request timed out. Try a simpler prompt or switch to Fast mode.';
+      else if (errorMsg === 'Failed to fetch') errorMsg = 'Lost connection to server. Check that the server is still running and try reconnecting.';
+      setLastChatError(errorMsg);
+    }
     btn.disabled = false; btn.textContent = 'Ask';
   }
 
@@ -1588,7 +1733,7 @@
       const d = await api('/api/routines/'+id+'/run', { method:'POST', body:JSON.stringify({conversation_id:conversationId}) });
       if (d.conversation_id) { saveConversationId(d.conversation_id); updateConversationIndicator(); }
       btn.textContent='Done'; btn.style.background='var(--green-light)'; btn.style.color='var(--green)';
-      if (d.success && d.output) { document.getElementById('outputResult').textContent=d.output; document.getElementById('buildOutput').classList.add('visible'); }
+      if (d.success && d.output) { const m = addChatMessage('[Routine: ' + id + ']'); m.response = d.output; renderChat(); }
     } catch(e) { btn.textContent='Done'; btn.style.background='var(--green-light)'; btn.style.color='var(--green)'; }
     setTimeout(() => { btn.textContent=orig; btn.style=''; }, 3000);
   }
