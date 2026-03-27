@@ -818,6 +818,13 @@
             </div>
             <div class="routine-item">
               <div class="routine-item-info">
+                <div class="routine-item-name" style="color:#10b981;">&#128640; Command Center</div>
+                <div class="routine-item-desc">Morning dashboard & priorities</div>
+              </div>
+              <a href="https://morningdash-lbxkyekd.manus.space/" target="_blank" class="routine-btn" style="text-decoration:none;text-align:center;">Open</a>
+            </div>
+            <div class="routine-item">
+              <div class="routine-item-info">
                 <div class="routine-item-name" style="color:#0ea5e9;">&#128240; DC Morning Brief</div>
                 <div class="routine-item-desc">Industry news & updates</div>
               </div>
@@ -1547,7 +1554,7 @@
       const res = await fetch('/api/build/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, conversation_id: conversationId, mode: depthMode, file_ids: attachedFileIds.map(f => f.id) }),
+        body: JSON.stringify({ prompt, conversation_id: conversationId, file_ids: attachedFileIds.map(f => f.id) }),
         signal: controller.signal,
       });
 

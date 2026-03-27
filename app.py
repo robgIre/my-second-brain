@@ -164,12 +164,7 @@ def api_build():
             prompt = "\n\n".join(doc_parts) + "\n\n" + prompt
 
     conversation_id = data.get("conversation_id") if data else None
-    mode = data.get("mode", "fast") if data else "fast"
-
-    if mode == "deep":
-        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True)
-    else:
-        result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=False)
+    result = run_prompt(prompt, timeout=600, conversation_id=conversation_id, allow_tools=True)
 
     return jsonify(result)
 
@@ -197,18 +192,11 @@ def api_build_stream():
             prompt = "\n\n".join(doc_parts) + "\n\n" + prompt
 
     conversation_id = data.get("conversation_id")
-    mode = data.get("mode", "fast")  # "fast" or "deep"
 
-    if mode == "deep":
-        stream_kwargs = {
-            "conversation_id": conversation_id,
-            "allow_tools": True,
-        }
-    else:
-        stream_kwargs = {
-            "conversation_id": conversation_id,
-            "allow_tools": False,
-        }
+    stream_kwargs = {
+        "conversation_id": conversation_id,
+        "allow_tools": True,  # Always enable tools (calendar, tasks, etc.)
+    }
 
     output_queue = queue.Queue()
     thread = threading.Thread(
