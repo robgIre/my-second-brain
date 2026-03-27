@@ -345,8 +345,8 @@ def fetch_meetings_background():
     day_cache["meetings_loading"] = True
     try:
         prompt = (
-            "Use the /calendar skill to list my meetings for today. "
-            "Return ONLY the meetings in chronological order, one per line, in this exact format:\n"
+            "Run this bash command to get my calendar: gcal list --json\n"
+            "Then format the results as one meeting per line in this exact format:\n"
             "HH:MM - HH:MM | Meeting Title | Attendees\n\n"
             "Example:\n"
             "10:00 - 10:30 | Team Sync | Alice, Bob\n"
@@ -380,7 +380,9 @@ def fetch_brief_background():
                 yesterday_notes = f"\n\nYesterday's notes from my scratchpad:\n{pad_data[yesterday]}\n"
 
         prompt = (
-            "Give me a concise morning brief for today. Use the /calendar skill for meetings. Include:\n"
+            "Give me a concise morning brief for today.\n"
+            "First run: gcal list --json\n"
+            "Then include:\n"
             "1. My meetings for today (list with times)\n"
             "2. Any open tasks or follow-ups that need attention\n"
             "3. Carry-over items from yesterday that I should remember\n"
